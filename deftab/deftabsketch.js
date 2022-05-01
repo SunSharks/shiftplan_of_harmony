@@ -10,8 +10,11 @@ let row_height;
 let ww;
 let wh;
 
+let grid;
 let griditems = [];
 let num_griditems = 0;
+
+let curr_color;
 
 
 function setup() {
@@ -112,14 +115,19 @@ function setup() {
 //   colormode = -1
 // }
 
+
+
 function draw() {
   // background(255);
   // print(col_width);
   // create_grid();
+  curr_color = grid.generate_random_color();
   if (mouseIsPressed){
+
     for (var i=0; i<griditems.length; i++){
       if (griditems[i].collides(mouseX, mouseY)){
-        mousePressed()
+        griditems[i].set_color(curr_color);
+        griditems[i].select();
       }
     }
   }
@@ -166,6 +174,13 @@ class Grid {
     }
   }
 
+  generate_random_color(){
+    let r = random(255); // r is a random number between 0 - 255
+    let g = random(100,200); // g is a random number betwen 100 - 200
+    let b = random(100); // b is a random number between 0 - 100
+    let a = random(200,255); // a is a random number between 200 - 255
+    return color(r, g, b, a)
+  }
 
 }
 
@@ -187,17 +202,23 @@ class Griditem {
   collides(x, y) {
     let ret = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h
     if (ret){
-      this.color = this.generate_random_color();
+      this.set_color(curr_color);
     }
     return ret
   }
 
-  clicked(x, y) {
-    if (this.collides(x, y)) {
+  set_color(c, show=false){
+    this.color = c;
+    if (show){
       this.show();
-      print("clicked." + this.id.toString());
-      print(this.color)
     }
+  }
+
+  select(x, y) {
+      this.show();
+      print("selected." + this.id.toString());
+      print(this.color)
+
   }
 
   // press(){
@@ -205,6 +226,7 @@ class Griditem {
   //     this.pressed = true;
   //   }
   // }
+
 
   show() {
     stroke(255);
@@ -216,12 +238,5 @@ class Griditem {
     print("draw " + this.id.toString())
   }
 
-  generate_random_color(){
-    let r = random(255); // r is a random number between 0 - 255
-    let g = random(100,200); // g is a random number betwen 100 - 200
-    let b = random(100); // b is a random number between 0 - 100
-    let a = random(200,255); // a is a random number between 200 - 255
-    return color(r, g, b, a);
-  }
 
 }

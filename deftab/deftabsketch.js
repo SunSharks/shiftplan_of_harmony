@@ -14,7 +14,7 @@ let grid;
 let griditems = [];
 let num_griditems = 0;
 
-let curr_color;
+let curr_color = "blue";
 
 
 function setup() {
@@ -24,116 +24,37 @@ function setup() {
   ww = windowWidth;
   wh = windowHeight;
   grid = new Grid();
-
 }
 
-// function mousePressed() {
-//   // inputcolorbutton.collides();
-//
-//   if (mouseButton === RIGHT) {
-//     // Get the same color as a right-clicked circle.
-//         for(var i=0; i<circles.length; i++){
-//           if (circles[i].collides()){
-//             colormode = i;
-//             c[0] = circles[i].curr_color[0];
-//             c[1] = circles[i].curr_color[1];
-//             c[2] = circles[i].curr_color[2];
-//             for (var s=0; s<sliders.length; s++){
-//               sliders[s].set_pos(c[s]);
-//             }
-//           }
-//       }
-//       return;
-//     }
-//     if(mouseX <= tri_area_dim){
-//       mode = 1;
-//     }
-//     else{
-//       mode = 0;
-//     }
-//   if (mode == 0){
-//     colormode = -1
-//     for(let i = 0; i < sliders.length; i++) {
-//       sliders[i].press();
-//     }
-//   }
-//   else if (mode == 1){
-//     console.log("in mode == 1");
-//     for (var i=0; i<circles.length; i++){
-//       if (circles[i].collides()){
-//         circles[i].update();
-//       }
-//     }
-//   }
-//   colormode = -1
-// }
 
-// function mousePressed() {
-//   for (let i = 0; i < num_jobs * num_days; i++) {
-//     griditems[i].clicked(mouseX, mouseY);
-//   }
-// }
-
-// function mousePressed() {
-//   // inputcolorbutton.collides();
-//
-//   if (mouseButton === RIGHT) {
-//     // Get the same color as a right-clicked circle.
-//         for(var i=0; i<circles.length; i++){
-//           if (circles[i].collides()){
-//             colormode = i;
-//             c[0] = circles[i].curr_color[0];
-//             c[1] = circles[i].curr_color[1];
-//             c[2] = circles[i].curr_color[2];
-//             for (var s=0; s<sliders.length; s++){
-//               sliders[s].set_pos(c[s]);
-//             }
-//           }
-//       }
-//       return;
-//     }
-//     if(mouseX <= tri_area_dim){
-//       mode = 1;
-//     }
-//     else{
-//       mode = 0;
-//     }
-//   if (mode == 0){
-//     colormode = -1
-//     for(let i = 0; i < sliders.length; i++) {
-//       sliders[i].press();
-//     }
-//   }
-//   else if (mode == 1){
-//     console.log("in mode == 1");
-//     for (var i=0; i<circles.length; i++){
-//       if (circles[i].collides()){
-//         circles[i].update();
-//       }
-//     }
-//   }
-//   colormode = -1
-// }
-
-
-
+let selected = -1;
+let row = -1;
 function draw() {
   // background(255);
   // print(col_width);
   // create_grid();
-  curr_color = grid.generate_random_color();
+
   if (mouseIsPressed){
 
     for (var i=0; i<griditems.length; i++){
       if (griditems[i].collides(mouseX, mouseY)){
-        griditems[i].set_color(curr_color);
-        griditems[i].select();
+        if(row == -1){
+          row = Math.floor(i/grid.cols.length)
+        }
+        if (row == Math.floor(i/grid.cols.length)){
+          griditems[i].set_color(curr_color);
+          griditems[i].select();
+        }
       }
     }
   }
 }
 
 
+function mouseReleased() {
+    curr_color = grid.generate_random_color();
+    row = -1;
+}
 
 
 class Grid {
@@ -202,7 +123,7 @@ class Griditem {
   collides(x, y) {
     let ret = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h
     if (ret){
-      this.set_color(curr_color);
+      this.set_color("green");
     }
     return ret
   }

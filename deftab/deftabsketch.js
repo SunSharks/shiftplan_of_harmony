@@ -1,10 +1,19 @@
+let jobnames = ["Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"]
+let num_jobs = jobnames.length;
 
-let num_days = 3;
-let num_jobs = 8;
-let headerheight = 20;
-let rowheaderwidth = 60;
-// col_width;
-// row_height;
+let daynames = ["Freitag", "Samstag", "Sonntag"];
+let num_days = daynames.length;
+
+let num_cols = num_days * 24;
+let headerheight = 30;
+let rowheaderwidth = 100;
+let txtsize = 12;
+let headertextx;
+let headertexty;
+let rowheadertextx = 0;
+let rowheadertexty;
+
+// ============
 let col_width;
 let row_height;
 let ww;
@@ -13,29 +22,31 @@ let wh;
 let grid;
 let griditems = [];
 let num_griditems = 0;
+let curr_color = 'blue';
 
-let curr_color = "blue";
+let selected = -1;
+let row = -1;
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  col_width = (windowWidth - rowheaderwidth) / num_days;
+  col_width = (windowWidth - rowheaderwidth) / (num_cols);
   row_height = (windowHeight - headerheight) / num_jobs;
+  headertexty = headerheight / 2;
+  let corrector = (col_width / 2) - txtsize / 2 -1;
+  headertextx = rowheaderwidth + corrector;
+  rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
   grid = new Grid();
 }
 
 
-let selected = -1;
-let row = -1;
+
 function draw() {
   // background(255);
-  // print(col_width);
-  // create_grid();
 
   if (mouseIsPressed){
-
     for (var i=0; i<griditems.length; i++){
       if (griditems[i].collides(mouseX, mouseY)){
         if(row == -1){
@@ -62,9 +73,11 @@ class Grid {
     this.rows = [];
     this.cols = [];
     this.assemble_grid();
+    this.make_colheaders();
+    this.make_rowheaders();
   }
 
-  make_data_row(y, num_cols=num_days){
+  make_data_row(y){
     let x = rowheaderwidth;
     let l = [];
     for (let i=0; i<num_cols; i++){
@@ -78,7 +91,7 @@ class Grid {
     this.rows.push(l);
   }
 
-  assemble_grid(num_rows=num_jobs, num_cols=num_days){
+  assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     for (let i=0; i<num_rows; i++){
       this.make_data_row(y);
@@ -103,6 +116,33 @@ class Grid {
     return color(r, g, b, a)
   }
 
+  insert_text(t, x, y){
+    fill(0);
+    // stroke(1);
+    textFont('Helvetica');
+    textSize(12);
+    text(t, x, y);
+    pop();
+  }
+
+  make_colheaders(){
+    let x = headertextx;
+    let y = headertexty;
+    for (let i=0; i<num_cols; i++){
+      for (let j=0; j<24; j++){
+        this.insert_text(j.toString(), x, y);
+        x += col_width;
+      }
+    }
+  }
+
+  make_rowheaders(){
+    let y = rowheadertexty;
+    for (let i=0; i<num_jobs; i++){
+      this.insert_text(jobnames[i], 0, y);
+      y += row_height;
+    }
+  }
 }
 
 class Griditem {
@@ -113,11 +153,12 @@ class Griditem {
     this.w = w;
     this.h = h;
     this.content = "";
-    this.color = "red";
-
-    this.pressed = false;
-    this.mouse_over = false;
-    this.can_hold = true;
+    if (this.id % 2 == 0){
+      this.color = color(187, 186, 143);
+    }
+    else{
+      this.color = color(170, 175, 91);
+    }
   }
 
   collides(x, y) {

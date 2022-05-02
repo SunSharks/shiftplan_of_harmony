@@ -57,30 +57,36 @@ function save_data(){
   let ret = [];
   let group = [];
   let curr_group = -1;
+  print(ret);
+
+  // ret.push(1);
   for (let i=0; i<griditems.length; i++){
     if (griditems[i].selected){
-      print("sel " + ret.length.toString());
-      // print(griditems[i]);
+
       if (griditems[i].group == curr_group || curr_group == -1){
         group.push(i);
-        print("push");
+        print("push " + griditems[i].id.toString());
+        curr_group = griditems[i].group;
       }
       else{
         ret.push(group);
-        group = [griditems[i]];
+        group = [i];
+        curr_group = griditems[i].group;
+        // print(group);
       }
-      curr_group = griditems[i].group;
     }
     else{
-
       if (group.length > 0){
         ret.push(group);
+        // print(group);
+        group = [];
         curr_group = -1;
       }
     }
   }
-    print("ret " + ret.length.toString());
-    return ret
+  print("ret " + ret);
+  print(ret.length);
+  return ret
   }
 
 function draw() {
@@ -221,7 +227,7 @@ class Griditem {
     this.content = "";
     this.color = default_colors[this.id%2];
     this.defaultcolor = default_colors[this.id%2];
-    this.group;
+    this.group = -1;
     this.selected = false;
   }
 

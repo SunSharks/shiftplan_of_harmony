@@ -32,6 +32,8 @@ let default_colors;
 let row = -1;
 let curr_selected_cols = [];
 let btn;
+let savebtn;
+let edited = false;
 
 function setup() {
   createCanvas(windowWidth, windowHeight+20);
@@ -77,7 +79,7 @@ function save_data(){
 
     }
   }
-    print(ret);
+    print(ret.length);
     return ret
   }
 
@@ -99,9 +101,11 @@ function draw() {
               griditems[i].set_color(curr_color);
               griditems[i].set_group(curr_group);
               griditems[i].select();
+              edited = true;
             }
             else {
               griditems[i].deselect();
+              edited = true;
             }
           }
         }
@@ -249,6 +253,7 @@ class Griditem {
     this.color = this.defaultcolor;
     this.selected = false;
     this.show();
+    print("deselected." + this.id.toString());
   }
 
   show() {
@@ -325,7 +330,7 @@ Button.prototype.collides = function() {
     //   }
     // }
     if (this.func == "save"){
-      if (this.state == 0){
+      if (this.state == 0 && edited == true){
         save_data();
       }
     }

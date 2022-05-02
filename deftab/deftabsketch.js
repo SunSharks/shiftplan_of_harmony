@@ -1,6 +1,8 @@
+//  JOBS
 let jobnames = ["Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"]
 let num_jobs = jobnames.length;
 
+// DAYS
 let daynames = ["Freitag", "Samstag", "Sonntag"];
 let num_days = daynames.length;
 
@@ -23,13 +25,16 @@ let grid;
 let griditems = [];
 let num_griditems = 0;
 let curr_color = 'blue';
+let curr_group = 0;
+let default_colors;
 
-let selected = -1;
+// let selected = -1;
 let row = -1;
-
+let curr_selected_cols = [];
+let btn;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight+20);
   col_width = (windowWidth - rowheaderwidth) / (num_cols);
   row_height = (windowHeight - headerheight) / num_jobs;
   headertexty = headerheight / 2;
@@ -38,35 +43,86 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
+  default_colors = [color(187, 186, 143), color(170, 175, 91)];
   grid = new Grid();
+  btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
+  btn.draw();
+  savebtn = new Button(0, wh, ww, 50, "save", false, ["save", "save"]);
+  savebtn.draw();
 }
 
+function save_data(){
+  let ret = [];
+  let group = [];
+  let curr_group = -1;
+  let last_desel = true;
+  for (let i=0; i<griditems.length; i++){
+    if (griditems[i].selected){
+      print(griditems[i]);
+      if (griditems[i].group == curr_group || curr_group == -1){
+        group.push(i);
+      }
+      else{
+        ret.push(group);
+        group = [griditems[i]];
+      }
+      curr_group = griditems[i].group;
+      last_desel = false;
+    }
+    else{
+      if (group.length > 0){
+        ret.push(group);
+        curr_group = -1;
+      }
 
+    }
+  }
+    print(ret);
+    return ret
+  }
 
 function draw() {
   // background(255);
 
   if (mouseIsPressed){
-    for (var i=0; i<griditems.length; i++){
-      if (griditems[i].collides(mouseX, mouseY)){
-        if(row == -1){
-          row = Math.floor(i/grid.cols.length)
-        }
-        if (row == Math.floor(i/grid.cols.length)){
-          griditems[i].set_color(curr_color);
-          griditems[i].select();
+    btn.collides();
+    savebtn.collides();
+
+    if (mouseButton === LEFT){
+      for (var i=0; i<griditems.length; i++){
+        if (griditems[i].collides(mouseX, mouseY)){
+          if(row == -1){
+            row = Math.floor(i/grid.cols.length)
+          }
+          if (row == Math.floor(i/grid.cols.length)){
+            if (!btn.state){
+              griditems[i].set_color(curr_color);
+              griditems[i].set_group(curr_group);
+              griditems[i].select();
+            }
+            else {
+              griditems[i].deselect();
+            }
+          }
         }
       }
     }
+    // else if (mouseButton === RIGHT){
+    //   for (var i=0; i<griditems.length; i++){
+    //     if (griditems[i].collides(mouseX, mouseY)){
+    //         griditems[i].deselect();
+    //     }
+    //   }
+    // }
   }
 }
 
 
 function mouseReleased() {
     curr_color = grid.generate_random_color();
+    curr_group += 1;
     row = -1;
 }
-
 
 class Grid {
   constructor(){
@@ -75,6 +131,12 @@ class Grid {
     this.assemble_grid();
     this.make_colheaders();
     this.make_rowheaders();
+    this.selected = [];
+    this.select = true;
+  }
+
+  deselect(){
+    this.select = !this.select;
   }
 
   make_data_row(y){
@@ -153,12 +215,9 @@ class Griditem {
     this.w = w;
     this.h = h;
     this.content = "";
-    if (this.id % 2 == 0){
-      this.color = color(187, 186, 143);
-    }
-    else{
-      this.color = color(170, 175, 91);
-    }
+    this.color = default_colors[this.id%2];
+    this.defaultcolor = default_colors[this.id%2];
+    this.group;
   }
 
   collides(x, y) {
@@ -176,19 +235,21 @@ class Griditem {
     }
   }
 
-  select(x, y) {
-      this.show();
-      print("selected." + this.id.toString());
-      print(this.color)
-
+  set_group(g){
+    this.group = g;
   }
 
-  // press(){
-  //   if(this.mouse_over) {
-  //     this.pressed = true;
-  //   }
-  // }
+  select() {
+      this.show();
+      print("selected." + this.id.toString());
+      this.selected = true;
+  }
 
+  deselect(){
+    this.color = this.defaultcolor;
+    this.selected = false;
+    this.show();
+  }
 
   show() {
     stroke(255);
@@ -197,8 +258,82 @@ class Griditem {
     // rect(this.x, this.y, this.w, this.h);
     fill(this.color);
     rect(this.x, this.y, this.w, this.h);
-    print("draw " + this.id.toString())
+    // print("draw " + this.id.toString())
+  }
+}
+
+class Job {
+  constructor(name, start, dur){
+    this.name = name;
+    this.start = start;
+    this.end = start + dur;
+    this.during = dur;
+    jobs.push(this);
+  }
+}
+
+Button = function(x, y, w, h, func, state, texts) {
+  this.func = func;   // "deselect", "save", "clear"
+  this.state = state; //0, 1
+  this.text = texts[+state];
+  print(this.text)
+  this.texts = texts;
+  this.x = x;
+  this.y = y;
+  this.h = h;
+  this.w = w;
+  this.color = [0, 155, 140];
+  this.textsize = 12;
+}
+Button.prototype.draw = function() {
+  // stroke(0);
+  if (this.func == "deselect"){
+    if(this.state){
+      fill(default_colors[0]);
+    }
+    else{
+      fill(this.color[0], this.color[1], (this.color[2]+20*this.state)%255);
+    }
+  }
+  else{
+    fill(this.color[0], this.color[1], (this.color[2]+20*this.state)%255);
   }
 
-
+  rect(this.x, this.y, this.w, this.h);
+  textSize(this.textsize);
+  fill(0)
+  // textStyle(BOLD);
+  // textAlign(CENTER+this.x, CENTER+this.y);
+  // text(this.func, this.x+(this.w/2)-45, this.y+this.h/2);
+  textStyle(NORMAL);
+  text(this.text, this.x, this.y+this.h/2);
 }
+
+Button.prototype.collides = function() {
+  var col = (mouseX >= this.x && mouseX <= this.x+this.w && mouseY >= this.y && mouseY <= this.y+this.h);
+  if (col){
+    this.change_mode();
+  }
+}
+  Button.prototype.change_mode = function() {
+    // if (this.func == "deselect") {
+    //   if (this.state == false){
+    //     grid.select = true;
+    //   }
+    //   else {
+    //   grid.select = false;
+    //   }
+    // }
+    if (this.func == "save"){
+      if (this.state == 0){
+        save_data();
+      }
+    }
+    else{
+      this.state = !this.state;
+
+    }
+    this.text = this.texts[+this.state];
+    this.draw();
+
+  }

@@ -9,6 +9,7 @@ let num_days = daynames.length;
 let num_cols = num_days * 24;
 let headerheight = 30;
 let rowheaderwidth = 100;
+let gridendy;
 let txtsize = 12;
 let headertextx;
 let headertexty;
@@ -35,59 +36,78 @@ let btn;
 let savebtn;
 let edited = false;
 
+let jobs = [];
+
 function setup() {
   createCanvas(windowWidth, windowHeight+20);
   col_width = (windowWidth - rowheaderwidth) / (num_cols);
   row_height = (windowHeight - headerheight) / num_jobs;
+  if (row_height > 75){
+    row_height = 75;
+  }
+  gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
   let corrector = (col_width / 2) - txtsize / 2 -1;
   headertextx = rowheaderwidth + corrector;
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
-  default_colors = [color(187, 186, 143), color(170, 175, 91)];
+  default_colors = [color(176, 174, 175), color(199, 201, 203)];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
-  savebtn = new Button(0, wh, ww, 50, "save", false, ["save", "save"]);
+  savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   savebtn.draw();
 }
 
 function save_data(){
-  let ret = [];
+  let groups = [];
   let group = [];
   let curr_group = -1;
-  print(ret);
+  print(groups);
 
-  // ret.push(1);
+  // groups.push(1);
   for (let i=0; i<griditems.length; i++){
     if (griditems[i].selected){
 
       if (griditems[i].group == curr_group || curr_group == -1){
-        group.push(i);
+        group.push(griditems[i]);
         print("push " + griditems[i].id.toString());
         curr_group = griditems[i].group;
       }
       else{
-        ret.push(group);
-        group = [i];
+        groups.push(group);
+        group = [griditems[i]];
         curr_group = griditems[i].group;
         // print(group);
       }
     }
     else{
       if (group.length > 0){
-        ret.push(group);
+        groups.push(group);
         // print(group);
         group = [];
         curr_group = -1;
       }
     }
   }
-  print("ret " + ret);
-  print(ret.length);
-  return ret
+  // print("groups " + groups);
+  // print(groups.length);
+  let ret = [];
+  for (let i = 0; i<groups.length; i++){
+    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length);
+    print(JSON.stringify(j));
+    print(j.name);
+    ret.push(JSON.stringify(j));
   }
+  write_to_file("jobs.json", ret);
+  }
+
+function write_to_file(filename, obj){
+  writer = createWriter(filename);
+  writer.write(JSON.stringify(obj));
+  writer.close();
+}
 
 function draw() {
   // background(255);
@@ -117,13 +137,6 @@ function draw() {
         }
       }
     }
-    // else if (mouseButton === RIGHT){
-    //   for (var i=0; i<griditems.length; i++){
-    //     if (griditems[i].collides(mouseX, mouseY)){
-    //         griditems[i].deselect();
-    //     }
-    //   }
-    // }
   }
 }
 
@@ -149,12 +162,11 @@ class Grid {
     this.select = !this.select;
   }
 
-  make_data_row(y){
+  make_data_row(name, y){
     let x = rowheaderwidth;
     let l = [];
     for (let i=0; i<num_cols; i++){
-      let r = new Griditem(num_griditems, x, y);
-      num_griditems += 1;
+      let r = new Griditem(name, griditems.length, x, y, i);
       r.show();
       griditems.push(r);
       l.push(r);
@@ -166,7 +178,7 @@ class Grid {
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     for (let i=0; i<num_rows; i++){
-      this.make_data_row(y);
+      this.make_data_row(jobnames[i], y);
       y += row_height;
     }
     let col = [];
@@ -218,8 +230,10 @@ class Grid {
 }
 
 class Griditem {
-  constructor(id, x, y, w=col_width, h=row_height) {
-    this.id = id
+  constructor(name, id, x, y, time, w=col_width, h=row_height) {
+    this.name = name;
+    this.id = id;
+    this.time = time;
     this.x = x; // upper left corner
     this.y = y; // upper left corner
     this.w = w;
@@ -314,11 +328,8 @@ Button.prototype.draw = function() {
   rect(this.x, this.y, this.w, this.h);
   textSize(this.textsize);
   fill(0)
-  // textStyle(BOLD);
-  // textAlign(CENTER+this.x, CENTER+this.y);
-  // text(this.func, this.x+(this.w/2)-45, this.y+this.h/2);
   textStyle(NORMAL);
-  text(this.text, this.x, this.y+this.h/2);
+  text(this.text, this.x+10, this.y+this.h/2);
 }
 
 Button.prototype.collides = function() {
@@ -328,14 +339,6 @@ Button.prototype.collides = function() {
   }
 }
   Button.prototype.change_mode = function() {
-    // if (this.func == "deselect") {
-    //   if (this.state == false){
-    //     grid.select = true;
-    //   }
-    //   else {
-    //   grid.select = false;
-    //   }
-    // }
     if (this.func == "save"){
       if (this.state == 0 && edited == true){
         save_data();

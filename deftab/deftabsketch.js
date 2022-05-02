@@ -57,29 +57,29 @@ function save_data(){
   let ret = [];
   let group = [];
   let curr_group = -1;
-  let last_desel = true;
   for (let i=0; i<griditems.length; i++){
     if (griditems[i].selected){
-      print(griditems[i]);
+      print("sel " + ret.length.toString());
+      // print(griditems[i]);
       if (griditems[i].group == curr_group || curr_group == -1){
         group.push(i);
+        print("push");
       }
       else{
         ret.push(group);
         group = [griditems[i]];
       }
       curr_group = griditems[i].group;
-      last_desel = false;
     }
     else{
+
       if (group.length > 0){
         ret.push(group);
         curr_group = -1;
       }
-
     }
   }
-    print(ret.length);
+    print("ret " + ret.length.toString());
     return ret
   }
 
@@ -222,6 +222,7 @@ class Griditem {
     this.color = default_colors[this.id%2];
     this.defaultcolor = default_colors[this.id%2];
     this.group;
+    this.selected = false;
   }
 
   collides(x, y) {
@@ -281,7 +282,7 @@ Button = function(x, y, w, h, func, state, texts) {
   this.func = func;   // "deselect", "save", "clear"
   this.state = state; //0, 1
   this.text = texts[+state];
-  print(this.text)
+  // print(this.text)
   this.texts = texts;
   this.x = x;
   this.y = y;
@@ -332,11 +333,11 @@ Button.prototype.collides = function() {
     if (this.func == "save"){
       if (this.state == 0 && edited == true){
         save_data();
+        edited = false;
       }
     }
     else{
       this.state = !this.state;
-
     }
     this.text = this.texts[+this.state];
     this.draw();

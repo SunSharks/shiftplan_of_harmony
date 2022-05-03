@@ -1,6 +1,6 @@
 let days = [];
 let num_jobs = 0;
-// let jobs = [];
+let jobs = [];
 
 function create_daybox(){
     // First create a DIV element.
@@ -20,10 +20,12 @@ function create_jobbox(){
   new_box.setAttribute("id", "jobbox"+id.toString());
   let btn_box = document.createElement('button');
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-  btn_box.innerHTML = "<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>";
+  btn_box.innerHTML = "<button type='button' content='del' onclick='delete_jobbox(" + id.toString() + ");'>";
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
-  new_box.innerHTML = "<input type='text' id='job" + id.toString() + "'>";
+  new_box.innerHTML = "<input type='text' id='job"   + id.toString() + "'>";
+  // alert(id.toString());
   num_jobs++;
+  jobs.push(new_box);
 //   let btn_box = document.createElement('button');
 //   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
 //   btn_box.setAttribute('content', '+');
@@ -53,13 +55,17 @@ function delete_daybox(){
 }
 
 function delete_jobbox(id){
-  print(id.toString());
-  // print(id);
-  // const element = document.getElementById(id);
-  // element.remove();
-  // num_jobs--;
+  const element = document.getElementById("jobbox"+id.toString());
+  element.remove();
+  const el = document.getElementById("jobdelbtn"+id.toString());
+  el.remove();
+  num_jobs--;
 }
 
 function remove(elem){
 elem.parentNode.removeChild(elem);
+}
+
+function write_json(){
+
 }

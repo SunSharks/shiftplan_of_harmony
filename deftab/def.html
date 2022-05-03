@@ -46,11 +46,13 @@
 
     function create_jobbox(){
       let new_box = document.createElement('div');
-      new_box.setAttribute("id", "jobbox");
+      let id = num_jobs;
+      new_box.setAttribute("id", "jobbox"+id.toString());
       let btn_box = document.createElement('div');
-      btn_box.setAttribute("id", "btnbox");
+      btn_box.setAttribute("id", "jobdelbtn"+id.toString());
         // Then add the content (a new input box) of the element.
-      new_box.innerHTML = "<input type='text' id='job" + num_jobs + "'>";
+      btn_box.innerHTML = "<button type='button' onclick='delete_jobbox();'>"
+      new_box.innerHTML = "<input type='text' id='job" + id.toString() + "'>";
       num_jobs++;
 
         // Finally put it where it is supposed to appear.
@@ -70,11 +72,17 @@
       num_jobs--;
     }
 
+    function remove(elem){
+    elem.parentNode.removeChild(elem);
+    }
+
   </script>
 
 </head>
 
 <body>
+
+<div id="i", onclick="remove(this)">click</div>
   <div id="test">Test</div>
   <div class="day">
     <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>

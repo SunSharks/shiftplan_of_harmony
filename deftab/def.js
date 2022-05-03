@@ -18,12 +18,27 @@ function create_jobbox(){
   let new_box = document.createElement('div');
   let id = num_jobs;
   new_box.setAttribute("id", "jobbox"+id.toString());
-  let btn_box = document.createElement('div');
+  let btn_box = document.createElement('button');
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-    // Then add the content (a new input box) of the element.
-  btn_box.innerHTML = "<button type='button' onclick='delete_jobbox();'>"
+  btn_box.innerHTML = "<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>";
+  // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
   new_box.innerHTML = "<input type='text' id='job" + id.toString() + "'>";
   num_jobs++;
+//   let btn_box = document.createElement('button');
+//   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
+//   btn_box.setAttribute('content', '+');
+//     // Then add the content (a new input box) of the element.
+//   btn_box.innerHTML = "<button type='button' onclick='delete_jobbox(" + id + ");'>"
+//   new_box.innerHTML = "<input type='text' id='job" + id.toString() + "'>";
+//   num_jobs++;
+//
+//   var b =
+//
+// b.setAttribute('id', 'btn');
+// b.textContent = 'test value';
+//
+// var wrapper = document.getElementById("divWrapper");
+// wrapper.appendChild(b);
 
     // Finally put it where it is supposed to appear.
   document.getElementById("add_job").appendChild(new_box);
@@ -38,9 +53,11 @@ function delete_daybox(){
 }
 
 function delete_jobbox(id){
-  const element = document.getElementById(id);
-  element.remove();
-  num_jobs--;
+  print(id.toString());
+  // print(id);
+  // const element = document.getElementById(id);
+  // element.remove();
+  // num_jobs--;
 }
 
 function remove(elem){

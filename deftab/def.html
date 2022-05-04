@@ -12,7 +12,7 @@
     }
     h1 {text-align: center;}
     p {text-align: center;}
-    #daybox {
+    .daybox {
       display: inline;
     }
     #del_day {
@@ -27,21 +27,36 @@
     /* div {text-align: center;} */
   </style>
 
-  <script defer src=def.js></script>
-
+  <script src="./p5/p5.min.js"></script>
+  <script src=def.js></script>
 </head>
 <body>
-
-  <div id="i", onclick="remove(this)">click</div>
-  <div id="test">Test</div>
+  <main>
+  </main>
+  <!-- <div id="test">Test</div> -->
   <div class="day">
     <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
-    <div id="del_day"><button type="button" onclick="delete_daybox()">-</button><br></div>
+    <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
   </div>
   <div id="job">
     <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
   </div>
 
+  <div id="savebtn"><button type="submit" onclick="write_to_file();">SAVE</button><br></div>
+
+  <!-- <div>
+    <form action="" method="GET">
+      <fieldset>
+        <label>
+          <select name="sendfinal" size="1">
+            <option value="save.py">Jep, abschicken. </option>
+            <option value="no">Nope, noch nicht abschicken.</option>
+          </select>
+        </label>
+        <input type="submit" value="Alles bestätigen"/>
+      </fieldset>
+    </form>
+  </div> -->
 
 
 </body>

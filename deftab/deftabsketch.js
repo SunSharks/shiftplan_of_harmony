@@ -96,9 +96,9 @@ function save_data(){
   let ret = [];
   for (let i = 0; i<groups.length; i++){
     let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length);
-    print(JSON.stringify(j));
-    print(j.name);
-    ret.push(JSON.stringify(j));
+    // print(JSON.stringify(j));
+    // print(j.name);
+    // ret.push(JSON.stringify(j));
   }
   write_to_file("jobs.json", ret);
   }

@@ -20,7 +20,7 @@ function create_jobbox(){
   new_box.setAttribute("id", "jobbox"+id.toString());
   let btn_box = document.createElement('button');
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-  btn_box.innerHTML = "<button type='button' content='del' onclick='delete_jobbox(" + id.toString() + ");'>";
+  btn_box.innerHTML = "<button type='button' content='del' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
   new_box.innerHTML = "<input type='text' id='job"   + id.toString() + "'>";
   // alert(id.toString());

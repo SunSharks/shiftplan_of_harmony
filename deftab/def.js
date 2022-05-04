@@ -12,7 +12,23 @@ function setup(){
 
 }
 
+function hide_it() {
+  const btn = document.getElementById("hidebtn");
+  btn.addEventListener("click", ()=>{
+    if(btn.innerText === "HIDE DEFINITIONS"){
+        btn.innerText = "SHOW DEFINITIONS";
+    }else{
+        btn.innerText = "HIDE DEFINITIONS";
+    }
+  });
 
+  var x = document.getElementById("definition");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 function create_daybox(){
     // First create a DIV element.
   var new_box = document.createElement('div');

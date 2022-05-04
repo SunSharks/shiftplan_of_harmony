@@ -1,6 +1,6 @@
 let days = [];
-let num_jobs = 0;
-let abs_num_jobs = 0;
+let numjobs = 0;
+let abs_numjobs = 0;
 let jobs = {};
 // var dict = {
 //   FirstName: "Chris",
@@ -44,7 +44,7 @@ function create_daybox(){
 
 function create_jobbox(){
   let new_box = document.createElement('div');
-  let id = abs_num_jobs;
+  let id = abs_numjobs;
   new_box.setAttribute("id", "jobbox"+id.toString());
   let btn_box = document.createElement('button');
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
@@ -53,8 +53,8 @@ function create_jobbox(){
   new_box.innerHTML = "<input type='text' id='job"   + id.toString() + "'>";
   // alert(id.toString());
   jobs[id.toString()] = new_box;
-  num_jobs++;
-  abs_num_jobs++;
+  numjobs++;
+  abs_numjobs++;
     // Finally put it where it is supposed to appear.
   document.getElementById("add_job").appendChild(new_box);
   document.getElementById("add_job").appendChild(btn_box);
@@ -72,7 +72,7 @@ function delete_jobbox(id){
   element.remove();
   const el = document.getElementById("jobdelbtn"+id.toString());
   el.remove();
-  num_jobs--;
+  numjobs--;
   delete jobs[id];
 }
 

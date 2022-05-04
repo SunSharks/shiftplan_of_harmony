@@ -36,7 +36,7 @@ let btn;
 let savebtn;
 let edited = false;
 
-let jobs = [];
+let job_instances = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight+20);
@@ -294,7 +294,7 @@ class Job {
     this.start = start;
     this.end = start + dur;
     this.during = dur;
-    jobs.push(this);
+    job_instances.push(this);
   }
 }
 

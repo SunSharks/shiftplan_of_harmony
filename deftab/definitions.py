@@ -4,7 +4,7 @@ class Definitions:
             "Nun gib bitte eine Anzahl an Tagen ein.\n", "Als Eingabe werden nur Ganzzahlen akzeptiert.")
         print(f"Wie heißen diese {self.num_days} Tage?")
         self.days = self.input_list(True, self.num_days)
-        print("Bitte gib nun die Schichtbezeichnungen an.")
+        print("Bitte gib nun die Schichtbezeichnung(en) an.")
         self.jobnames = self.input_list(def_len=False)
 
     def __repr__(self):

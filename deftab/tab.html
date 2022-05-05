@@ -19,8 +19,33 @@
   <!-- <script defer src=https://cdn.JsDelivr.net/npm/p5></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
-  <script> console.log("Hallo");
+  <script>
+  // Arrow function to get all the GET parameters
+  get_params = () => {
+      console.log("Hallo");
+      // Address of the current window
+      address = window.location.search
+
+      // Returns a URLSearchParams object instance
+      param_lst = new URLSearchParams(address)
+
+      // Created a map which holds key value pairs
+      let map = new Map()
+
+      // Storing every key value pair in the map
+      param_lst.forEach((value, key) => {
+          map.set(key, value)
+      })
+
+      // Returning the map of GET parameters
+      return map
+  }
+
+  // Gets all the getParameters
+  console.log(get_params())
   console.log(document.getElementById("add_day"));
+  console.log(window.location);
+
   </script>
   <script src=deftabsketch.js></script>
 </head>

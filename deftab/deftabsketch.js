@@ -1,12 +1,13 @@
+let get_params;
 //  JOBS
-let jobnames = ["Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"]
-let num_jobs = jobnames.length;
+let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
+let num_jobs;
 
 // DAYS
-let daynames = ["Freitag", "Samstag", "Sonntag"];
-let num_days = daynames.length;
+let daynames = []; // "Freitag", "Samstag", "Sonntag"
+let num_days;
 
-let num_cols = num_days * 24;
+let num_cols;
 let headerheight = 30;
 let rowheaderwidth = 100;
 let gridendy;
@@ -75,8 +76,57 @@ let job_instances = [];
 //   }
 // }
 
+get_params = () => {
+    // Address of the current window
+    address = window.location.search
+
+    // Returns a URLSearchParams object instance
+    param_lst = new URLSearchParams(address)
+
+    // Created a map which holds key value pairs
+    let map = new Map()
+
+    // Storing every key value pair in the map
+    param_lst.forEach((value, key) => {
+        map.set(key, value)
+    })
+
+    // Returning the map of GET parameters
+    return map
+}
+
+function assign_params(map){
+  map.forEach (function(value, key) {
+    if (key.startsWith("day")){
+      daynames.push(value);
+      num_days = daynames.length;
+    }
+    else if (key.startsWith("job")){
+      jobnames.push(value);
+      num_jobs = jobnames.length;
+    }
+  })
+}
+
+// Gets all the getParameters
+
 function setup() {
+//   var regex = /[?&]([^=#]+)=([^&#]*)/g,
+//     url = window.location.href,
+//     params = {},
+//     match;
+// while(match = regex.exec(url)) {
+//     params[match[1]] = match[2];
+// }
+  console.log("setup_tab");
+  get_params = get_params();
+  console.log(get_params.get("day0"));
+  assign_params(get_params);
+  console.log(daynames);
+  console.log(jobnames);
+
   createCanvas(windowWidth, windowHeight+20);
+  num_cols = num_days * 24;
   col_width = (windowWidth - rowheaderwidth) / (num_cols);
   row_height = (windowHeight - headerheight) / num_jobs;
   if (row_height > 75){
@@ -303,7 +353,7 @@ class Griditem {
 
   select() {
       this.show();
-      print("selected." + this.id.toString());
+      // print("selected." + this.id.toString());
       this.selected = true;
   }
 
@@ -311,7 +361,7 @@ class Griditem {
     this.color = this.defaultcolor;
     this.selected = false;
     this.show();
-    print("deselected." + this.id.toString());
+    // print("deselected." + this.id.toString());
   }
 
   show() {

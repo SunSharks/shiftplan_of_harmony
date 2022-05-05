@@ -36,28 +36,36 @@ function create_daybox(){
   new_box.setAttribute("class", "daybox");
     // Then add the content (a new input box) of the element.
   new_box.innerHTML = "<input type='text' name='day" + days.length + "' id='day" + days.length + "'>";
-
-    // Finally put it where it is supposed to appear.
+  // Finally put it where it is supposed to appear.
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);
 }
 
 function create_jobbox(){
-  let new_box = document.createElement('div');
   let id = abs_numjobs;
+  var check_box = document.createElement('checkbox');
+  check_box.setAttribute("class", "jobbox");
+  check_box.setAttribute("id", "exception"+id.toString());
+  // check_box.setAttribute("name", "exception"+id.toString());
+  check_box.setAttribute("value", "exception"+id.toString());
+  check_box.innerHTML = "<input type='checkbox' name='exception'" + id.toString() + "'>";
+
+  let new_box = document.createElement('div');
   new_box.setAttribute("id", "jobbox"+id.toString());
+  new_box.setAttribute("class", "jobbox");
   let btn_box = document.createElement('button');
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-  btn_box.innerHTML = "<button type='button' content='del' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
+  btn_box.innerHTML = "<button type='button' class='inlinebtn' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
-  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "'>";
+  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "'><br>";
   // alert(id.toString());
   jobs[id.toString()] = new_box;
   numjobs++;
   abs_numjobs++;
     // Finally put it where it is supposed to appear.
-  document.getElementById("add_job").appendChild(new_box);
+  document.getElementById("add_job").appendChild(check_box);
   document.getElementById("add_job").appendChild(btn_box);
+  document.getElementById("add_job").appendChild(new_box);
 }
 
 function delete_daybox(){
@@ -73,6 +81,8 @@ function delete_jobbox(id){
   const el = document.getElementById("jobdelbtn"+id.toString());
   el.remove();
   numjobs--;
+  const e = document.getElementById("exception"+id.toString());
+  e.remove();
   delete jobs[id];
 }
 

@@ -151,7 +151,7 @@ function save_data(){
   let groups = [];
   let group = [];
   let curr_group = -1;
-  print(groups);
+  // print(groups);
 
   // groups.push(1);
   for (let i=0; i<griditems.length; i++){
@@ -159,7 +159,7 @@ function save_data(){
 
       if (griditems[i].group == curr_group || curr_group == -1){
         group.push(griditems[i]);
-        print("push " + griditems[i].id.toString());
+        // print("push " + griditems[i].id.toString());
         curr_group = griditems[i].group;
       }
       else{
@@ -187,7 +187,10 @@ function save_data(){
     // print(j.name);
     ret.push(JSON.stringify(j));
   }
-  write_to_file("jobs.json", ret);
+  // write_to_file("jobs.json", ret);
+  console.log("hi");
+  console.log(ret);
+  return ret
   }
 
 function write_to_file(filename, obj){

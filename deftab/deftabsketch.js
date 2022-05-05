@@ -38,6 +38,43 @@ let edited = false;
 
 let job_instances = [];
 
+// let canvas = null;
+//
+// function createP5 (){
+//   let canvasWidth = document.getElementById("widthInput").value;
+//   let canvasHeight = document.getElementById("heightInput").value;
+//   if (canvas === null){
+//     canvas = new p5(function (p) {
+//       p.setup = function (){
+//         p.createCanvas(windowWidth, windowHeight+20);
+//         col_width = (windowWidth - rowheaderwidth) / (num_cols);
+//         row_height = (windowHeight - headerheight) / num_jobs;
+//         if (row_height > 75){
+//           row_height = 75;
+//         }
+//         gridendy = row_height * num_jobs + headerheight;
+//         headertexty = headerheight / 2;
+//         let corrector = (col_width / 2) - txtsize / 2 -1;
+//         headertextx = rowheaderwidth + corrector;
+//         rowheadertexty = headerheight + row_height / 2;
+//         ww = windowWidth;
+//         wh = windowHeight;
+//         default_colors = [color(176, 174, 175), color(199, 201, 203)];
+//         grid = new Grid();
+//         btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
+//         btn.draw();
+//         savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
+//         savebtn.draw();
+//       }
+//       p.draw = function(){
+//         p.background(55);
+//         p.stroke(0);
+//         p.rect(p.width/5, p.height/5, p.width/5 * 3, p.height/5 * 3);
+//      }
+//     }, "canvas-div");
+//   }
+// }
+
 function setup() {
   createCanvas(windowWidth, windowHeight+20);
   col_width = (windowWidth - rowheaderwidth) / (num_cols);

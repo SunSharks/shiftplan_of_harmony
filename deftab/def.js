@@ -35,7 +35,7 @@ function create_daybox(){
   new_box.setAttribute("id", "daybox"+days.length.toString());
   new_box.setAttribute("class", "daybox");
     // Then add the content (a new input box) of the element.
-  new_box.innerHTML = "<input type='text' id='day" + days.length + "'>";
+  new_box.innerHTML = "<input type='text' name='day" + days.length + "' id='day" + days.length + "'>";
 
     // Finally put it where it is supposed to appear.
   document.getElementById("add_day").appendChild(new_box);
@@ -50,7 +50,7 @@ function create_jobbox(){
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
   btn_box.innerHTML = "<button type='button' content='del' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
-  new_box.innerHTML = "<input type='text' id='job"   + id.toString() + "'>";
+  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "'>";
   // alert(id.toString());
   jobs[id.toString()] = new_box;
   numjobs++;

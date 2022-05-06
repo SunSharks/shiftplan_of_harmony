@@ -384,7 +384,7 @@ class Griditem {
     // rect(this.x, this.y, this.w, this.h);
     fill(this.color);
     rect(this.x, this.y, this.w, this.h);
-   console.log("draw " + this.id.toString());
+   // console.log("draw " + this.id.toString());
   }
 }
 

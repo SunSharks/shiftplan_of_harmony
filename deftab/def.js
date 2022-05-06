@@ -1,4 +1,4 @@
-let name_exception = "helper";
+let name_special = "helper";
 let days = [];
 let numjobs = 0;
 let abs_numjobs = 0;
@@ -46,15 +46,15 @@ function create_jobbox(){
   console.log("create");
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
-  check_box.setAttribute("id", "exception"+id.toString());
-  check_box.setAttribute("name", "exception"+id.toString());
-  check_box.setAttribute("value", "exception"+id.toString());
-  check_box.innerHTML = "<input type='checkbox' name='exception" + id.toString() + "'>";
+  check_box.setAttribute("id", "special"+id.toString());
+  check_box.setAttribute("name", "special"+id.toString());
+  check_box.setAttribute("value", "special"+id.toString());
+  check_box.innerHTML = "<input type='checkbox' name='special" + id.toString() + "'>";
   let label = document.createElement('label');
   label.setAttribute("for", "checkbox");
   label.setAttribute("name", "cb_label"+id.toString());
   label.setAttribute("id", "cb_label"+id.toString());
-  label.innerHTML = name_exception;
+  label.innerHTML = name_special;
 // <label for="smoking" name="yesnos" id="yesnos">No</label>
   let new_box = document.createElement('div');
   new_box.setAttribute("id", "jobbox"+id.toString());

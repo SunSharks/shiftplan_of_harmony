@@ -1,6 +1,7 @@
 let get_params;
 //  JOBS
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
+let jobs = new Map(); // {id: <jobtype instance>}
 let num_jobs;
 
 // DAYS
@@ -29,6 +30,7 @@ let num_griditems = 0;
 let curr_color = 'blue';
 let curr_group = 0;
 let default_colors;
+let default_special_colors;
 
 // let selected = -1;
 let row = -1;
@@ -39,42 +41,6 @@ let edited = false;
 
 let job_instances = [];
 
-// let canvas = null;
-//
-// function createP5 (){
-//   let canvasWidth = document.getElementById("widthInput").value;
-//   let canvasHeight = document.getElementById("heightInput").value;
-//   if (canvas === null){
-//     canvas = new p5(function (p) {
-//       p.setup = function (){
-//         p.createCanvas(windowWidth, windowHeight+20);
-//         col_width = (windowWidth - rowheaderwidth) / (num_cols);
-//         row_height = (windowHeight - headerheight) / num_jobs;
-//         if (row_height > 75){
-//           row_height = 75;
-//         }
-//         gridendy = row_height * num_jobs + headerheight;
-//         headertexty = headerheight / 2;
-//         let corrector = (col_width / 2) - txtsize / 2 -1;
-//         headertextx = rowheaderwidth + corrector;
-//         rowheadertexty = headerheight + row_height / 2;
-//         ww = windowWidth;
-//         wh = windowHeight;
-//         default_colors = [color(176, 174, 175), color(199, 201, 203)];
-//         grid = new Grid();
-//         btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
-//         btn.draw();
-//         savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
-//         savebtn.draw();
-//       }
-//       p.draw = function(){
-//         p.background(55);
-//         p.stroke(0);
-//         p.rect(p.width/5, p.height/5, p.width/5 * 3, p.height/5 * 3);
-//      }
-//     }, "canvas-div");
-//   }
-// }
 
 get_params = () => {
     // Address of the current window
@@ -96,16 +62,40 @@ get_params = () => {
 }
 
 function assign_params(map){
-  map.forEach (function(value, key) {
+  let id;
+  map.forEach (function(value, key){
     if (key.startsWith("day")){
       daynames.push(value);
       num_days = daynames.length;
     }
     else if (key.startsWith("job")){
+      id = parseInt(key.slice(3));
+      if (jobs.has(id)){
+        jobs.get(id).set_name(value);
+      }
+      else{
+        let new_jt = new Jobtype(id);
+        new_jt.set_name(value);
+        jobs.set(id, new_jt);
+      }
+      // console.log(jobs.get(id));
       jobnames.push(value);
       num_jobs = jobnames.length;
     }
+    else if (key.startsWith("special")){
+      id = parseInt(key.slice(7));
+      if (jobs.has(id)){
+        jobs.get(id).set_special();
+      }
+      else{
+        let new_jt = new Jobtype(id);
+        new_jt.set_special();
+        jobs.set(id, new_jt);
+      }
+
+    }
   })
+  console.log(jobs);
 }
 
 // Gets all the getParameters
@@ -118,13 +108,13 @@ function setup() {
 // while(match = regex.exec(url)) {
 //     params[match[1]] = match[2];
 // }
-  console.log("setup_tab");
+  // console.log("setup_tab");
   get_params = get_params();
-  console.log(get_params.get("day0"));
+  // console.log(get_params.get("day0"));
   assign_params(get_params);
-  console.log(daynames);
-  console.log(jobnames);
-
+  // console.log(daynames);
+  // console.log(jobnames);
+  console.log(jobs);
   createCanvas(windowWidth, windowHeight+20);
   num_cols = num_days * 24;
   col_width = (windowWidth - rowheaderwidth) / (num_cols);
@@ -139,7 +129,8 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
-  default_colors = [color(175, 175, 175), color(200, 200, 200)];
+  default_colors = [color(220, 220, 220, 100), color(230, 230, 230, 100)];
+  default_special_colors = [color(220, 235, 220, 100), color(230, 250, 230, 100)];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
@@ -182,13 +173,13 @@ function save_data(){
   // print(groups.length);
   let ret = [];
   for (let i = 0; i<groups.length; i++){
-    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length);
+    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].special);
     // print(JSON.stringify(j));
     // print(j.name);
     ret.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
-  console.log("hi");
+  // console.log("hi");
   console.log(ret);
   return ret
   }
@@ -200,8 +191,6 @@ function write_to_file(filename, obj){
 }
 
 function draw() {
-  // background(255);
-
   if (mouseIsPressed){
     btn.collides();
     savebtn.collides();
@@ -237,6 +226,22 @@ function mouseReleased() {
     row = -1;
 }
 
+class Jobtype {
+  constructor(id){
+    this.id = id;
+    this.name;
+    this.special = false;
+  }
+
+  set_special(){
+    this.special = true;
+  }
+
+  set_name(name){
+    this.name = name;
+  }
+}
+
 class Grid {
   constructor(){
     this.rows = [];
@@ -252,11 +257,11 @@ class Grid {
     this.select = !this.select;
   }
 
-  make_data_row(name, y){
+  make_data_row(name, y, special=false){
     let x = rowheaderwidth;
     let l = [];
     for (let i=0; i<num_cols; i++){
-      let r = new Griditem(name, griditems.length, x, y, i);
+      let r = new Griditem(name, griditems.length, x, y, i, special=special);
       r.show();
       griditems.push(r);
       l.push(r);
@@ -268,7 +273,8 @@ class Grid {
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     for (let i=0; i<num_rows; i++){
-      this.make_data_row(jobnames[i], y);
+      // console.log(jobs.get(i.toString()).special);
+      this.make_data_row(jobs.get(i).name, y, jobs.get(i).special);
       y += row_height;
     }
     let col = [];
@@ -284,8 +290,8 @@ class Grid {
 
   generate_random_color(){
     let r = random(255); // r is a random number between 0 - 255
-    let g = random(100,200); // g is a random number betwen 100 - 200
-    let b = random(100); // b is a random number between 0 - 100
+    let g = random(255); // g is a random number betwen 100 - 200
+    let b = random(200); // b is a random number between 0 - 100
     let a = random(200,255); // a is a random number between 200 - 255
     return color(r, g, b, a)
   }
@@ -320,8 +326,9 @@ class Grid {
 }
 
 class Griditem {
-  constructor(name, id, x, y, time, w=col_width, h=row_height) {
-    this.name = name;
+  constructor(name, id, x, y, time, special=false, w=col_width, h=row_height) {
+    this.name = name; // name of job
+    this.special = special;
     this.id = id;
     this.time = time;
     this.x = x; // upper left corner
@@ -330,6 +337,9 @@ class Griditem {
     this.h = h;
     this.content = "";
     this.color = default_colors[this.id%2];
+    if (this.special){
+      this.color = default_special_colors[this.id%2];
+    }
     this.defaultcolor = default_colors[this.id%2];
     this.group = -1;
     this.selected = false;
@@ -374,12 +384,12 @@ class Griditem {
     // rect(this.x, this.y, this.w, this.h);
     fill(this.color);
     rect(this.x, this.y, this.w, this.h);
-    // print("draw " + this.id.toString())
+   console.log("draw " + this.id.toString());
   }
 }
 
 class Job {
-  constructor(name, start, dur){
+  constructor(name, start, dur, special=false){
     this.name = name;
     this.start = start;
     this.end = start + dur;
@@ -388,6 +398,7 @@ class Job {
     this.end_day = daynames[Math.floor(this.end/24)];
     this.dt_start = this.start % 24;
     this.dt_end = this.end % 24;
+    this.special = special;
     job_instances.push(this);
   }
 }

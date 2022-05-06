@@ -139,7 +139,7 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
-  default_colors = [color(176, 174, 175), color(199, 201, 203)];
+  default_colors = [color(175, 175, 175), color(200, 200, 200)];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
@@ -384,6 +384,10 @@ class Job {
     this.start = start;
     this.end = start + dur;
     this.during = dur;
+    this.start_day = daynames[Math.floor(this.start/24)];
+    this.end_day = daynames[Math.floor(this.end/24)];
+    this.dt_start = this.start % 24;
+    this.dt_end = this.end % 24;
     job_instances.push(this);
   }
 }

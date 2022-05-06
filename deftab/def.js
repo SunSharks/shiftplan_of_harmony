@@ -1,3 +1,4 @@
+let name_exception = "helper";
 let days = [];
 let numjobs = 0;
 let abs_numjobs = 0;
@@ -7,7 +8,6 @@ let jobs = {};
 //   "one": 1,
 //   1: "some value"
 // };
-
 function setup(){
 
 }
@@ -35,7 +35,7 @@ function create_daybox(){
   new_box.setAttribute("id", "daybox"+days.length.toString());
   new_box.setAttribute("class", "daybox");
     // Then add the content (a new input box) of the element.
-  new_box.innerHTML = "<input type='text' name='day" + days.length + "' id='day" + days.length + "'>";
+  new_box.innerHTML = "<input type='text' name='day" + days.length + "' id='day" + days.length + "' required>";
   // Finally put it where it is supposed to appear.
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);
@@ -43,13 +43,19 @@ function create_daybox(){
 
 function create_jobbox(){
   let id = abs_numjobs;
+  console.log("create");
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "exception"+id.toString());
-  // check_box.setAttribute("name", "exception"+id.toString());
+  check_box.setAttribute("name", "exception"+id.toString());
   check_box.setAttribute("value", "exception"+id.toString());
-  check_box.innerHTML = "<input type='checkbox' name='exception'" + id.toString() + "'>";
-
+  check_box.innerHTML = "<input type='checkbox' name='exception" + id.toString() + "'>";
+  let label = document.createElement('label');
+  label.setAttribute("for", "checkbox");
+  label.setAttribute("name", "cb_label"+id.toString());
+  label.setAttribute("id", "cb_label"+id.toString());
+  label.innerHTML = name_exception;
+// <label for="smoking" name="yesnos" id="yesnos">No</label>
   let new_box = document.createElement('div');
   new_box.setAttribute("id", "jobbox"+id.toString());
   new_box.setAttribute("class", "jobbox");
@@ -57,13 +63,14 @@ function create_jobbox(){
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
   btn_box.innerHTML = "<button type='button' class='inlinebtn' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
-  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "'><br>";
+  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
   // alert(id.toString());
   jobs[id.toString()] = new_box;
   numjobs++;
   abs_numjobs++;
     // Finally put it where it is supposed to appear.
-  document.getElementById("add_job").appendChild(check_box);
+  label.appendChild(check_box);
+  document.getElementById("add_job").appendChild(label);
   document.getElementById("add_job").appendChild(btn_box);
   document.getElementById("add_job").appendChild(new_box);
 }
@@ -81,7 +88,7 @@ function delete_jobbox(id){
   const el = document.getElementById("jobdelbtn"+id.toString());
   el.remove();
   numjobs--;
-  const e = document.getElementById("exception"+id.toString());
+  const e = document.getElementById("cb_label"+id.toString());
   e.remove();
   delete jobs[id];
 }

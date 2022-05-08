@@ -51,14 +51,18 @@
           $pdo = connect();
           $days = perform_query($pdo, get_days_sql());
           foreach ($days as $d) {
-            printf(get_daybox_html($d["id"], $d["name"]));
+            printf(get_daybox_html_readonly($day_cnt, $d["name"]));
+            // echo $day_cnt;
             $day_cnt++;
           }
           $day_cnt++;
           echo $day_cnt;
         ?>
 
-        <div id="add_day"><button type="button" onclick="create_daybox('<?php echo $day_cnt;?>');">+</button></div>
+
+        <script> js_variable_name = "<?php echo $php_variable; ?>";</script>
+        <script> set_numdays(<?php echo $day_cnt; ?>);</script>
+        <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
         <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
       </div>
       <div id="job">

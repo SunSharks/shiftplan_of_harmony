@@ -13,6 +13,14 @@ function setup(){
 
 }
 
+function set_numdays(num){
+  numdays = num;
+}
+
+function set_days(d){
+  days = d;
+}
+
 function hide_it() {
   const btn = document.getElementById("hidebtn");
   btn.addEventListener("click", ()=>{
@@ -30,10 +38,10 @@ function hide_it() {
     x.style.display = "none";
   }
 }
-function create_daybox(pre_id){
+function create_daybox(){
     // First create a DIV element.
-  console.log(parseInt(pre_id) + days.length);
-  let id = parseInt(pre_id) + days.length;
+  console.log(parseInt(numdays) + days.length);
+  let id = parseInt(numdays) + days.length;
   var new_box = document.createElement('div');
   new_box.setAttribute("id", "daybox"+id.toString());
   new_box.setAttribute("class", "daybox");
@@ -42,6 +50,7 @@ function create_daybox(pre_id){
   // Finally put it where it is supposed to appear.
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);
+  numdays++;
 }
 
 function create_jobbox(){
@@ -79,9 +88,11 @@ function create_jobbox(){
 }
 
 function delete_daybox(){
+  console.log(days);
   id = days[days.length-1].id;
-  days.pop();
-  const element = document.getElementById(id);
+  let d = days.pop();
+  numdays--;
+  const element = document.getElementById(d.id);
   element.remove();
 }
 

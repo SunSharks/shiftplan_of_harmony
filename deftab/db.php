@@ -9,6 +9,7 @@ define("DB_PASSWORD", "");
 // echo "yea";
 $day_order = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
 $day_cnt = 0;
+// $days = [];
 $job_cnt = 0;
 
 function get_days_sql(){
@@ -62,9 +63,20 @@ function perform_query($pdo, $sql){
   }
 }
 
-function get_daybox_html($id, $dayname){
+function get_daybox_html_readonly($id, $dayname){
   $html = "<div id='daybox$id' class='daybox'> <input type='text' name='day$id' id='day$id' value='$dayname' readonly></div> ";
   return $html;
+}
+
+function get_daybox_html($id){
+  $html = "<div id='daybox$id' class='daybox'> <input type='text' name='day$id' id='day$id' value=''></div> ";
+  return $html;
+}
+
+function insert_daybox_html($id){
+  $html = get_daybox_html($id);
+  $day_cnt++;
+  printf($html);
 }
 
 function get_jobbox_html($id, $jobname, $special){

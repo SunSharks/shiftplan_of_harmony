@@ -331,6 +331,7 @@ class Griditem {
     this.special = special;
     this.id = id;
     this.time = time;
+    this.day; // TODO 
     this.x = x; // upper left corner
     this.y = y; // upper left corner
     this.w = w;

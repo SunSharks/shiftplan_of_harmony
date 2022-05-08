@@ -14,7 +14,16 @@
     p {text-align: center;}
     .daybox {
       display: inline;
+      padding: 100;
+
     }
+    .day {
+      padding: 100;
+      margin: 100;
+    }
+    /* .jobbox {
+      display: inline;
+    } */
     #del_day {
       display: inline;
     }
@@ -27,50 +36,48 @@
     /* div {text-align: center;} */
   </style>
 
-  <script src="./p5/p5.min.js"></script>
+  <!-- <script src="./p5/p5.min.js"></script> -->
+  <?php include("db.php"); ?>
+
   <script src=def.js></script>
 </head>
+
 <body>
-  <?php
-    echo "hello";
-  ?>
-  <!-- <div id="test">Test</div> -->
   <div id="definition">
-  <div class="day">
-    <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
-    <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
-  </div>
-  <div id="job">
-    <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
-  </div>
+    <form action="tab.html"  method="get">
+      <div class="day">
+        <!-- Fetch predefined days. -->
+        <?php
+          $pdo = connect();
+          $days = perform_query($pdo, get_days_sql());
+          foreach ($days as $d) {
+            printf(get_daybox_html($d["id"], $d["name"]));
+            $day_cnt++;
+          }
+          $day_cnt++;
+          echo $day_cnt;
+        ?>
 
-  <div id="savebtn"><button type="submit" onclick="write_to_file();">SAVE</button><br></div>
-
-</div>
-<div id="hide"><button id="hidebtn" onclick="hide_it()">HIDE DEFINITIONS</button></div>
-<!-- <div id="Create Table"><button id="create_tab_btn" onclick="hide_it()">HIDE DEFINITIONS</button></div> -->
-<!-- <a href="https://www.google.com/">Google Search</a>
-<a href="https://www.tutorialrepublic.com/">Tutorial Republic</a>
-<a href="images/kites.jpg">
-    <img src="kites-thumb.jpg" alt="kites">
-</a> -->
-<a href="./tab.html">TABLE</a>
-<main>
-</main>
-  <!-- <div>
-    <form action="" method="GET">
-      <fieldset>
-        <label>
-          <select name="sendfinal" size="1">
-            <option value="save.py">Jep, abschicken. </option>
-            <option value="no">Nope, noch nicht abschicken.</option>
-          </select>
-        </label>
-        <input type="submit" value="Alles bestätigen"/>
-      </fieldset>
+        <div id="add_day"><button type="button" onclick="create_daybox('<?php echo $day_cnt;?>');">+</button></div>
+        <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
+      </div>
+      <div id="job">
+        <!-- Fetch predefined jobs. -->
+        <?php
+          $pdo = connect();
+          $jobs = perform_query($pdo, get_job_def_sql());
+          foreach ($jobs as $j) {
+            printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
+          }
+        ?>
+        <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
+      </div>
+  <div><p><input type="submit" value="Show me the table!"></p></div>
     </form>
-  </div> -->
+  </div>
 
+<!-- <main>
+</main> -->
 
 </body>
 

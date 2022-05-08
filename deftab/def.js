@@ -1,5 +1,6 @@
 let name_special = "helper";
 let days = [];
+let numdays = 0;
 let numjobs = 0;
 let abs_numjobs = 0;
 let jobs = {};
@@ -29,13 +30,15 @@ function hide_it() {
     x.style.display = "none";
   }
 }
-function create_daybox(){
+function create_daybox(pre_id){
     // First create a DIV element.
+  console.log(parseInt(pre_id) + days.length);
+  let id = parseInt(pre_id) + days.length;
   var new_box = document.createElement('div');
-  new_box.setAttribute("id", "daybox"+days.length.toString());
+  new_box.setAttribute("id", "daybox"+id.toString());
   new_box.setAttribute("class", "daybox");
     // Then add the content (a new input box) of the element.
-  new_box.innerHTML = "<input type='text' name='day" + days.length + "' id='day" + days.length + "' required>";
+  new_box.innerHTML = "<input type='text' name='day" + id.toString() + "' id='day" + id.toString() + "' required>";
   // Finally put it where it is supposed to appear.
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);

@@ -10,10 +10,17 @@ CREATE TABLE Jobs (
     end_day       VARCHAR(255),
     dt_start      INT,
     dt_end        INT,
-    special       BOOLEAN
 );
 
 CREATE TABLE Days (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Jobtypes (
+  id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name          VARCHAR(255) NOT NULL,
+  competences   INT NULL,
+  special       BOOLEAN
+
 );

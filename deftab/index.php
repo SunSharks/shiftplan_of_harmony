@@ -56,12 +56,12 @@
             $day_cnt++;
           }
           $day_cnt++;
-          echo $day_cnt;
+          // echo $day_cnt;
+
         ?>
 
 
-        <script> js_variable_name = "<?php echo $php_variable; ?>";</script>
-        <script> set_numdays(<?php echo $day_cnt; ?>);</script>
+        <script> set_days(<?php echo json_encode($days); ?>);</script>
         <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
         <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
       </div>
@@ -71,9 +71,11 @@
           $pdo = connect();
           $jobs = perform_query($pdo, get_job_def_sql());
           foreach ($jobs as $j) {
-            printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
+            printf(get_jobbox_html($job_cnt, $j["name"], $j["special"]));
+            $job_cnt++;
           }
         ?>
+        <script> set_jobs(<?php echo json_encode($jobs); ?>);</script>
         <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
       </div>
   <div><p><input type="submit" value="Show me the table!"></p></div>

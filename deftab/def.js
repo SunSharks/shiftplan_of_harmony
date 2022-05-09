@@ -9,16 +9,20 @@ let jobs = {};
 //   "one": 1,
 //   1: "some value"
 // };
-function setup(){
-
-}
-
-function set_numdays(num){
-  numdays = num;
-}
 
 function set_days(d){
+  // console.log(d);
   days = d;
+  numdays = d.length;
+}
+
+function set_jobs(j){
+  for (let i=0; i<j.length; i++){
+    jobs[i.id] = i;
+  }
+  numjobs = j.length;
+  abs_numjobs = j.length;
+  console.log(jobs);
 }
 
 function hide_it() {

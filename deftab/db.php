@@ -83,7 +83,7 @@ function get_jobbox_html($id, $jobname, $special){
   $html = "<div id='jobbox$id' class='jobbox'>
 <label for='checkbox' name='cb_label$id' id='cb_label$id'>Helper</label>
 <input type='checkbox' class='jobbox' id='special$id' name='special$id' value='special$id' readonly>
-<input type='text' name='day$id' id='day$id' value='$jobname' readonly></div> ";
+<input type='text' name='job$id' id='job$id' value='$jobname' readonly></div> ";
   $job_cnt++;
   return $html;
 }

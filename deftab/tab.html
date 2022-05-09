@@ -23,9 +23,32 @@
 </head>
 
 <body>
-  <a href="./index.html">Back to definitions</a>
+  <a href="./index.php">Back to definitions</a>
   <main>
   </main>
+
+  <!-- <script language="php">
+    $servername = "localhost";
+    $user = "root";
+    $pw = "";
+    $db = "Testplan";
+    $con = new mysqli($servername, $user, $pw, $db);
+    if($con->connect_error) {
+      die("Wasn Dreck.".$con->connect_error);
+    }
+    echo "connected to DB. ";
+    $sql = "INSERT INTO Jobs (name) VALUES ('Test')";
+    $q = $con->query($sql);
+
+    if($q === TRUE) {
+      echo "alles gut.";
+    }
+    else {
+      echo "Schlecht. ".$con->error;
+    }
+    $con->close();
+  </script> -->
+
 <!-- <h1>Instructions</h1>
 <p>
   Chose a color: Either by using the color picker bars for r, g, b or right-clicking on a painted circle.<br>

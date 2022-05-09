@@ -3,7 +3,7 @@ let days = [];
 let numdays = 0;
 let numjobs = 0;
 let abs_numjobs = 0;
-let jobs = {};
+let jobs = new Map();
 // var dict = {
 //   FirstName: "Chris",
 //   "one": 1,
@@ -19,10 +19,11 @@ function set_days(d){
 function set_jobs(j){
   for (let i=0; i<j.length; i++){
     jobs[i.id] = i;
+    // console.log(jobs[i.id]);
   }
   numjobs = j.length;
   abs_numjobs = j.length;
-  console.log(jobs);
+
 }
 
 function hide_it() {
@@ -59,7 +60,9 @@ function create_daybox(){
 
 function create_jobbox(){
   let id = abs_numjobs;
-  console.log("create");
+  while (jobs.has(id)){
+    id++;
+  }
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "special"+id.toString());
@@ -132,9 +135,4 @@ function write_to_file(){
   writer.write(JSON.stringify(d));
   writer.write(JSON.stringify(j));
   writer.close();
-}
-
-
-function draw(){
-
 }

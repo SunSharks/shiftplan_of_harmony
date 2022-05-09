@@ -36,7 +36,6 @@
     /* div {text-align: center;} */
   </style>
 
-  <!-- <script src="./p5/p5.min.js"></script> -->
   <?php include("db.php"); ?>
 
   <script src=def.js></script>
@@ -44,7 +43,7 @@
 
 <body>
   <div id="definition">
-    <form action="tab.html"  method="get">
+    <form action="tab.php"  method="get">
       <div class="day">
         <!-- Fetch predefined days. -->
         <?php
@@ -69,7 +68,7 @@
         <!-- Fetch predefined jobs. -->
         <?php
           $pdo = connect();
-          $jobs = perform_query($pdo, get_job_def_sql());
+          $jobs = perform_query($pdo, get_jobtypes_sql());
           foreach ($jobs as $j) {
             printf(get_jobbox_html($job_cnt, $j["name"], $j["special"]));
             $job_cnt++;

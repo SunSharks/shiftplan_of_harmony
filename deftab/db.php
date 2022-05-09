@@ -16,8 +16,8 @@ function get_days_sql(){
   return "SELECT * FROM Days";
 }
 
-function get_job_def_sql(){
-  return "SELECT id, name, special FROM Jobs";
+function get_jobtypes_sql(){
+  return "SELECT id, name, special FROM Jobtypes";
 }
 
 function get_jobs_sql(){
@@ -31,6 +31,8 @@ function insert_day_sql($day){
 function insert_job_sql($job){
   return "INSERT INTO Jobs (name) VALUES ($job)";
 }
+
+
 
 function connect(){
   // CONNECT TO DATABASE
@@ -80,9 +82,15 @@ function insert_daybox_html($id){
 }
 
 function get_jobbox_html($id, $jobname, $special){
+  if ($special){
+    $checked = "checked";
+  }
+  else{
+    $checked = "";
+  }
   $html = "<div id='jobbox$id' class='jobbox'>
 <label for='checkbox' name='cb_label$id' id='cb_label$id'>Helper</label>
-<input type='checkbox' class='jobbox' id='special$id' name='special$id' value='special$id' readonly>
+<input type='checkbox' class='jobbox' id='special$id' name='special$id' value='special$id' $checked>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div> ";
   $job_cnt++;
   return $html;

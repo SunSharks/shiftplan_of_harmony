@@ -3,6 +3,9 @@ let get_params;
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
 let jobs = new Map(); // {id: <jobtype instance>}
 let num_jobs;
+let json_jobs = [];
+let job_instances = [];
+
 
 // DAYS
 let daynames = []; // "Freitag", "Samstag", "Sonntag"
@@ -39,7 +42,6 @@ let btn;
 let savebtn;
 let edited = false;
 
-let job_instances = [];
 
 
 get_params = () => {
@@ -60,6 +62,8 @@ get_params = () => {
     // Returning the map of GET parameters
     return map
 }
+
+
 
 function assign_params(map){
   let id;
@@ -98,7 +102,6 @@ function assign_params(map){
   console.log(jobs);
 }
 
-// Gets all the getParameters
 
 function setup() {
 //   var regex = /[?&]([^=#]+)=([^&#]*)/g,
@@ -110,11 +113,7 @@ function setup() {
 // }
   // console.log("setup_tab");
   get_params = get_params();
-  // console.log(get_params.get("day0"));
   assign_params(get_params);
-  // console.log(daynames);
-  // console.log(jobnames);
-  console.log(jobs);
   createCanvas(windowWidth, windowHeight+20);
   num_cols = num_days * 24;
   col_width = (windowWidth - rowheaderwidth) / (num_cols);
@@ -176,12 +175,12 @@ function save_data(){
     let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].special);
     // print(JSON.stringify(j));
     // print(j.name);
-    ret.push(JSON.stringify(j));
+    json_jobs.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
-  // console.log("hi");
-  console.log(ret);
-  return ret
+  console.log(job_instances);
+  console.log(json_jobs);
+  return json_jobs
   }
 
 function write_to_file(filename, obj){
@@ -331,7 +330,7 @@ class Griditem {
     this.special = special;
     this.id = id;
     this.time = time;
-    this.day; // TODO 
+    this.day; // TODO
     this.x = x; // upper left corner
     this.y = y; // upper left corner
     this.w = w;

@@ -51,12 +51,8 @@
           $days = perform_query($pdo, get_days_sql());
           foreach ($days as $d) {
             printf(get_daybox_html_readonly($day_cnt, $d["name"]));
-            // echo $day_cnt;
             $day_cnt++;
           }
-          $day_cnt++;
-          // echo $day_cnt;
-
         ?>
 
 
@@ -65,7 +61,7 @@
         <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
       </div>
       <div id="job">
-        <!-- Fetch predefined jobs. -->
+        <!-- Fetch predefined jobtypes. -->
         <?php
           $pdo = connect();
           $jobs = perform_query($pdo, get_jobtypes_sql());
@@ -80,9 +76,6 @@
   <div><p><input type="submit" value="Show me the table!"></p></div>
     </form>
   </div>
-
-<!-- <main>
-</main> -->
 
 </body>
 

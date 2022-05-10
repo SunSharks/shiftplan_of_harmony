@@ -28,6 +28,9 @@ function insert_day_sql($day){
   return "INSERT INTO Days (name) VALUES ($day)";
 }
 
+function insert_jobtype_sql($name, $special){
+  return "INSERT INTO Jobtypes (name, special) VALUES ($name, $special)";
+}
 function insert_job_sql($job){
   return "INSERT INTO Jobs (name) VALUES ($job)";
 }

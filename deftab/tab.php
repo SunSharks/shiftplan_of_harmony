@@ -58,12 +58,29 @@
   <?php
 
   $ar = $_POST['jobs'];
-  $jobs = explode("}", $ar);
-  if (isset($ar)){echo "PHP array \$jobs()<BR>";
-
-  for ($i=0;$i<count($jobs);$i++){
-    echo "<BR>\$jobs[".$i."]: ".json_encode($jobs[$i]);
+  $js = explode("}", $ar);
+  $jobs = [];
+  if (isset($ar)){
+    echo "PHP array \$jobs()<BR>";
+  for ($i=0;$i<count($js);$i++){
+    $j = json_encode($js[$i]);
+    if ($j[0] == '"'){
+      $j = ltrim($j, '"');
+    }
+    if ($j[0] == ','){
+      $j = ltrim($j, ',');
+    }
+    if ($j == ""){
+      break;
+    }
+    $j = $j."}";
+    array_push($jobs, $j);
   }
+  for ($i=0; $i<count($jobs); $i++){
+    echo $jobs[$i];
+    echo "<BR>";
+  }
+
 }
   ?>
 

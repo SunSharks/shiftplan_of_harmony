@@ -9,3 +9,6 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ## TODO
 * Calculate & show day of griditems.
+* Show how many griditems are currently selected.
+* Red frame around each job after saving for a short time.
+* Nicer css

@@ -69,12 +69,15 @@
           foreach ($jobtypes as $j) {
             printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
             $job_cnt++;
-            if ($maxid < $j["id"]){
-              $maxid = $j["id"];
+            if ($maxid < (int)$j["id"]){
+              $maxid = (int)$j["id"];
             }
           }
         ?>
-        <script> set_jobs(<?php echo json_encode($jobtypes, $maxid); ?>);</script>
+        <script>
+        let test = set_jobs(<?php echo json_encode($jobtypes); ?>);
+        // console.log(test);
+        </script>
         <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
       </div>
   <div><p><input type="submit" value="Show me the table!"></p></div>

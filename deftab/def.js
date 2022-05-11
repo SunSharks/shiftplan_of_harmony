@@ -15,16 +15,22 @@ function set_days(d){
   numdays = d.length;
 }
 
-function set_jobs(j, maxid){
+function set_jobs(j){
+  console.log(j);
+  let _maxid = 0;
   for (let i=0; i<j.length; i++){
-    jobtypes[i.id] = i;
-    // console.log(jobs[i.id]);
+    jobtypes[i.id] = j[i];
+    console.log(jobtypes[i.id].id);
+    if (_maxid < jobtypes[i.id].id){
+      _maxid = jobtypes[i.id].id;
+    }
   }
+  maxid = _maxid;
+
   numjobs = j.length;
   abs_numjobs = j.length;
   num_db_jobs = j.length;
-  maxid = maxid;
-  console.log(maxid);
+  return "yes";
 }
 
 function hide_it() {
@@ -61,6 +67,7 @@ function create_daybox(){
 
 function create_jobbox(){
   let id = ++maxid;
+  console.log(maxid);
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "special"+id.toString());
@@ -82,7 +89,7 @@ function create_jobbox(){
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
   new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
   // alert(id.toString());
-  jobtypes[id.toString()] = new_box;
+  jobtypes[id] = new_box;
   numjobs++;
   abs_numjobs++;
     // Finally put it where it is supposed to appear.
@@ -93,7 +100,7 @@ function create_jobbox(){
 }
 
 function delete_daybox(){
-  console.log(days);
+  // console.log(days);
   id = days[days.length-1].id;
   let d = days.pop();
   numdays--;
@@ -120,8 +127,8 @@ function write_to_file(){
   const writer = createWriter("jobs_days.json");
   let d = [];
   for (let i=0; i<days.length; i++){
-    console.log(document.getElementById("day"+i.toString()).value);
-    console.log(jobtypes);
+    // console.log(document.getElementById("day"+i.toString()).value);
+    // console.log(jobtypes);
     d.push(document.getElementById("day"+i.toString()).value);
   }
   let j = [];

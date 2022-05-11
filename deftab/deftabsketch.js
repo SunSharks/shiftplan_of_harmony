@@ -85,6 +85,17 @@ function assign_params(map){
       jobnames.push(value);
       num_jobs = jobnames.length;
     }
+    else if (key.startsWith("PRE")){
+      id = parseInt(key.slice(6));
+      if (jobtypes.has(id)){
+        jobtypes.get(id).set_indb();
+      }
+      else{
+        let new_jt = new Jobtype(id);
+        new_jt.set_indb();
+        jobtypes.set(id, new_jt);
+      }
+    }
     else if (key.startsWith("special")){
       id = parseInt(key.slice(7));
       if (jobtypes.has(id)){
@@ -211,6 +222,7 @@ class Jobtype {
     this.id = id;
     this.name;
     this.special = false;
+    this.indb = false;
   }
 
   set_special(){
@@ -219,6 +231,10 @@ class Jobtype {
 
   set_name(name){
     this.name = name;
+  }
+
+  set_indb(){
+    this.indb = true;
   }
 }
 

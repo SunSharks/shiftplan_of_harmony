@@ -64,7 +64,6 @@ get_params = () => {
 }
 
 
-
 function assign_params(map){
   let id;
   map.forEach (function(value, key){
@@ -96,7 +95,6 @@ function assign_params(map){
         new_jt.set_special();
         jobs.set(id, new_jt);
       }
-
     }
   })
   console.log(jobs);
@@ -137,44 +135,34 @@ function setup() {
   savebtn.draw();
 }
 
+
 function save_data(){
   let groups = [];
   let group = [];
   let curr_group = -1;
-  // print(groups);
-
-  // groups.push(1);
   for (let i=0; i<griditems.length; i++){
     if (griditems[i].selected){
-
       if (griditems[i].group == curr_group || curr_group == -1){
         group.push(griditems[i]);
-        // print("push " + griditems[i].id.toString());
         curr_group = griditems[i].group;
       }
       else{
         groups.push(group);
         group = [griditems[i]];
         curr_group = griditems[i].group;
-        // print(group);
       }
     }
     else{
       if (group.length > 0){
         groups.push(group);
-        // print(group);
         group = [];
         curr_group = -1;
       }
     }
   }
-  // print("groups " + groups);
-  // print(groups.length);
   let ret = [];
   for (let i = 0; i<groups.length; i++){
     let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].special);
-    // print(JSON.stringify(j));
-    // print(j.name);
     json_jobs.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
@@ -193,7 +181,6 @@ function draw() {
   if (mouseIsPressed){
     btn.collides();
     savebtn.collides();
-
     if (mouseButton === LEFT){
       for (var i=0; i<griditems.length; i++){
         if (griditems[i].collides(mouseX, mouseY)){
@@ -225,6 +212,7 @@ function mouseReleased() {
     row = -1;
 }
 
+
 class Jobtype {
   constructor(id){
     this.id = id;
@@ -240,6 +228,7 @@ class Jobtype {
     this.name = name;
   }
 }
+
 
 class Grid {
   constructor(){
@@ -324,6 +313,7 @@ class Grid {
   }
 }
 
+
 class Griditem {
   constructor(name, id, x, y, time, special=false, w=col_width, h=row_height) {
     this.name = name; // name of job
@@ -388,6 +378,7 @@ class Griditem {
   }
 }
 
+
 class Job {
   constructor(name, start, dur, special=false){
     this.name = name;
@@ -403,11 +394,11 @@ class Job {
   }
 }
 
+
 Button = function(x, y, w, h, func, state, texts) {
   this.func = func;   // "deselect", "save", "clear"
   this.state = state; //0, 1
   this.text = texts[+state];
-  // print(this.text)
   this.texts = texts;
   this.x = x;
   this.y = y;
@@ -416,6 +407,7 @@ Button = function(x, y, w, h, func, state, texts) {
   this.color = [0, 155, 140];
   this.textsize = 12;
 }
+
 Button.prototype.draw = function() {
   // stroke(0);
   if (this.func == "deselect"){
@@ -443,17 +435,17 @@ Button.prototype.collides = function() {
     this.change_mode();
   }
 }
-  Button.prototype.change_mode = function() {
-    if (this.func == "save"){
-      if (this.state == 0 && edited == true){
-        save_data();
-        edited = false;
-      }
+Button.prototype.change_mode = function() {
+  if (this.func == "save"){
+    if (this.state == 0 && edited == true){
+      save_data();
+      edited = false;
     }
-    else{
-      this.state = !this.state;
-    }
-    this.text = this.texts[+this.state];
-    this.draw();
-
   }
+  else{
+    this.state = !this.state;
+  }
+  this.text = this.texts[+this.state];
+  this.draw();
+
+}

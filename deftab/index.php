@@ -64,13 +64,17 @@
         <!-- Fetch predefined jobtypes. -->
         <?php
           $pdo = connect();
-          $jobs = perform_query($pdo, get_jobtypes_sql());
-          foreach ($jobs as $j) {
-            printf(get_jobbox_html($job_cnt, $j["name"], $j["special"]));
+          $jobtypes = perform_query($pdo, get_jobtypes_sql());
+          $maxid = 0;
+          foreach ($jobtypes as $j) {
+            printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
             $job_cnt++;
+            if ($maxid < $j["id"]){
+              $maxid = $j["id"];
+            }
           }
         ?>
-        <script> set_jobs(<?php echo json_encode($jobs); ?>);</script>
+        <script> set_jobs(<?php echo json_encode($jobtypes, $maxid); ?>);</script>
         <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
       </div>
   <div><p><input type="submit" value="Show me the table!"></p></div>

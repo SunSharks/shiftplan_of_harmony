@@ -4,9 +4,9 @@ let days = [];
 let numdays = 0;
 let numjobs = 0;
 let abs_numjobs = 0;
-let jobs = new Map();
+let jobtypes = new Map();
 let num_db_jobs = 0;
-
+let maxid = 0;
 
 
 function set_days(d){
@@ -15,15 +15,16 @@ function set_days(d){
   numdays = d.length;
 }
 
-function set_jobs(j){
+function set_jobs(j, maxid){
   for (let i=0; i<j.length; i++){
-    jobs[i.id] = i;
+    jobtypes[i.id] = i;
     // console.log(jobs[i.id]);
   }
   numjobs = j.length;
   abs_numjobs = j.length;
   num_db_jobs = j.length;
-
+  maxid = maxid;
+  console.log(maxid);
 }
 
 function hide_it() {
@@ -59,10 +60,7 @@ function create_daybox(){
 }
 
 function create_jobbox(){
-  let id = abs_numjobs;
-  while (jobs.has(id)){
-    id++;
-  }
+  let id = ++maxid;
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "special"+id.toString());
@@ -84,7 +82,7 @@ function create_jobbox(){
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
   new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
   // alert(id.toString());
-  jobs[id.toString()] = new_box;
+  jobtypes[id.toString()] = new_box;
   numjobs++;
   abs_numjobs++;
     // Finally put it where it is supposed to appear.
@@ -111,7 +109,7 @@ function delete_jobbox(id){
   numjobs--;
   const e = document.getElementById("cb_label"+id.toString());
   e.remove();
-  delete jobs[id];
+  delete jobtypes[id];
 }
 
 function remove(elem){
@@ -123,11 +121,11 @@ function write_to_file(){
   let d = [];
   for (let i=0; i<days.length; i++){
     console.log(document.getElementById("day"+i.toString()).value);
-    console.log(jobs);
+    console.log(jobtypes);
     d.push(document.getElementById("day"+i.toString()).value);
   }
   let j = [];
-  for (const [key, value] of Object.entries(jobs)) {
+  for (const [key, value] of Object.entries(jobtypes)) {
     // console.log(`${key}: ${value}`);
     // console.log(document.getElementById("job"+key.toString()).value);
     j.push(document.getElementById("job"+key.toString()).value);

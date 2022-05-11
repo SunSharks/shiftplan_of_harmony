@@ -1,7 +1,7 @@
 let get_params;
 //  JOBS
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
-let jobs = new Map(); // {id: <jobtype instance>}
+let jobtypes = new Map(); // {id: <jobtype instance>}
 let num_jobs;
 let json_jobs = [];
 let job_instances = [];
@@ -73,13 +73,13 @@ function assign_params(map){
     }
     else if (key.startsWith("job")){
       id = parseInt(key.slice(3));
-      if (jobs.has(id)){
-        jobs.get(id).set_name(value);
+      if (jobtypes.has(id)){
+        jobtypes.get(id).set_name(value);
       }
       else{
         let new_jt = new Jobtype(id);
         new_jt.set_name(value);
-        jobs.set(id, new_jt);
+        jobtypes.set(id, new_jt);
       }
       // console.log(jobs.get(id));
       jobnames.push(value);
@@ -87,28 +87,21 @@ function assign_params(map){
     }
     else if (key.startsWith("special")){
       id = parseInt(key.slice(7));
-      if (jobs.has(id)){
-        jobs.get(id).set_special();
+      if (jobtypes.has(id)){
+        jobtypes.get(id).set_special();
       }
       else{
         let new_jt = new Jobtype(id);
         new_jt.set_special();
-        jobs.set(id, new_jt);
+        jobtypes.set(id, new_jt);
       }
     }
   })
-  console.log(jobs);
+  console.log(jobtypes);
 }
 
 
 function setup() {
-//   var regex = /[?&]([^=#]+)=([^&#]*)/g,
-//     url = window.location.href,
-//     params = {},
-//     match;
-// while(match = regex.exec(url)) {
-//     params[match[1]] = match[2];
-// }
   // console.log("setup_tab");
   get_params = get_params();
   assign_params(get_params);
@@ -162,7 +155,7 @@ function save_data(){
   }
   let ret = [];
   for (let i = 0; i<groups.length; i++){
-    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].special);
+    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special);
     json_jobs.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
@@ -245,11 +238,11 @@ class Grid {
     this.select = !this.select;
   }
 
-  make_data_row(name, y, special=false){
+  make_data_row(name, y, jobtype_id, special=false){
     let x = rowheaderwidth;
     let l = [];
     for (let i=0; i<num_cols; i++){
-      let r = new Griditem(name, griditems.length, x, y, i, special=special);
+      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, special=special);
       r.show();
       griditems.push(r);
       l.push(r);
@@ -259,17 +252,13 @@ class Grid {
   }
 
   assemble_grid(num_rows=num_jobs){
-    console.log("assemble");
-    console.log(num_rows);
     let y = headerheight;
-    for (let i=0; i<num_rows; i++){
-      // console.log(jobs.get(i.toString()).special);
-      this.make_data_row(jobs.get(i).name, y, jobs.get(i).special);
+    for (var [key, value] of jobtypes.entries()){
+      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).jobtype_id, jobtypes.get(key).special);
       y += row_height;
     }
     let col = [];
     for (let i=0; i<num_cols; i++){
-
       for (let j=0; j<num_rows; j++){
         col.push(this.rows[j][i])
       }
@@ -317,10 +306,11 @@ class Grid {
 
 
 class Griditem {
-  constructor(name, id, x, y, time, special=false, w=col_width, h=row_height) {
+  constructor(name, id, x, y, time, jobtype_id, special=false, w=col_width, h=row_height) {
     this.name = name; // name of job
     this.special = special;
     this.id = id;
+    this.jobtype_id = jobtype_id;
     this.time = time;
     this.day; // TODO
     this.x = x; // upper left corner
@@ -384,7 +374,7 @@ class Griditem {
 
 
 class Job {
-  constructor(name, start, dur, special=false){
+  constructor(name, start, dur, jobtype_id, special=false){
     this.name = name;
     this.start = start;
     this.end = start + dur;
@@ -394,6 +384,7 @@ class Job {
     this.dt_start = this.start % 24;
     this.dt_end = this.end % 24;
     this.special = special;
+    this.jobtype_id = jobtype_id;
     job_instances.push(this);
   }
 }

@@ -13,3 +13,4 @@ In def.js, the `name_special` variable can be changed to change the label for th
 * Red frame around each job after saving for a short time.
 * Nicer css
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
+* German Umlauts!!!

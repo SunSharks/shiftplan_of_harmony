@@ -49,9 +49,9 @@
   $js = explode("}", $ar);
   $jobs = [];
   if (isset($ar)){
-    echo "PHP array \$jobs()<BR>";
+    // echo count($js);
   for ($i=0;$i<count($js);$i++){
-    $j = json_encode($js[$i]);
+    $j = json_encode(utf8_encode($js[$i]));
     if (str_ends_with($j, 'false"') || str_ends_with($j, 'true"')){
       $j = rtrim($j, '"');
     }
@@ -69,17 +69,22 @@
   }
   for ($i=0; $i<count($jobs); $i++){
     $dec = json_decode(stripslashes($jobs[$i]));
-    insert_job_sql($dec);
+    $jobsql = insert_job_sql($dec);
+    echo $jobsql;
+    $pdo = connect();
+    perform_query($pdo, $jobsql);
   }
+
   echo "----_______----";
-}
+  }
+
   ?>
 
 </head>
 
 <body>
   <a href="./index.php">Back to definitions</a>
-  <div style='position:absolute;top:200px;left:450px'>
+  <div style='position:absolute;top:500px;left:450px'>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
   <input name='jobs' type=hidden>
   <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">

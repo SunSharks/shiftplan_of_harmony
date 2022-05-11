@@ -32,12 +32,19 @@ function insert_jobtype_sql($name, $special){
   return "INSERT INTO Jobtypes (name, special) VALUES ($name, $special)";
 }
 function insert_job_sql($job_json){
-  echo $job_json->name;
+  // echo $job_json->name;
+  // echo "<BR>";
+  // echo "<BR>";
+  if ($job_json->special == 1){
+    return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ('$job_json->name', $job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, true)";
+  }
+  else{
+    return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ('$job_json->name', $job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, false)";
+  }
   echo "<BR>";
-  echo "<BR>";
-  return "t";
-  // return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ($job_json)";
+
 }
+
 
 function test(){
   echo "testitest";

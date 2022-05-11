@@ -126,8 +126,8 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth;
   wh = windowHeight;
-  default_colors = [color(220, 220, 220, 100), color(230, 230, 230, 100)];
-  default_special_colors = [color(220, 235, 220, 100), color(230, 250, 230, 100)];
+  default_colors = [color(220, 220, 220), color(230, 230, 230)];
+  default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
@@ -259,6 +259,8 @@ class Grid {
   }
 
   assemble_grid(num_rows=num_jobs){
+    console.log("assemble");
+    console.log(num_rows);
     let y = headerheight;
     for (let i=0; i<num_rows; i++){
       // console.log(jobs.get(i.toString()).special);
@@ -281,7 +283,7 @@ class Grid {
     let g = random(255); // g is a random number betwen 100 - 200
     let b = random(200); // b is a random number between 0 - 100
     let a = random(200,255); // a is a random number between 200 - 255
-    return color(r, g, b, a)
+    return color(r, g, b, a);
   }
 
   insert_text(t, x, y){
@@ -327,10 +329,12 @@ class Griditem {
     this.h = h;
     this.content = "";
     this.color = default_colors[this.id%2];
+    this.defaultcolor = default_colors[this.id%2];
     if (this.special){
       this.color = default_special_colors[this.id%2];
+      this.defaultcolor = default_special_colors[this.id%2];
     }
-    this.defaultcolor = default_colors[this.id%2];
+
     this.group = -1;
     this.selected = false;
   }

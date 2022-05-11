@@ -26,7 +26,6 @@ function set_jobs(j){
     }
   }
   maxid = _maxid;
-
   numjobs = j.length;
   abs_numjobs = j.length;
   num_db_jobs = j.length;

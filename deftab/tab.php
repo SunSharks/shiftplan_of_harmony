@@ -32,19 +32,23 @@
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
   <script src=deftabsketch.js></script>
   <script language="javascript">
-
   function insertarrayintohiddenformfield(){
-    let values = [];
-    for (let i=0; i<job_instances.length; i++){
-      values.push(JSON.stringify(job_instances[i]));
+    let job_values = [];
+    let jt_values = [];
+    for (var [key, value] of jobtypes.entries()){
+      jt_values.push(JSON.stringify(value));
     }
-    console.log(values);
-    document.Form.jobs.value = values;
+    for (let i=0; i<job_instances.length; i++){
+      job_values.push(JSON.stringify(job_instances[i]));
+    }
+    console.log(job_values);
+    console.log(jt_values);
+    document.Form.jobtypes.value = jt_values;
+    document.Form.jobs.value = job_values;
   }
-
   </script>
-  <?php
 
+  <?php
   $ar = $_POST['jobs'];
   $js = explode("}", $ar);
   $jobs = [];
@@ -52,7 +56,7 @@
     // echo count($js);
   for ($i=0;$i<count($js);$i++){
     $j = json_encode(utf8_encode($js[$i]));
-    if (str_ends_with($j, 'false"') || str_ends_with($j, 'true"')){
+    if (str_ends_with($j, '"') || str_ends_with($j, '"')){
       $j = rtrim($j, '"');
     }
     if ($j[0] == '"'){
@@ -67,13 +71,18 @@
     $j = $j."}";
     array_push($jobs, $j);
   }
+  echo count($jobs);
   for ($i=0; $i<count($jobs); $i++){
     $dec = json_decode(stripslashes($jobs[$i]));
+    // echo $dec;
     $jobsql = insert_job_sql($dec);
     echo $jobsql;
     $pdo = connect();
     perform_query($pdo, $jobsql);
   }
+
+  $jtar = $_POST['jobtypes'];
+  echo $jtar;
 
   echo "----_______----";
   }
@@ -87,6 +96,7 @@
   <div style='position:absolute;top:500px;left:450px'>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
   <input name='jobs' type=hidden>
+  <input name='jobtypes' type=hidden>
   <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
 
   </form>

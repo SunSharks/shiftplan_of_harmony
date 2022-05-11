@@ -235,6 +235,7 @@ class Jobtype {
 
   set_indb(){
     this.indb = true;
+    // console.log(this.name, this.indb);
   }
 }
 
@@ -270,7 +271,7 @@ class Grid {
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     for (var [key, value] of jobtypes.entries()){
-      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).jobtype_id, jobtypes.get(key).special);
+      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, jobtypes.get(key).special);
       y += row_height;
     }
     let col = [];

@@ -1,14 +1,13 @@
+
 let name_special = "helper";
 let days = [];
 let numdays = 0;
 let numjobs = 0;
 let abs_numjobs = 0;
 let jobs = new Map();
-// var dict = {
-//   FirstName: "Chris",
-//   "one": 1,
-//   1: "some value"
-// };
+let num_db_jobs = 0;
+
+
 
 function set_days(d){
   // console.log(d);
@@ -23,6 +22,7 @@ function set_jobs(j){
   }
   numjobs = j.length;
   abs_numjobs = j.length;
+  num_db_jobs = j.length;
 
 }
 

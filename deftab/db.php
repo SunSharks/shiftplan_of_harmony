@@ -17,11 +17,11 @@ function get_days_sql(){
 }
 
 function get_jobtypes_sql(){
-  return "SELECT id, name, special FROM Jobtypes";
+  return "SELECT id, name, special FROM Jobs_without_Jobtypes";
 }
 
 function get_jobs_sql(){
-  return "SELECT * FROM Jobs";
+  return "SELECT * FROM Jobs_without_Jobtypes";
 }
 
 function insert_day_sql($day){
@@ -31,18 +31,14 @@ function insert_day_sql($day){
 function insert_jobtype_sql($name, $special){
   return "INSERT INTO Jobtypes (name, special) VALUES ($name, $special)";
 }
+
 function insert_job_sql($job_json){
-  // echo $job_json->name;
-  // echo "<BR>";
-  // echo "<BR>";
   if ($job_json->special == 1){
     return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ('$job_json->name', $job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, true)";
   }
   else{
     return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ('$job_json->name', $job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, false)";
   }
-  echo "<BR>";
-
 }
 
 

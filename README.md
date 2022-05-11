@@ -14,3 +14,6 @@ In def.js, the `name_special` variable can be changed to change the label for th
 * Nicer css
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
 * German Umlauts!!!
+* Job db table with a column that refers to corresponding jobtype.
+* Insert new job only if its not predefined.
+* Show predefined jobs in deftabsketch.

@@ -31,8 +31,16 @@ function insert_day_sql($day){
 function insert_jobtype_sql($name, $special){
   return "INSERT INTO Jobtypes (name, special) VALUES ($name, $special)";
 }
-function insert_job_sql($job){
-  return "INSERT INTO Jobs (name) VALUES ($job)";
+function insert_job_sql($job_json){
+  echo $job_json->name;
+  echo "<BR>";
+  echo "<BR>";
+  return "t";
+  // return "INSERT INTO Jobs_without_Jobtypes (name, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, special) VALUES ($job_json)";
+}
+
+function test(){
+  echo "testitest";
 }
 
 

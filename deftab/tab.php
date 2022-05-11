@@ -21,19 +21,7 @@
       padding: 100;
       margin: 100;
     }
-    /* .jobbox {
-      display: inline;
-    } */
-    #del_day {
-      display: inline;
-    }
-    #add_day {
-      display: inline;
-    }
-    /* #test {
-      background-color: yellow;
-    } */
-    /* div {text-align: center;} */
+
   </style>
 
   <?php include("db.php"); ?>
@@ -60,7 +48,6 @@
   $ar = $_POST['jobs'];
   $js = explode("}", $ar);
   $jobs = [];
-  $jobobjs = [];
   if (isset($ar)){
     echo "PHP array \$jobs()<BR>";
   for ($i=0;$i<count($js);$i++){
@@ -81,9 +68,8 @@
     array_push($jobs, $j);
   }
   for ($i=0; $i<count($jobs); $i++){
-    echo $jobs[$i];
-    echo "<BR>";
-    array_push($jobobjs, json_decode($jobs[$i]));
+    $dec = json_decode(stripslashes($jobs[$i]));
+    insert_job_sql($dec);
   }
   echo "----_______----";
 }

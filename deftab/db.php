@@ -44,7 +44,7 @@ function insert_jobtype_sql($jt){
 }
 
 function insert_job_sql($job_json){
-    return "INSERT INTO Jobs (abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, jobtype) VALUES ($job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
+    return "INSERT INTO Jobs (abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
 }
 
 

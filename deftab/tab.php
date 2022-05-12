@@ -37,6 +37,7 @@
     let jt_values = [];
     for (var [key, value] of jobtypes.entries()){
       jt_values.push(JSON.stringify(value));
+      console.log(jt_values);
     }
     for (let i=0; i<job_instances.length; i++){
       job_values.push(JSON.stringify(job_instances[i]));
@@ -48,42 +49,79 @@
   }
   </script>
 
-  <?php
+<?php
   $ar = $_POST['jobs'];
   $js = explode("}", $ar);
   $jobs = [];
   if (isset($ar)){
     // echo count($js);
-  for ($i=0;$i<count($js);$i++){
-    $j = json_encode(utf8_encode($js[$i]));
-    if (str_ends_with($j, '"') || str_ends_with($j, '"')){
-      $j = rtrim($j, '"');
+    for ($i=0;$i<count($js);$i++){
+      $j = json_encode(utf8_encode($js[$i]));
+      if (str_ends_with($j, '"') || str_ends_with($j, '"')){
+        $j = substr($j, 0, -1);
+      }
+      if ($j[0] == '"'){
+        $j = ltrim($j, '"');
+      }
+      if ($j[0] == ','){
+        $j = ltrim($j, ',');
+      }
+      if ($j == ""){
+        break;
+      }
+      $j = $j."}";
+      array_push($jobs, $j);
     }
-    if ($j[0] == '"'){
-      $j = ltrim($j, '"');
+    // echo count($jobs);
+    for ($i=0; $i<count($jobs); $i++){
+      $dec = json_decode(stripslashes($jobs[$i]));
+      // echo $dec;
+      $jobsql = insert_job_sql($dec);
+      // echo $jobsql;
+      $pdo = connect();
+      perform_query($pdo, $jobsql);
     }
-    if ($j[0] == ','){
-      $j = ltrim($j, ',');
-    }
-    if ($j == ""){
-      break;
-    }
-    $j = $j."}";
-    array_push($jobs, $j);
-  }
-  echo count($jobs);
-  for ($i=0; $i<count($jobs); $i++){
-    $dec = json_decode(stripslashes($jobs[$i]));
-    // echo $dec;
-    $jobsql = insert_job_sql($dec);
-    echo $jobsql;
-    $pdo = connect();
-    perform_query($pdo, $jobsql);
   }
 
   $jtar = $_POST['jobtypes'];
-  echo $jtar;
-
+  $js = explode("}", $jtar);
+  $jobtypes = [];
+  if (isset($jtar)){
+    // echo count($js);
+    // echo rtrim("lalalayyyy", 'y');
+    // echo "<br>";
+    for ($i=0;$i<count($js);$i++){
+      $j = json_encode(utf8_encode($js[$i]));
+      // echo $j;
+      // echo "<br>";
+      if (str_ends_with($j, '"') || str_ends_with($j, '"')){
+        $j = substr($j, 0, -1);
+      }
+      if ($j[0] == '"'){
+        $j = ltrim($j, '"');
+      }
+      if ($j[0] == ','){
+        $j = ltrim($j, ',');
+      }
+      if ($j == ""){
+        break;
+      }
+      $j = $j."}";
+      array_push($jobtypes, $j);
+    }
+    echo count($jobtypes);
+    for ($i=0; $i<count($jobtypes); $i++){
+      $dec = json_decode(stripslashes($jobtypes[$i]));
+      echo stripslashes($jobtypes[$i]);
+      echo "<br>";
+      // echo $dec;
+      $jobsql = insert_jobtype_sql($dec);
+      echo $jobsql;
+      if ($jobsql != ""){
+        $pdo = connect();
+        perform_query($pdo, $jobsql);
+      }
+    }
   echo "----_______----";
   }
 

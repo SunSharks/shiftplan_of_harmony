@@ -29,6 +29,12 @@ function insert_day_sql($day){
 }
 
 function insert_jobtype_sql($jt){
+  // echo $jt->name;
+  // echo "<br>";
+  if ($jt->indb == 1){
+    echo "indb";
+    return "";
+  }
   if ($jt->special == 1){
     return "INSERT INTO Jobtypes (name, special) VALUES ('$jt->name', true)";
   }

@@ -18,6 +18,7 @@ CREATE TABLE Days (
   name          VARCHAR(255) NOT NULL
 );
 
+DROP TABLE Jobtypes;
 CREATE TABLE Jobtypes (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NOT NULL,

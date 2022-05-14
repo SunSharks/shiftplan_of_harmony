@@ -6,7 +6,7 @@ let jobtypes = new Map(); // {id: <jobtype instance>}
 let num_jobs;
 let json_jobs = [];
 let job_instances = [];
-
+let editable_area = 0;
 
 // DAYS
 let daynames = []; // "Freitag", "Samstag", "Sonntag"
@@ -109,12 +109,12 @@ function assign_params(map){
       }
     }
   })
-  console.log(jobtypes);
+  // console.log(jobtypes);
 }
 
 function insert_predefined_jobs(job_json){
   predef_jobs = job_json;
-  console.log(JSON.stringify(predef_jobs));
+  // console.log(JSON.stringify(predef_jobs));
 }
 
 function setup() {
@@ -138,7 +138,7 @@ function setup() {
   default_colors = [color(220, 220, 220), color(230, 230, 230)];
   default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
   grid = new Grid();
-  console.log(predef_jobs);
+  // console.log(predef_jobs);
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
   savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
@@ -193,22 +193,23 @@ function draw() {
     btn.collides();
     savebtn.collides();
     if (mouseButton === LEFT){
-      for (var i=0; i<griditems.length; i++){
-        console.log(jobtypes);
-        if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
-          if(row == -1){
-            row = Math.floor(i/grid.cols.length);
-          }
-          if (row == Math.floor(i/grid.cols.length)){
-            if (!btn.state){
-              griditems[i].set_color(curr_color);
-              griditems[i].set_group(curr_group);
-              griditems[i].select();
-              edited = true;
+      if (mouseY > editable_area){
+        for (var i=0; i<griditems.length; i++){
+          if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
+            if(row == -1){
+              row = Math.floor(i/grid.cols.length);
             }
-            else {
-              griditems[i].deselect();
-              edited = true;
+            if (row == Math.floor(i/grid.cols.length)){
+              if (!btn.state){
+                griditems[i].set_color(curr_color);
+                griditems[i].set_group(curr_group);
+                griditems[i].select();
+                edited = true;
+              }
+              else {
+                griditems[i].deselect();
+                edited = true;
+              }
             }
           }
         }
@@ -261,12 +262,17 @@ class Grid {
   }
 
   insert_predefs(){
-    console.log("hai");
-    console.log(jt_id_to_griditems);
+    // console.log("hai");
+    // console.log(jt_id_to_griditems);
+    console.log(predef_jobs);
+    let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
+    let c = 0;
     for (var [key, val] of predef_jobs.entries()){
       curr_color = this.generate_random_color();
+      curr_color = colors[c%colors.length];
+      c++;
+      console.log(curr_color);
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
-        console.log(jt_id_to_griditems.get(val["jt_primary".toString()])[t]);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
       }
@@ -286,6 +292,9 @@ class Grid {
       griditems.push(r);
       l.push(r);
       x += col_width;
+    }
+    if (jobtypes.get(jobtype_id).indb){
+      editable_area = y + row_height;
     }
     this.rows.push(l);
     jt_id_to_griditems.set(jobtype_id, l);
@@ -368,6 +377,7 @@ class Griditem {
 
     this.group = -1;
     this.selected = false;
+    this.editable = true;
     // console.log(jt_id_to_griditems);
   }
 
@@ -379,14 +389,9 @@ class Griditem {
     return ret
   }
 
-  set_color(c, show=false, generate=false){
-    if (generate){
-      this.color = grid.generate_random_color();
-    }
-    else{
-      this.color = c;
-    }
-
+  set_color(c, show=false){
+    console.log("set_color " + this.name);
+    this.color = c;
     if (show){
       this.show();
     }

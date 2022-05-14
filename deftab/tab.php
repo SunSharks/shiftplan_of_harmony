@@ -122,6 +122,7 @@
         $pdo = null;
       }
     }
+    unset($_POST['jobtypes']);
   }
 
   $jar = $_POST['jobs'];
@@ -129,12 +130,13 @@
     $jvals = process_postval($jar);
     for ($i=0; $i<count($jvals); $i++){
       $jobsql2 = insert_job_sql($jvals[$i]);
-      // echo $jobsql;
+      // printf($jobsql."<br><br>");
       if ($jobsql2 != ""){
         $pdo2 = connect();
         perform_query($pdo2, $jobsql2);
       }
     }
+    unset($_POST['jobs']);
   }
 
 

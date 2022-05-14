@@ -194,9 +194,10 @@ function draw() {
     savebtn.collides();
     if (mouseButton === LEFT){
       for (var i=0; i<griditems.length; i++){
-        if (griditems[i].collides(mouseX, mouseY)){
+        console.log(jobtypes);
+        if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
           if(row == -1){
-            row = Math.floor(i/grid.cols.length)
+            row = Math.floor(i/grid.cols.length);
           }
           if (row == Math.floor(i/grid.cols.length)){
             if (!btn.state){
@@ -242,8 +243,8 @@ class Jobtype {
 
   set_indb(){
     this.indb = true;
-    // console.log(this.name, this.indb);
   }
+
 }
 
 
@@ -259,12 +260,6 @@ class Grid {
     console.log("Grid constructed.");
   }
 
-  // insert_predefs(){
-  //   // predef_jobs.set_color(curr_color);
-  //   // griditems[i].set_group(curr_group);
-  //   // griditems[i].select();
-  // }
-
   insert_predefs(){
     console.log("hai");
     console.log(jt_id_to_griditems);
@@ -272,7 +267,7 @@ class Grid {
       curr_color = this.generate_random_color();
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
         console.log(jt_id_to_griditems.get(val["jt_primary".toString()])[t]);
-        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(color(1,1,1), true);
+        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
       }
     }

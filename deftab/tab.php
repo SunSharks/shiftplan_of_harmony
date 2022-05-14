@@ -25,12 +25,38 @@
   </style>
 
   <?php include("db.php"); ?>
+
+
   <script src="./p5/p5.min.js"></script>
  <!-- <script src="./p5/addons/p5.sound.js"></script> -->
   <!-- <script defer src=https://cdn.JsDelivr.net/npm/p5></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
   <script src=deftabsketch.js></script>
+
+  <?php
+    $pdo = connect();
+    $sql = get_jobs_sql();
+    $js = perform_query($pdo, $sql);
+    // printf(json_encode($js));
+    // printf(json_encode(count($js[0])));
+
+    $jobs = [];
+    foreach ($js as $j){
+      $tmp = array();
+      foreach ($j as $key=>$val){
+        if (strlen($key) > 1){
+          $tmp[$key] = $val;
+          // printf($key." => ".$val);
+          // printf("<br>");
+          // printf("<br>");
+        }
+      }
+      array_push($jobs, $tmp);
+    }
+  ?>
+  <script> insert_predefined_jobs(<?php echo json_encode($jobs); ?>);</script>
+
   <script language="javascript">
   function insertarrayintohiddenformfield(){
     let job_values = [];
@@ -49,6 +75,7 @@
   }
   </script>
 
+
 <?php
 // // WARNINGS
 // ini_set('display_errors', 1);
@@ -56,7 +83,6 @@
 // error_reporting(E_ALL);
 
   function process_postval($postar){
-    echo "postval";
     $js = explode("}", $postar);
     $vals = [];
     if (isset($postar)){
@@ -125,7 +151,6 @@
   <input name='jobs' type=hidden>
   <input name='jobtypes' type=hidden>
   <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
-
   </form>
   </div>
 

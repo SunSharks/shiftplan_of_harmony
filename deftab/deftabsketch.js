@@ -1,5 +1,6 @@
 let get_params;
 //  JOBS
+let jt_id_to_griditems = new Map();
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
 let jobtypes = new Map(); // {id: <jobtype instance>}
 let num_jobs;
@@ -111,6 +112,10 @@ function assign_params(map){
   console.log(jobtypes);
 }
 
+function insert_predefined_jobs(job_json){
+  predef_jobs = job_json;
+  console.log(JSON.stringify(predef_jobs));
+}
 
 function setup() {
   // console.log("setup_tab");
@@ -133,10 +138,12 @@ function setup() {
   default_colors = [color(220, 220, 220), color(230, 230, 230)];
   default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
   grid = new Grid();
+  console.log(predef_jobs);
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
   savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   savebtn.draw();
+  grid.insert_predefs();
 }
 
 
@@ -249,6 +256,26 @@ class Grid {
     this.make_rowheaders();
     this.selected = [];
     this.select = true;
+    console.log("Grid constructed.");
+  }
+
+  // insert_predefs(){
+  //   // predef_jobs.set_color(curr_color);
+  //   // griditems[i].set_group(curr_group);
+  //   // griditems[i].select();
+  // }
+
+  insert_predefs(){
+    console.log("hai");
+    console.log(jt_id_to_griditems);
+    for (var [key, val] of predef_jobs.entries()){
+      curr_color = this.generate_random_color();
+      for (let t=val["abs_start"]; t<val["abs_end"]; t++){
+        console.log(jt_id_to_griditems.get(val["jt_primary".toString()])[t]);
+        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(color(1,1,1), true);
+        jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
+      }
+    }
   }
 
   deselect(){
@@ -266,6 +293,8 @@ class Grid {
       x += col_width;
     }
     this.rows.push(l);
+    jt_id_to_griditems.set(jobtype_id, l);
+
   }
 
   assemble_grid(num_rows=num_jobs){
@@ -344,6 +373,7 @@ class Griditem {
 
     this.group = -1;
     this.selected = false;
+    // console.log(jt_id_to_griditems);
   }
 
   collides(x, y) {
@@ -354,8 +384,14 @@ class Griditem {
     return ret
   }
 
-  set_color(c, show=false){
-    this.color = c;
+  set_color(c, show=false, generate=false){
+    if (generate){
+      this.color = grid.generate_random_color();
+    }
+    else{
+      this.color = c;
+    }
+
     if (show){
       this.show();
     }
@@ -459,5 +495,12 @@ Button.prototype.change_mode = function() {
   }
   this.text = this.texts[+this.state];
   this.draw();
+}
 
+function generate_random_color(){
+  let r = Math.random(255); // r is a random number between 0 - 255
+  let g = Math.random(255); // g is a random number betwen 100 - 200
+  let b = Math.random(200); // b is a random number between 0 - 100
+  let a = Math.random(200,255); // a is a random number between 200 - 255
+  return [r, g, b, a];
 }

@@ -21,7 +21,7 @@ function get_jobtypes_sql(){
 }
 
 function get_jobs_sql(){
-  return "SELECT * FROM Jobs_without_Jobtypes";
+  return "SELECT id, abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, jt_primary FROM Jobs";
 }
 
 function insert_day_sql($day){
@@ -44,6 +44,9 @@ function insert_jobtype_sql($jt){
 }
 
 function insert_job_sql($job_json){
+  if ($jt->indb == 1){
+    return "";
+  }
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day, end_day, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, '$job_json->start_day', '$job_json->end_day', $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
 }
 
@@ -73,6 +76,8 @@ function connect(){
 // }
 
 function perform_query($pdo, $sql){
+  echo $sql;
+  echo "<br> ___";
   try{
     $stmt = $pdo->prepare($sql);
     $stmt->execute();

@@ -8,12 +8,17 @@ index.html uses def.js for definitions of day and job credentials.
 In def.js, the `name_special` variable can be changed to change the label for this checkbox. It can be used to mark all kinds of exceptions.
 
 ## TODO
+
+### Appearence
 * Calculate & show day of griditems.
 * Show how many griditems are currently selected.
 * Red frame around each job after saving for a short time.
 * Nicer css
+
+### Functionality
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
 * German Umlauts!!!
-* Job db table with a column that refers to corresponding jobtype.
+* [DONE] Job db table with a column that refers to corresponding jobtype.
+* Link that Jobtype to its column somehow in sql.
 * Insert new job only if its not predefined.
 * Show predefined jobs in deftabsketch.

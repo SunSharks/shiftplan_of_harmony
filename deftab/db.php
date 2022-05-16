@@ -16,8 +16,18 @@ function get_days_sql(){
   return "SELECT * FROM Days";
 }
 
+function delete_day_sql($day_id){
+  return "DELETE FROM Days WHERE id = $day_id";
+}
+
 function get_jobtypes_sql(){
   return "SELECT id, name, special FROM Jobtypes";
+}
+
+function delete_jobtype_sql($jt_id){
+  $ret = "DELETE FROM Jobtypes WHERE id = $jt_id;
+  DELETE FROM Jobs WHERE jt_primary = $jt_id";
+  return $ret;
 }
 
 function get_jobs_sql(){

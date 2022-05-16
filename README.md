@@ -11,14 +11,15 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ### Appearence
 * Calculate & show day of griditems.
-* Show how many griditems are currently selected.
+* [DONE] Show how many griditems are currently selected.
 * Red frame around each job after saving for a short time.
 * Nicer css
 
 ### Functionality
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
+* Delete jobtype and corresponding jobs. (button, functionality, security, integrety)
+* Link day entries of table Jobs to corresponding entry of table Days.
 * German Umlauts!!!
 * [DONE] Job db table with a column that refers to corresponding jobtype.
-* Link that Jobtype to its column somehow in sql.
-* Insert new job only if its not predefined.
-* Show predefined jobs in deftabsketch.
+* [DONE] Insert new job only if its not predefined.
+* [DONE] Show predefined jobs in deftabsketch.

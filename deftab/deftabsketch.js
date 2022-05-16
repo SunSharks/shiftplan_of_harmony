@@ -41,6 +41,7 @@ let row = -1;
 let curr_selected_cols = [];
 let btn;
 let savebtn;
+let cntbox;
 let edited = false;
 
 
@@ -144,6 +145,7 @@ function setup() {
   savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   savebtn.draw();
   grid.insert_predefs();
+  cntbox = new Countbox(0, gridendy, rowheaderwidth, 50);
 }
 
 
@@ -188,6 +190,7 @@ function write_to_file(filename, obj){
   writer.close();
 }
 
+collision_row = -1;
 function draw() {
   if (mouseIsPressed){
     btn.collides();
@@ -201,6 +204,17 @@ function draw() {
             }
             if (row == Math.floor(i/grid.cols.length)){
               if (!btn.state){
+                if (griditems[i].selected && griditems[i].group == curr_group){
+                  continue;
+                }
+                console.log("draw_count");
+                cntbox.count();
+                // fill(0,0,255);
+                // // stroke(1);
+                // textFont('Helvetica');
+                // textSize(30);
+                // text(++cnt, mouseX-30, mouseY-30);
+                // pop();
                 griditems[i].set_color(curr_color);
                 griditems[i].set_group(curr_group);
                 griditems[i].select();
@@ -223,6 +237,7 @@ function mouseReleased() {
     curr_color = grid.generate_random_color();
     curr_group += 1;
     row = -1;
+    cntbox.reset_counter();
 }
 
 
@@ -283,11 +298,11 @@ class Grid {
     this.select = !this.select;
   }
 
-  make_data_row(name, y, jobtype_id, special=false){
+  make_data_row(name, y, jobtype_id, row, special=false){
     let x = rowheaderwidth;
     let l = [];
     for (let i=0; i<num_cols; i++){
-      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, special=special);
+      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, special=special);
       r.show();
       griditems.push(r);
       l.push(r);
@@ -303,8 +318,9 @@ class Grid {
 
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
+    let cnt = 0;
     for (var [key, value] of jobtypes.entries()){
-      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, jobtypes.get(key).special);
+      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
       y += row_height;
     }
     let col = [];
@@ -356,10 +372,11 @@ class Grid {
 
 
 class Griditem {
-  constructor(name, id, x, y, time, jobtype_id, special=false, w=col_width, h=row_height) {
+  constructor(name, id, x, y, time, jobtype_id, row, special=false, w=col_width, h=row_height) {
     this.name = name; // name of job
     this.special = special;
     this.id = id;
+    this.row = row;
     this.jobtype_id = jobtype_id;
     this.time = time;
     this.day; // TODO
@@ -390,7 +407,7 @@ class Griditem {
   }
 
   set_color(c, show=false){
-    console.log("set_color " + this.name);
+    // console.log("set_color " + this.name);
     this.color = c;
     if (show){
       this.show();
@@ -504,3 +521,49 @@ function generate_random_color(){
   let a = Math.random(200,255); // a is a random number between 200 - 255
   return [r, g, b, a];
 }
+
+class Countbox{
+  constructor(x, y, w, h){
+    this.counter = 0;
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.show_counter = false;
+    this.show();
+  }
+
+  reset_counter(){
+    this.counter = 0;
+    this.show_counter = false;
+  }
+
+  count(){
+    this.counter++;
+    this.show_counter = true;
+    this.show();
+  }
+
+  show(){
+    fill(255, 255, 255);
+    rect(this.x, this.y, this.w, this.h);
+    if (this.show_counter){
+      textSize(40);
+      fill(0,0,0);
+      textStyle(NORMAL);
+      text(this.counter.toString(), this.x+rowheaderwidth/2, this.y+this.h/2);
+    }
+  }
+}
+
+
+// var myDiv = createDiv('Welcome to GeeksforGeeks');
+//
+//   // Set the position of div element
+//   myDiv.position(150, 100);
+//
+//   // Set the font-size of text
+//   myDiv.style('font-size', '24px');
+//
+//   // Set the font color
+//   myDiv.style('color', 'white');

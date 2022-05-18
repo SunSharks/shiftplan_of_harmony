@@ -37,6 +37,10 @@ function get_jobtypes_sql(){
   return "SELECT id, name, special FROM Jobtypes";
 }
 
+function get_jobtype_id_sql($id){
+  return "SELECT id FROM Jobtypes WHERE id = $id";
+}
+
 function insert_jobtype_sql($jt){
   // echo $jt->name;
   // echo "<br>";
@@ -44,6 +48,15 @@ function insert_jobtype_sql($jt){
     // echo "indb";
     return "";
   }
+  $pdo = connect();
+  $sql = get_jobtype_id_sql($jt->id);
+  // echo "$sql";
+  $jt_indb = perform_query($pdo, $sql);
+  if (sizeof($jt_indb) > 0){
+    // printf("jaaas");
+    return "";
+  }
+
   if ($jt->special == 1){
     return "INSERT INTO Jobtypes (name, special) VALUES ('$jt->name', true)";
   }
@@ -62,8 +75,21 @@ function get_jobs_sql(){
   return "SELECT id, abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary FROM Jobs";
 }
 
+function get_job_id_sql($id){
+  // echo "<br> $id <br>";
+  return "SELECT id FROM Jobs WHERE id = $id";
+}
+
 function insert_job_sql($job_json){
-  if ($jt->indb == 1){
+  if ($job_json->indb == 1){
+    // printf("<br> $job_json->indb in<br>")
+    return "";
+  }
+  $pdo = connect();
+  $sql = get_job_id_sql($job_json->id);
+  $job_indb = perform_query($pdo, $sql);
+  if (sizeof($job_indb) > 0){
+    // printf("<br>job_indb<br>");
     return "";
   }
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, $job_json->start_day_id, $job_json->end_day_id, $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
@@ -140,7 +166,7 @@ function get_daybox_html($id){
 function insert_daybox_html($id){
   $html = get_daybox_html($id);
   $day_cnt++;
-  printf($html);
+  // printf($html);
 }
 
 function get_jobbox_html($id, $jobname, $special){

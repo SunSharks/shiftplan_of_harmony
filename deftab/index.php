@@ -87,13 +87,9 @@
         <?php
           $pdo = connect();
           $jobtypes = perform_query($pdo, get_jobtypes_sql());
-          $maxid = 0;
           foreach ($jobtypes as $j) {
             printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
             $job_cnt++;
-            if ($maxid < (int)$j["id"]){
-              $maxid = (int)$j["id"];
-            }
           }
         ?>
         <script>

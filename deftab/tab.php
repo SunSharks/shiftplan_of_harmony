@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 
@@ -66,10 +65,8 @@
     }
   ?>
   <?php
-  if(!empty($_GET)){
     $jsjobs = json_encode($jobs);
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
-  }
   ?>
 
 
@@ -135,11 +132,13 @@
       $dayvals = process_postval($dayar);
       for ($i=0; $i<count($dayvals); $i++){
         $daysql = insert_day_sql($dayvals[$i]);
-        echo $daysql;
+        // echo "<br"$daysql;
         if ($daysql != ""){
           $pdo = connect();
           perform_query($pdo, $daysql);
           $pdo = null;
+          $d = json_encode($dayvals[$i]);
+          echo "<script>insert_day_indb($d);</script>";
         }
       }
       unset($_POST['days']);
@@ -149,13 +148,18 @@
     $jtar = $_POST['jobtypes'];
     if (isset($jtar)){
       $jtvals = process_postval($jtar);
+      echo $jtvals;
+
       for ($i=0; $i<count($jtvals); $i++){
         $jobsql = insert_jobtype_sql($jtvals[$i]);
-        // echo $jobsql;
+        echo $jobsql;
         if ($jobsql != ""){
+          // echo "jesjesjoo";
           $pdo = connect();
           perform_query($pdo, $jobsql);
           $pdo = null;
+          $d = json_encode($jtvals[$i]);
+          echo "<script>insert_jobtype_indb($d);</script>";
         }
       }
       unset($_POST['jobtypes']);
@@ -165,11 +169,15 @@
     if (isset($jar)){
       $jvals = process_postval($jar);
       for ($i=0; $i<count($jvals); $i++){
+        // echo "<br><br>jas<br>";
+
         $jobsql2 = insert_job_sql($jvals[$i]);
-        // printf($jobsql."<br><br>");
+        // printf($jobsql2."<br><br>");
         if ($jobsql2 != ""){
           $pdo2 = connect();
           perform_query($pdo2, $jobsql2);
+          $d = json_encode($jvals[$i]);
+          echo "<script>insert_job_indb($d);</script>";
         }
       }
       unset($_POST['jobs']);

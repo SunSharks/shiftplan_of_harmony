@@ -7,11 +7,16 @@ let num_jobs;
 let predef_jobs = [];
 let json_jobs = [];
 let job_instances = [];
+let job_instances_id = new Map();
+let max_jobid = -1;
+let indb_jts = [];
+let indb_jobs = [];
 let editable_area = 0;
 
 // DAYS
 let days = new Map();
 let days_arr = [];
+let indb_days = [];
 let daynames = [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]; // "Freitag", "Samstag", "Sonntag"
 let num_days;
 
@@ -135,7 +140,19 @@ function assign_params(map){
 
 function insert_predefined_jobs(job_json){
   predef_jobs = job_json;
-  console.log(JSON.stringify(predef_jobs));
+  // console.log(JSON.stringify(predef_jobs));
+}
+
+function insert_day_indb(day_json){
+  indb_days.push(day_json);
+}
+
+function insert_jobtype_indb(jt_json){
+  indb_jts.push(jt_json);
+}
+
+function insert_job_indb(job_json){
+  indb_jobs.push(job_json);
 }
 
 function setup() {
@@ -165,6 +182,7 @@ function setup() {
   savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   savebtn.draw();
   grid.insert_predefs();
+  grid.update_predefs();
   cntbox = new Countbox(0, gridendy, rowheaderwidth, 50);
 }
 
@@ -195,7 +213,7 @@ function save_data(){
   }
   let ret = [];
   for (let i = 0; i<groups.length; i++){
-    let j = new Job(groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special);
+    let j = new Job(groups[i][0].jobid, groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special, groups[i][0].pre);
     json_jobs.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
@@ -292,21 +310,60 @@ class Grid {
   insert_predefs(){
     // console.log("hai");
     // console.log(jt_id_to_griditems);
-    // console.log(predef_jobs);
+    console.log(predef_jobs);
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
     let c = 0;
+    let _maxid = -1;
     for (var [key, val] of predef_jobs.entries()){
-      curr_color = this.generate_random_color();
+      // curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
       c++;
       // console.log(curr_color);
-      console.log(jt_id_to_griditems);
+      // console.log(jt_id_to_griditems);
+      if (jt_id_to_griditems.size == 0){
+        return;
+      }
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
+        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_pre();
+        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_jobid(val["id"]);
+        console.log(val["id"]);
       }
     }
   }
+
+  update_predefs(){
+    // console.log("hai");
+    // console.log(jt_id_to_griditems);
+    console.log(indb_jts);
+    for (let i = 0; i < indb_jts.length; i++){
+      console.log(indb_jts[i]);
+      // console.log(jt_id_to_griditems);
+      if (jobtypes.size > 0){
+        jobtypes.get(indb_jts[i]["id"]).set_indb();
+      }
+    }
+    for (let i = 0; i < indb_days.length; i++){
+      if (days.size > 0){
+        days.get(parseInt(indb_days[i]["id"])).set_indb();
+      }
+    }
+
+    for (let i = 0; i < indb_jobs.length; i++){
+      if (job_instances_id.size > 0){
+        job_instances_id.get(parseInt(indb_jobs[i]["id"])).set_indb();
+      }
+    }
+
+      // for (let t=val["abs_start"]; t<val["abs_end"]; t++){
+      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
+      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
+      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_pre();
+      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_jobid(val["id"]);
+      //   console.log(val["id"]);
+      // }
+    }
 
   deselect(){
     this.select = !this.select;
@@ -409,6 +466,8 @@ class Griditem {
     this.group = -1;
     this.selected = false;
     this.editable = true;
+    this.pre = false;
+    this.jobid = -1;
   }
 
   collides(x, y) {
@@ -417,6 +476,14 @@ class Griditem {
       this.set_color("green");
     }
     return ret
+  }
+
+  set_jobid(jid){
+    this.jobid = jid;
+  }
+
+  set_pre(){
+    this.pre = true;
   }
 
   set_color(c, show=false){
@@ -478,29 +545,45 @@ class Day{
 }
 
 function make_day_instances(d){
-  console.log(d);
+  // console.log(d);
   for (const key in d){
-    console.log(`${key}: ${d[key]}`);
+    // console.log(`${key}: ${d[key]}`);
     let tmp = new Day(d[key], parseInt(key), indb=false);
-    console.log(tmp);
+    // console.log(tmp);
   }
 }
 
 
 class Job {
-  constructor(name, start, dur, jobtype_id, special=false){
+  constructor(id, name, start, dur, jobtype_id, special=false, indb=false){
+    this.id = parseInt(id);
     this.name = name;
     this.start = start;
     this.end = start + dur;
     this.during = dur;
+    console.log(days_arr);
+    console.log(this.end);
+    console.log(Math.floor(this.end/24));
     this.start_day_id = days_arr[Math.floor(this.start/24)].id;
-    console.log(this.start_day_id);
-    this.end_day_id = days_arr[Math.floor(this.end/24)].id;
+    // console.log(this.start_day_id);
+    if (this.end >= num_cols){
+      this.end_day_id = days_arr[Math.floor(this.end/24)-1].id;
+    }
+    else{
+      this.end_day_id = days_arr[Math.floor(this.end/24)].id;
+    }
+
     this.dt_start = this.start % 24;
     this.dt_end = this.end % 24;
     this.special = special;
     this.jobtype_id = jobtype_id;
+    this.indb = indb;
     job_instances.push(this);
+    job_instances_id.set(this.id, this);
+  }
+
+  set_indb(){
+    this.indb = true;
   }
 }
 

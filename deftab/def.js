@@ -15,11 +15,11 @@ function set_days(d){
 }
 
 function set_jobs(j){
-  console.log(j);
+  // console.log(j);
   let _maxid = 0;
   for (let i=0; i<j.length; i++){
     jobtypes[i.id] = j[i];
-    console.log(jobtypes[i.id].id);
+    // console.log(jobtypes[i.id].id);
     if (_maxid < jobtypes[i.id].id){
       _maxid = jobtypes[i.id].id;
     }
@@ -50,7 +50,7 @@ function hide_it() {
 }
 function create_daybox(){
     // First create a DIV element.
-  console.log(parseInt(numdays) + days.length);
+  // console.log(parseInt(numdays) + days.length);
   let id = parseInt(numdays) + days.length;
   let new_box = document.createElement('div');
   new_box.setAttribute("id", "daybox"+id.toString());
@@ -75,7 +75,7 @@ function create_daybox(){
 
 function create_jobbox(){
   let id = ++maxid;
-  console.log(maxid);
+  // console.log(maxid);
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "special"+id.toString());
@@ -173,8 +173,8 @@ class Day{
 
 function make_day_instances(d){
   for (let i=0; i<d.length; i++){
-    console.log(d[i]);
+    // console.log(d[i]);
     let tmp = new Day(d[i]);
-    console.log(tmp);
+    // console.log(tmp);
   }
 }

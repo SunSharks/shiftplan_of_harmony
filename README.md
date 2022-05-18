@@ -22,6 +22,7 @@ In def.js, the `name_special` variable can be changed to change the label for th
 * Numeric date format for day.
 * German Umlauts!!!
 * Insert Jobtypes into DB only once even if tab.php is reloaded.
+* Create day view: edit one day at whole page.
 
 * [DONE] Job db table with a column that refers to corresponding jobtype.
 * [DONE] Insert new job only if its not predefined.

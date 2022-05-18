@@ -1,7 +1,9 @@
+DROP TABLE Days;
 
 CREATE TABLE Days (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name          VARCHAR(255) NOT NULL
+  name          VARCHAR(255) NULL,
+  date          DATE NOT NULL UNIQUE
 );
 
 DROP TABLE Jobtypes;
@@ -19,8 +21,8 @@ CREATE TABLE Jobs (
     abs_start     INT,
     abs_end       INT,
     during        INT,
-    start_day     VARCHAR(255),
-    end_day       VARCHAR(255),
+    start_day_id  INT,
+    end_day_id    INT,
     dt_start      INT,
     dt_end        INT,
     jt_primary    INT

@@ -4,6 +4,7 @@ let jt_id_to_griditems = new Map();
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
 let jobtypes = new Map(); // {id: <jobtype instance>}
 let num_jobs;
+let predef_jobs = [];
 let json_jobs = [];
 let job_instances = [];
 let editable_area = 0;
@@ -134,7 +135,7 @@ function assign_params(map){
 
 function insert_predefined_jobs(job_json){
   predef_jobs = job_json;
-  // console.log(JSON.stringify(predef_jobs));
+  console.log(JSON.stringify(predef_jobs));
 }
 
 function setup() {
@@ -299,6 +300,7 @@ class Grid {
       curr_color = colors[c%colors.length];
       c++;
       // console.log(curr_color);
+      console.log(jt_id_to_griditems);
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
@@ -407,7 +409,6 @@ class Griditem {
     this.group = -1;
     this.selected = false;
     this.editable = true;
-    // console.log(jt_id_to_griditems);
   }
 
   collides(x, y) {

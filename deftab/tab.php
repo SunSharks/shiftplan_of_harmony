@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -64,7 +65,13 @@
       array_push($jobs, $tmp);
     }
   ?>
-  <script> insert_predefined_jobs(<?php echo json_encode($jobs); ?>);</script>
+  <?php
+  if(!empty($_GET)){
+    $jsjobs = json_encode($jobs);
+    echo "<script> insert_predefined_jobs($jsjobs);</script>";
+  }
+  ?>
+
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
@@ -123,50 +130,53 @@
     }
   }
 
-  $dayar = $_POST['days'];
-  if (isset($dayar)){
-    $dayvals = process_postval($dayar);
-    for ($i=0; $i<count($dayvals); $i++){
-      $daysql = insert_day_sql($dayvals[$i]);
-      echo $daysql;
-      if ($daysql != ""){
-        $pdo = connect();
-        perform_query($pdo, $daysql);
-        $pdo = null;
+    $dayar = $_POST['days'];
+    if (isset($dayar)){
+      $dayvals = process_postval($dayar);
+      for ($i=0; $i<count($dayvals); $i++){
+        $daysql = insert_day_sql($dayvals[$i]);
+        echo $daysql;
+        if ($daysql != ""){
+          $pdo = connect();
+          perform_query($pdo, $daysql);
+          $pdo = null;
+        }
       }
+      unset($_POST['days']);
     }
-    unset($_POST['days']);
-  }
 
-  // echo count($vals);
-  $jtar = $_POST['jobtypes'];
-  if (isset($jtar)){
-    $jtvals = process_postval($jtar);
-    for ($i=0; $i<count($jtvals); $i++){
-      $jobsql = insert_jobtype_sql($jtvals[$i]);
-      // echo $jobsql;
-      if ($jobsql != ""){
-        $pdo = connect();
-        perform_query($pdo, $jobsql);
-        $pdo = null;
+    // echo count($vals);
+    $jtar = $_POST['jobtypes'];
+    if (isset($jtar)){
+      $jtvals = process_postval($jtar);
+      for ($i=0; $i<count($jtvals); $i++){
+        $jobsql = insert_jobtype_sql($jtvals[$i]);
+        // echo $jobsql;
+        if ($jobsql != ""){
+          $pdo = connect();
+          perform_query($pdo, $jobsql);
+          $pdo = null;
+        }
       }
+      unset($_POST['jobtypes']);
     }
-    unset($_POST['jobtypes']);
-  }
 
-  $jar = $_POST['jobs'];
-  if (isset($jar)){
-    $jvals = process_postval($jar);
-    for ($i=0; $i<count($jvals); $i++){
-      $jobsql2 = insert_job_sql($jvals[$i]);
-      // printf($jobsql."<br><br>");
-      if ($jobsql2 != ""){
-        $pdo2 = connect();
-        perform_query($pdo2, $jobsql2);
+    $jar = $_POST['jobs'];
+    if (isset($jar)){
+      $jvals = process_postval($jar);
+      for ($i=0; $i<count($jvals); $i++){
+        $jobsql2 = insert_job_sql($jvals[$i]);
+        // printf($jobsql."<br><br>");
+        if ($jobsql2 != ""){
+          $pdo2 = connect();
+          perform_query($pdo2, $jobsql2);
+        }
       }
+      unset($_POST['jobs']);
     }
-    unset($_POST['jobs']);
-  }
+
+
+
 
 
   echo "----_______----";
@@ -185,9 +195,18 @@
     <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
   </form>
   </div>
+  <?php
+  if (empty($_GET)){
+    echo "Geschafft.";
+  }
+  else{
+    echo "Tabelle";
+    echo "<main>";
+    echo "</main>";
+  }
+  ?>
 
-  <main>
-  </main>
+
 
 </body>
 </html>

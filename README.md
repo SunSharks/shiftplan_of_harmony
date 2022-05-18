@@ -19,7 +19,10 @@ In def.js, the `name_special` variable can be changed to change the label for th
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
 * Delete jobtype and corresponding jobs. (button, functionality, security, integrety)
 * Link day entries of table Jobs to corresponding entry of table Days.
+* Numeric date format for day.
 * German Umlauts!!!
+* Insert Jobtypes into DB only once even if tab.php is reloaded.
+
 * [DONE] Job db table with a column that refers to corresponding jobtype.
 * [DONE] Insert new job only if its not predefined.
 * [DONE] Show predefined jobs in deftabsketch.

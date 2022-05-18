@@ -26,6 +26,14 @@
 
   <?php include("db.php"); ?>
 
+  <?php
+  $days = array();
+  foreach($_GET as $key=>$val){
+    if (str_starts_with($key, "day")){
+      $days[substr($key, 3)] = $val;
+    }
+  }
+  ?>
 
   <script src="./p5/p5.min.js"></script>
  <!-- <script src="./p5/addons/p5.sound.js"></script> -->
@@ -33,6 +41,7 @@
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
   <script src=deftabsketch.js></script>
+  <script> make_day_instances(<?php echo json_encode($days); ?>); </script>
 
   <?php
     $pdo = connect();
@@ -59,8 +68,12 @@
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
+    let day_values = [];
     let job_values = [];
     let jt_values = [];
+    for (let i=0; i<days_arr.length; i++){
+      day_values.push(JSON.stringify(days_arr[i]));
+    }
     for (var [key, value] of jobtypes.entries()){
       jt_values.push(JSON.stringify(value));
       console.log(jt_values);
@@ -70,6 +83,7 @@
     }
     console.log(job_values);
     console.log(jt_values);
+    document.Form.days.value = day_values;
     document.Form.jobtypes.value = jt_values;
     document.Form.jobs.value = job_values;
   }
@@ -107,6 +121,21 @@
       }
       return $vals;
     }
+  }
+
+  $dayar = $_POST['days'];
+  if (isset($dayar)){
+    $dayvals = process_postval($dayar);
+    for ($i=0; $i<count($dayvals); $i++){
+      $daysql = insert_day_sql($dayvals[$i]);
+      echo $daysql;
+      if ($daysql != ""){
+        $pdo = connect();
+        perform_query($pdo, $daysql);
+        $pdo = null;
+      }
+    }
+    unset($_POST['days']);
   }
 
   // echo count($vals);
@@ -150,9 +179,10 @@
   <a href="./index.php">Back to definitions</a>
   <div style='position:absolute;top:500px;left:450px'>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
-  <input name='jobs' type=hidden>
-  <input name='jobtypes' type=hidden>
-  <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
+    <input name='days' type=hidden>
+    <input name='jobs' type=hidden>
+    <input name='jobtypes' type=hidden>
+    <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
   </form>
   </div>
 

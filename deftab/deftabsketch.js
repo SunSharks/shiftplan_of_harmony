@@ -9,7 +9,9 @@ let job_instances = [];
 let editable_area = 0;
 
 // DAYS
-let daynames = []; // "Freitag", "Samstag", "Sonntag"
+let days = new Map();
+let days_arr = [];
+let daynames = [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]; // "Freitag", "Samstag", "Sonntag"
 let num_days;
 
 let num_cols;
@@ -70,8 +72,11 @@ function assign_params(map){
   let id;
   map.forEach (function(value, key){
     if (key.startsWith("day")){
-      daynames.push(value);
-      num_days = daynames.length;
+      id = parseInt(key.slice(3));
+      let new_day = new Day(value, parseInt(id), indb=false);
+      days.set(id, new_day);
+      days_arr.push(new_day);
+      num_days = days_arr.length;
     }
     else if (key.startsWith("job")){
       id = parseInt(key.slice(3));
@@ -89,14 +94,28 @@ function assign_params(map){
     }
     else if (key.startsWith("PRE")){
       id = parseInt(key.slice(6));
-      if (jobtypes.has(id)){
-        jobtypes.get(id).set_indb();
+      if (key.startsWith("PREjob")){
+        if (jobtypes.has(id)){
+          jobtypes.get(id).set_indb();
+        }
+        else{
+          let new_jt = new Jobtype(id);
+          new_jt.set_indb();
+          jobtypes.set(id, new_jt);
+        }
       }
-      else{
-        let new_jt = new Jobtype(id);
-        new_jt.set_indb();
-        jobtypes.set(id, new_jt);
+      else if (key.startsWith("PREday")){
+        if (days.has(id)){
+          days.get(id).set_indb();
+        }
+        else{
+          let new_day = new Day(value, id, indb=true);
+          days.set(id, new_day);
+          days_arr.push(new_day);
+          num_days = days_arr.length;
+        }
       }
+
     }
     else if (key.startsWith("special")){
       id = parseInt(key.slice(7));
@@ -179,7 +198,7 @@ function save_data(){
     json_jobs.push(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
-  console.log(job_instances);
+  // console.log(job_instances);
   console.log(json_jobs);
   return json_jobs
   }
@@ -207,14 +226,7 @@ function draw() {
                 if (griditems[i].selected && griditems[i].group == curr_group){
                   continue;
                 }
-                console.log("draw_count");
                 cntbox.count();
-                // fill(0,0,255);
-                // // stroke(1);
-                // textFont('Helvetica');
-                // textSize(30);
-                // text(++cnt, mouseX-30, mouseY-30);
-                // pop();
                 griditems[i].set_color(curr_color);
                 griditems[i].set_group(curr_group);
                 griditems[i].select();
@@ -273,20 +285,20 @@ class Grid {
     this.make_rowheaders();
     this.selected = [];
     this.select = true;
-    console.log("Grid constructed.");
+    // console.log("Grid constructed.");
   }
 
   insert_predefs(){
     // console.log("hai");
     // console.log(jt_id_to_griditems);
-    console.log(predef_jobs);
+    // console.log(predef_jobs);
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
     let c = 0;
     for (var [key, val] of predef_jobs.entries()){
       curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
       c++;
-      console.log(curr_color);
+      // console.log(curr_color);
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
@@ -443,14 +455,46 @@ class Griditem {
 }
 
 
+class Day{
+  constructor(date, id, indb=false, name=null){
+    this.date = date;
+    this.indb = indb;
+    // console.log(this.date);
+    this.date_date = new Date(this.date);
+    this.name = name;
+    this.id = id;
+    this.calculate_dayname();
+    // console.log(this.name);
+  }
+
+  calculate_dayname(){
+    this.name = daynames[this.date_date.getDay()];
+  }
+
+  set_indb(){
+    this.indb = true;
+  }
+}
+
+function make_day_instances(d){
+  console.log(d);
+  for (const key in d){
+    console.log(`${key}: ${d[key]}`);
+    let tmp = new Day(d[key], parseInt(key), indb=false);
+    console.log(tmp);
+  }
+}
+
+
 class Job {
   constructor(name, start, dur, jobtype_id, special=false){
     this.name = name;
     this.start = start;
     this.end = start + dur;
     this.during = dur;
-    this.start_day = daynames[Math.floor(this.start/24)];
-    this.end_day = daynames[Math.floor(this.end/24)];
+    this.start_day_id = days_arr[Math.floor(this.start/24)].id;
+    console.log(this.start_day_id);
+    this.end_day_id = days_arr[Math.floor(this.end/24)].id;
     this.dt_start = this.start % 24;
     this.dt_end = this.end % 24;
     this.special = special;
@@ -548,10 +592,10 @@ class Countbox{
     fill(255, 255, 255);
     rect(this.x, this.y, this.w, this.h);
     if (this.show_counter){
-      textSize(40);
+      textSize(35);
       fill(0,0,0);
       textStyle(NORMAL);
-      text(this.counter.toString(), this.x+rowheaderwidth/2, this.y+this.h/2);
+      text(this.counter.toString(), this.x, this.y+this.h/2);
     }
   }
 }

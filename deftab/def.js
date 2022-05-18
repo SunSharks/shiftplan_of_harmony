@@ -1,4 +1,3 @@
-
 let name_special = "helper";
 let days = [];
 let numdays = 0;
@@ -10,7 +9,7 @@ let maxid = 0;
 
 
 function set_days(d){
-  // console.log(d);
+  console.log(d);
   days = d;
   numdays = d.length;
 }
@@ -53,12 +52,22 @@ function create_daybox(){
     // First create a DIV element.
   console.log(parseInt(numdays) + days.length);
   let id = parseInt(numdays) + days.length;
-  var new_box = document.createElement('div');
+  let new_box = document.createElement('div');
   new_box.setAttribute("id", "daybox"+id.toString());
   new_box.setAttribute("class", "daybox");
     // Then add the content (a new input box) of the element.
-  new_box.innerHTML = "<input type='text' name='day" + id.toString() + "' id='day" + id.toString() + "' required>";
+  let innerdaylabel = document.createElement('div');
+  innerdaylabel.setAttribute("id", "day_label"+id.toString());
+  innerdaylabel.setAttribute("class", "inner_daybox");
+
+  let innerdaydate = document.createElement('div');
+  innerdaydate.setAttribute("id", "day"+id.toString());
+  innerdaydate.setAttribute("class", "inner_daybox");
+  innerdaylabel.innerHTML = "<label for='day" + id.toString() + "'></label>"
+  innerdaydate.innerHTML = "<input type='date' name='day" + id.toString() + "' id='day" + id.toString() + "' required>";
   // Finally put it where it is supposed to appear.
+  new_box.appendChild(innerdaylabel);
+  new_box.appendChild(innerdaydate);
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);
   numdays++;
@@ -139,4 +148,33 @@ function write_to_file(){
   writer.write(JSON.stringify(d));
   writer.write(JSON.stringify(j));
   writer.close();
+}
+
+class Day{
+  constructor(date, indb=false, name=null, id=null){
+    this.date = date;
+    this.indb = indb;
+    // console.log(this.date);
+    this.date_date = new Date(this.date);
+    this.name = name;
+    this.id = id;
+    this.calculate_dayname();
+    // console.log(this.name);
+  }
+
+  calculate_dayname(){
+    this.name = daynames[this.date_date.getDay()];
+  }
+
+  set_indb(){
+    this.indb = true;
+  }
+}
+
+function make_day_instances(d){
+  for (let i=0; i<d.length; i++){
+    console.log(d[i]);
+    let tmp = new Day(d[i]);
+    console.log(tmp);
+  }
 }

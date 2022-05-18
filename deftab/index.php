@@ -13,14 +13,19 @@
     h1 {text-align: center;}
     p {text-align: center;}
     .daybox {
-      display: inline;
+      float:left;
       padding: 100;
-
     }
-    .day {
+    .inner_daybox {
+      display: block;
+      padding: 100;
+    }
+
+
+    /* .day {
       padding: 100;
       margin: 100;
-    }
+    } */
     /* .jobbox {
       display: inline;
     } */
@@ -36,9 +41,23 @@
     /* div {text-align: center;} */
   </style>
 
+  <!-- <script>
+    const input = document.querySelector('input');
+    const log = document.getElementById('values');
+    input.addEventListener('input', updateValue);
+
+    function updateValue(e) {
+      log.textContent = e.target.value;
+    }
+  </script> -->
+
   <?php include("db.php"); ?>
 
   <script src=def.js></script>
+
+  <p id="demo"></p>
+
+
 </head>
 
 <body>
@@ -49,9 +68,12 @@
         <?php
           $pdo = connect();
           $days = perform_query($pdo, get_days_sql());
+          $max_dayid = 0;
           foreach ($days as $d) {
-            printf(get_daybox_html_readonly($day_cnt, $d["name"]));
-            $day_cnt++;
+            printf(get_daybox_html_readonly($d["id"], $d["name"], $d["date"]));
+            if ($d["id"] > $max_dayid){
+              $max_dayid = $d["id"];
+            }
           }
         ?>
 
@@ -78,6 +100,7 @@
         let test = set_jobs(<?php echo json_encode($jobtypes); ?>);
         // console.log(test);
         </script>
+        <br>
         <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
       </div>
   <div><p><input type="submit" value="Show me the table!"></p></div>

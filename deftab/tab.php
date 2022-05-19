@@ -1,3 +1,8 @@
+<?php
+// Start the session
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -128,11 +133,11 @@
   }
 
     $dayar = $_POST['days'];
-    if (isset($dayar)){
+    if (isset($dayar) && !$_SESSION["days_indb"]){
       $dayvals = process_postval($dayar);
       for ($i=0; $i<count($dayvals); $i++){
         $daysql = insert_day_sql($dayvals[$i]);
-        // echo "<br"$daysql;
+        echo "<br".$daysql;
         if ($daysql != ""){
           $pdo = connect();
           perform_query($pdo, $daysql);
@@ -141,12 +146,13 @@
           echo "<script>insert_day_indb($d);</script>";
         }
       }
+      $_SESSION["days_indb"] = true;
       unset($_POST['days']);
     }
 
     // echo count($vals);
     $jtar = $_POST['jobtypes'];
-    if (isset($jtar)){
+    if (isset($jtar) && !$_SESSION["jts_indb"]){
       $jtvals = process_postval($jtar);
       echo $jtvals;
 
@@ -162,17 +168,18 @@
           echo "<script>insert_jobtype_indb($d);</script>";
         }
       }
+      $_SESSION["jts_indb"] = true;
       unset($_POST['jobtypes']);
     }
 
     $jar = $_POST['jobs'];
-    if (isset($jar)){
+    if (isset($jar) && !$_SESSION["jobs_indb"]){
       $jvals = process_postval($jar);
       for ($i=0; $i<count($jvals); $i++){
         // echo "<br><br>jas<br>";
 
         $jobsql2 = insert_job_sql($jvals[$i]);
-        // printf($jobsql2."<br><br>");
+        printf($jobsql2."<br><br>");
         if ($jobsql2 != ""){
           $pdo2 = connect();
           perform_query($pdo2, $jobsql2);
@@ -180,6 +187,7 @@
           echo "<script>insert_job_indb($d);</script>";
         }
       }
+      $_SESSION["jobs_indb"] = true;
       unset($_POST['jobs']);
     }
 

@@ -1,3 +1,8 @@
+<?php
+// Start the session
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -102,6 +107,12 @@
   <div><p><input type="submit" value="Show me the table!"></p></div>
     </form>
   </div>
+
+  <?php
+  $_SESSION["days_indb"] = false;
+  $_SESSION["jts_indb"] = false;
+  $_SESSION["jobs_indb"] = false;
+  ?>
 
 </body>
 

@@ -142,8 +142,8 @@ session_start();
       $dayvals = process_postval($dayar);
       for ($i=0; $i<count($dayvals); $i++){
         $daysql = insert_day_sql($dayvals[$i]);
-        echo "<br".$daysql;
         if ($daysql != ""){
+          echo "<br".$daysql;
           $pdo = connect();
           perform_query($pdo, $daysql);
           $pdo = null;
@@ -161,9 +161,8 @@ session_start();
       $jtvals = process_postval($jtar);
       for ($i=0; $i<count($jtvals); $i++){
         $jobsql = insert_jobtype_sql($jtvals[$i]);
-        echo $jobsql;
         if ($jobsql != ""){
-          // echo "jesjesjoo";
+          echo $jobsql;
           $pdo = connect();
           perform_query($pdo, $jobsql);
           $pdo = null;
@@ -180,8 +179,8 @@ session_start();
       $jvals = process_postval($jar);
       for ($i=0; $i<count($jvals); $i++){
         $jobsql2 = insert_job_sql($jvals[$i]);
-        printf($jobsql2."<br><br>");
         if ($jobsql2 != ""){
+          printf("<br>".$jobsql2."<br>");
           $pdo2 = connect();
           perform_query($pdo2, $jobsql2);
           $d = json_encode($jvals[$i]);
@@ -191,13 +190,7 @@ session_start();
       $_SESSION["jobs_indb"] = true;
       unset($_POST['jobs']);
     }
-
-
-
-
-
-  echo "----_______----";
-
+  // echo "----_______----";
   ?>
 
 </head>

@@ -190,7 +190,7 @@ function setup() {
   // savebtn.draw();
   grid.insert_predefs();
   grid.update_predefs();
-  cntbox = new Countbox(0, gridendy, rowheaderwidth, 50);
+  cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
 }
 
 
@@ -198,39 +198,49 @@ function save_data(){
   let groups = [];
   let group = [];
   let curr_group = -1;
-  for (let i=0; i<griditems.length; i++){
-    console.log("_____");
-    console.log(griditems[i].selected);
-    if (griditems[i].selected){
-      if (griditems[i].group == curr_group || curr_group == -1){
-        group.push(griditems[i]);
-        curr_group = griditems[i].group;
+  for (let i=0; i<grid.rows.length; i++){
+    for (let j=0; j<grid.rows[i].length; j++){
+      if (grid.rows[i][j].selected){
+        if (grid.rows[i][j].group == curr_group || curr_group == -1){
+          group.push(grid.rows[i][j]);
+          curr_group = grid.rows[i][j].group;
+
+        }
+        else{
+          for (let g=0; g<group.length; g++){
+          }
+          groups.push(group);
+          group = [grid.rows[i][j]];
+          curr_group = grid.rows[i][j].group;
+        }
       }
       else{
-        groups.push(group);
-        group = [griditems[i]];
-        curr_group = griditems[i].group;
+        if (group.length > 0){
+          groups.push(group);
+          group = [];
+          curr_group = -1;
+        }
       }
     }
-    else{
-      if (group.length > 0){
-        groups.push(group);
-        group = [];
-        curr_group = -1;
-      }
-    }
+    curr_group = -1;
   }
   if (group.length > 0){
     groups.push(group);
   }
+  // console.log("GROUPS");
   let ret = [];
   for (let i = 0; i<groups.length; i++){
+    // console.log(JSON.stringify(groups[i]));
     let j = new Job(groups[i][0].jobid, groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special, groups[i][0].pre);
     json_jobs.push(JSON.stringify(j));
+    console.log(JSON.stringify(j));
   }
   // write_to_file("jobs.json", ret);
   // console.log(job_instances);
-  console.log(json_jobs);
+  // for (let i=0; i<json_jobs.length; i++){
+  //   console.log(json_jobs[i]);
+  // }
+
   return json_jobs
   }
 
@@ -241,7 +251,6 @@ function write_to_file(filename, obj){
 }
 
 function get_colliding_row(mouse_y){
-  // console.log(dayview);
   if (dayview){
     for (let i=daygrid.rows.length-1; i>=0; i--){
         // console.log(mouse_y.toString() + " => daygrid => " + daygrid.rows[i][0].y);
@@ -252,8 +261,9 @@ function get_colliding_row(mouse_y){
   }
   else{
     for (let i=grid.rows.length-1; i>=0; i--){
-      // console.log(mouse_y.toString() + " => grid => " + grid.rows[i][0].y);
-      if (mouse_y > grid.rows[i][0].y && mouse_y < grid.rows[i][0].y+grid.rows[i][0].h){
+      let upper = grid.rows[i][0].y + grid.rows[i][0].h;
+      // console.log(mouse_y.toString() + " => grid => " + grid.rows[i][0].y + " => => " + grid.rows[i][0].h + grid.rows[i][0].h);
+      if ((mouse_y > parseInt(grid.rows[i][0].y)) && (mouse_y < parseInt(grid.rows[i][0].y)+parseInt(grid.rows[i][0].h))){
         return i;
       }
     }
@@ -264,8 +274,6 @@ function get_colliding_row(mouse_y){
 
 function draw() {
   let lastidx = griditems.length - 1;
-  // console.log(griditems);
-  // console.log(griditems[0].group);
   if (edit_mode){
     if (mouseIsPressed){
       btn.collides();
@@ -273,8 +281,8 @@ function draw() {
       if (mouseButton === LEFT){
         if (mouseY > editable_area){
           let colliding_row = get_colliding_row(mouseY);
-          if (!colliding_row){
-            print("no colliding row");
+          if (colliding_row === false){
+            console.log("no colliding row");
             return;
           }
           let use_grid;
@@ -285,8 +293,6 @@ function draw() {
             use_grid = grid;
           }
           for (var i=0; i<use_grid.rows[colliding_row].length; i++){
-            // console.log(griditems[i].collides(mouseX, mouseY));
-
             if (use_grid.rows[colliding_row][i].collides(mouseX, mouseY) && !jobtypes.get(use_grid.rows[colliding_row][i].jobtype_id).indb){
               if(row == -1){
                 row = Math.floor(i/grid.cols.length);
@@ -665,7 +671,6 @@ class Griditem {
 
   select() {
       this.show();
-      // print("selected." + this.id.toString());
       this.selected = true;
   }
 
@@ -673,7 +678,6 @@ class Griditem {
     this.color = this.defaultcolor;
     this.selected = false;
     this.show();
-    // print("deselected." + this.id.toString());
   }
 
   show() {

@@ -9,7 +9,7 @@ let maxid = 0;
 
 
 function set_days(d){
-  console.log(d);
+  // console.log(d);
   days = d;
   numdays = d.length;
 }

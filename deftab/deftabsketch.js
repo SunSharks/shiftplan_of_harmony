@@ -102,7 +102,6 @@ function assign_params(map){
         new_jt.set_name(value);
         jobtypes.set(id, new_jt);
       }
-      // console.log(jobs.get(id));
       jobnames.push(value);
       num_jobs = jobnames.length;
     }
@@ -143,7 +142,6 @@ function assign_params(map){
       }
     }
   })
-  // console.log(jobtypes);
 }
 
 function insert_predefined_jobs(job_json){
@@ -167,15 +165,14 @@ function insert_job_indb(job_json){
 }
 
 function setup() {
-  // console.log("setup_tab");
   get_params = get_params();
   assign_params(get_params);
   createCanvas(windowWidth-5, windowHeight-5);
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
-  row_height = (windowHeight-5 - headerheight) / num_jobs;
-  if (row_height > 75){
-    row_height = 75;
+  row_height = (windowHeight-10 - headerheight) / num_jobs;
+  if (row_height > 100){
+    row_height = 100;
   }
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
@@ -187,7 +184,6 @@ function setup() {
   default_colors = [color(220, 220, 220), color(230, 230, 230)];
   default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
   grid = new Grid();
-  // console.log(predef_jobs);
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
   // savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
@@ -203,6 +199,8 @@ function save_data(){
   let group = [];
   let curr_group = -1;
   for (let i=0; i<griditems.length; i++){
+    console.log("_____");
+    console.log(griditems[i].selected);
     if (griditems[i].selected){
       if (griditems[i].group == curr_group || curr_group == -1){
         group.push(griditems[i]);
@@ -222,6 +220,9 @@ function save_data(){
       }
     }
   }
+  if (group.length > 0){
+    groups.push(group);
+  }
   let ret = [];
   for (let i = 0; i<groups.length; i++){
     let j = new Job(groups[i][0].jobid, groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special, groups[i][0].pre);
@@ -240,10 +241,10 @@ function write_to_file(filename, obj){
 }
 
 function get_colliding_row(mouse_y){
-  console.log(dayview);
+  // console.log(dayview);
   if (dayview){
     for (let i=daygrid.rows.length-1; i>=0; i--){
-        console.log(mouse_y.toString() + " => daygrid => " + daygrid.rows[i][0].y);
+        // console.log(mouse_y.toString() + " => daygrid => " + daygrid.rows[i][0].y);
       if (mouse_y > daygrid.rows[i][0].y && mouse_y < daygrid.rows[i][0].y+daygrid.rows[i][0].h){
         return i;
       }
@@ -251,7 +252,7 @@ function get_colliding_row(mouse_y){
   }
   else{
     for (let i=grid.rows.length-1; i>=0; i--){
-      console.log(mouse_y.toString() + " => grid => " + grid.rows[i][0].y);
+      // console.log(mouse_y.toString() + " => grid => " + grid.rows[i][0].y);
       if (mouse_y > grid.rows[i][0].y && mouse_y < grid.rows[i][0].y+grid.rows[i][0].h){
         return i;
       }
@@ -262,6 +263,9 @@ function get_colliding_row(mouse_y){
 
 
 function draw() {
+  let lastidx = griditems.length - 1;
+  // console.log(griditems);
+  // console.log(griditems[0].group);
   if (edit_mode){
     if (mouseIsPressed){
       btn.collides();
@@ -273,26 +277,33 @@ function draw() {
             print("no colliding row");
             return;
           }
-          for (var i=0; i<griditems.length; i++){
-            console.log(griditems[i].collides(mouseX, mouseY));
+          let use_grid;
+          if (dayview){
+            use_grid = daygrid;
+          }
+          else{
+            use_grid = grid;
+          }
+          for (var i=0; i<use_grid.rows[colliding_row].length; i++){
+            // console.log(griditems[i].collides(mouseX, mouseY));
 
-            if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
+            if (use_grid.rows[colliding_row][i].collides(mouseX, mouseY) && !jobtypes.get(use_grid.rows[colliding_row][i].jobtype_id).indb){
               if(row == -1){
                 row = Math.floor(i/grid.cols.length);
               }
               if (row == Math.floor(i/grid.cols.length)){
                 if (!btn.state){
-                  if (griditems[i].selected && griditems[i].group == curr_group){
+                  if (use_grid.rows[colliding_row][i].selected && use_grid.rows[colliding_row][i].group == curr_group){
                     continue;
                   }
                   cntbox.count();
-                  griditems[i].set_color(curr_color);
-                  griditems[i].set_group(curr_group);
-                  griditems[i].select();
+                  use_grid.rows[colliding_row][i].set_color(curr_color);
+                  use_grid.rows[colliding_row][i].set_group(curr_group);
+                  use_grid.rows[colliding_row][i].select();
                   edited = true;
                 }
                 else {
-                  griditems[i].deselect();
+                  use_grid.rows[colliding_row][i].deselect();
                   edited = true;
                 }
               }
@@ -382,7 +393,6 @@ class Grid {
 
   update_predefs(){
     for (let i = 0; i < indb_jts.length; i++){
-      // console.log(jt_id_to_griditems);
       if (jobtypes.size > 0){
         jobtypes.get(indb_jts[i]["id"]).set_indb();
       }
@@ -445,8 +455,8 @@ class Grid {
     let r = random(255); // r is a random number between 0 - 255
     let g = random(255); // g is a random number betwen 100 - 200
     let b = random(200); // b is a random number between 0 - 100
-    let a = random(200,255); // a is a random number between 200 - 255
-    return color(r, g, b, a);
+    // let a = random(200,255); // a is a random number between 200 - 255
+    return color(r, g, b);
   }
 
   insert_text(t, x, y){
@@ -499,13 +509,11 @@ class Daygrid {
 
     this.calc_rows_and_cols();
     this.update_coords();
-    // console.log("Grid constructed.");
   }
 
   calc_rows_and_cols(){
     for (let i=0; i<this.whole_grid.rows.length; i++){
       this.rows.push(this.whole_grid.rows[i].slice(this.startcol, this.endcol));
-      // console.log(i);
     }
     let col = [];
     for (let i=0; i<24; i++){
@@ -523,8 +531,6 @@ class Daygrid {
     this.make_colheaders();
     this.make_rowheaders();
     let y = headerheight;
-    console.log(row_height);
-    console.log("__________");
     for (let i=0; i<this.whole_grid.rows.length; i++){
       for (let j=0; j<this.whole_grid.rows[i]; j++){
         this.whole_grid.rows[i][j].unset_coords();
@@ -538,7 +544,6 @@ class Daygrid {
         x += this.col_width;
       }
       y += row_height;
-      console.log(y);
     }
   }
 
@@ -546,8 +551,8 @@ class Daygrid {
     let r = random(255); // r is a random number between 0 - 255
     let g = random(255); // g is a random number betwen 100 - 200
     let b = random(200); // b is a random number between 0 - 100
-    let a = random(200,255); // a is a random number between 200 - 255
-    return color(r, g, b, a);
+    // let a = random(200,255); // a is a random number between 200 - 255
+    return color(r, g, b);
   }
 
   insert_text(t, x, y){
@@ -614,11 +619,8 @@ class Griditem {
   }
 
   collides(x, y) {
-    let ret = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h
-    // if (ret){
-    //   this.set_color("green");
-    // }
-    return ret
+    let ret = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+    return ret;
   }
 
   set_new_coords(x, y, w, h){
@@ -651,7 +653,6 @@ class Griditem {
   }
 
   set_color(c, show=false){
-    // console.log("set_color " + this.name);
     this.color = c;
     if (show){
       this.show();
@@ -678,11 +679,8 @@ class Griditem {
   show() {
     stroke(255);
     strokeWeight(4);
-    // fill(255);
-    // rect(this.x, this.y, this.w, this.h);
     fill(this.color);
     rect(this.x, this.y, this.w, this.h);
-   // console.log("draw " + this.id.toString());
   }
 }
 
@@ -709,11 +707,9 @@ class Day{
 }
 
 function make_day_instances(d){
-  // console.log(d);
   for (const key in d){
     // console.log(`${key}: ${d[key]}`);
     let tmp = new Day(d[key], parseInt(key), indb=false);
-    // console.log(tmp);
   }
 }
 
@@ -725,11 +721,7 @@ class Job {
     this.start = start;
     this.end = start + dur;
     this.during = dur;
-    // console.log(days_arr);
-    // console.log(this.end);
-    // console.log(Math.floor(this.end/24));
     this.start_day_id = days_arr[Math.floor(this.start/24)].id;
-    // console.log(this.start_day_id);
     if (this.end >= num_cols){
       this.end_day_id = days_arr[Math.floor(this.end/24)-1].id;
     }
@@ -810,8 +802,8 @@ function generate_random_color(){
   let r = Math.random(255); // r is a random number between 0 - 255
   let g = Math.random(255); // g is a random number betwen 100 - 200
   let b = Math.random(200); // b is a random number between 0 - 100
-  let a = Math.random(200,255); // a is a random number between 200 - 255
-  return [r, g, b, a];
+  // let a = Math.random(200,255); // a is a random number between 200 - 255
+  return [r, g, b];
 }
 
 class Countbox{

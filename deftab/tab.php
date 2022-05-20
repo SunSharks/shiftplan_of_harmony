@@ -32,10 +32,15 @@ session_start();
   <?php include("db.php"); ?>
 
   <?php
+  $num_days = 0;
   $days = array();
   foreach($_GET as $key=>$val){
     if (str_starts_with($key, "day")){
       $days[substr($key, 3)] = $val;
+      $num_days++;
+    }
+    else if (str_starts_with($key, "PREday")){
+      $num_days++;
     }
   }
   ?>
@@ -77,22 +82,21 @@ session_start();
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
-    save_data();
     let day_values = [];
     let job_values = [];
     let jt_values = [];
+    save_data();
     for (let i=0; i<days_arr.length; i++){
       day_values.push(JSON.stringify(days_arr[i]));
     }
     for (var [key, value] of jobtypes.entries()){
       jt_values.push(JSON.stringify(value));
-      console.log(jt_values);
     }
     for (let i=0; i<job_instances.length; i++){
       job_values.push(JSON.stringify(job_instances[i]));
     }
     console.log(job_values);
-    console.log(jt_values);
+    console.log(job_instances);
     document.Form.days.value = day_values;
     document.Form.jobtypes.value = jt_values;
     document.Form.jobs.value = job_values;
@@ -201,8 +205,11 @@ session_start();
 <body>
   <a href="./index.php">Back to definitions</a>
   <div style='position:absolute;top:500px;left:450px'>
-    <button type="button" onclick="create_dayview(0)">DAY 1</button>
-    <button type="button" onclick="create_dayview(1)">DAY 2</button>
+    <?php
+    for ($i=0; $i<$num_days; $i++){
+      echo "<button type='button' onclick='create_dayview($i)'>DAY $i</button>";
+    }
+    ?>
     <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
     <input name='days' type=hidden>

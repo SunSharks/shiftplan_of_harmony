@@ -89,7 +89,6 @@ function insert_job_sql($job_json){
   $sql = get_job_id_sql($job_json->id);
   $job_indb = perform_query($pdo, $sql);
   if (sizeof($job_indb) > 0){
-    // printf("<br>job_indb<br>");
     return "";
   }
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, $job_json->start_day_id, $job_json->end_day_id, $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";

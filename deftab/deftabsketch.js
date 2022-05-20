@@ -1,4 +1,5 @@
 let get_params;
+let edit_mode = true;
 //  JOBS
 let jt_id_to_griditems = new Map();
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
@@ -17,26 +18,28 @@ let editable_area = 0;
 let days = new Map();
 let days_arr = [];
 let indb_days = [];
-let daynames = [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]; // "Freitag", "Samstag", "Sonntag"
+const daynames = [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]; // "Freitag", "Samstag", "Sonntag"
 let num_days;
 
 let num_cols;
-let headerheight = 30;
-let rowheaderwidth = 100;
+const headerheight = 30;
+const rowheaderwidth = 100;
 let gridendy;
-let txtsize = 12;
+const txtsize = 12;
 let headertextx;
 let headertexty;
 let rowheadertextx = 0;
 let rowheadertexty;
 
 // ============
-let col_width;
+let default_col_width;
 let row_height;
 let ww;
 let wh;
 
 let grid;
+let daygrid;
+let dayview = false;
 let griditems = [];
 let num_griditems = 0;
 let curr_color = 'blue';
@@ -51,6 +54,11 @@ let btn;
 let savebtn;
 let cntbox;
 let edited = false;
+
+function unset_edit_mode(){
+  console.log("unset edit_mode");
+  edit_mode = false;
+}
 
 
 
@@ -140,6 +148,9 @@ function assign_params(map){
 
 function insert_predefined_jobs(job_json){
   predef_jobs = job_json;
+  if (grid != null){
+    grid.update_predefs();
+  }
   // console.log(JSON.stringify(predef_jobs));
 }
 
@@ -159,28 +170,28 @@ function setup() {
   // console.log("setup_tab");
   get_params = get_params();
   assign_params(get_params);
-  createCanvas(windowWidth, windowHeight+20);
+  createCanvas(windowWidth-5, windowHeight-5);
   num_cols = num_days * 24;
-  col_width = (windowWidth - rowheaderwidth) / (num_cols);
-  row_height = (windowHeight - headerheight) / num_jobs;
+  default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
+  row_height = (windowHeight-5 - headerheight) / num_jobs;
   if (row_height > 75){
     row_height = 75;
   }
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
-  let corrector = (col_width / 2) - txtsize / 2 -1;
+  let corrector = (default_col_width / 2) - txtsize / 2 -1;
   headertextx = rowheaderwidth + corrector;
   rowheadertexty = headerheight + row_height / 2;
-  ww = windowWidth;
-  wh = windowHeight;
+  ww = windowWidth-5;
+  wh = windowHeight-5;
   default_colors = [color(220, 220, 220), color(230, 230, 230)];
   default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
   grid = new Grid();
   // console.log(predef_jobs);
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
-  savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
-  savebtn.draw();
+  // savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
+  // savebtn.draw();
   grid.insert_predefs();
   grid.update_predefs();
   cntbox = new Countbox(0, gridendy, rowheaderwidth, 50);
@@ -228,32 +239,62 @@ function write_to_file(filename, obj){
   writer.close();
 }
 
-collision_row = -1;
+function get_colliding_row(mouse_y){
+  console.log(dayview);
+  if (dayview){
+    for (let i=daygrid.rows.length-1; i>=0; i--){
+        console.log(mouse_y.toString() + " => daygrid => " + daygrid.rows[i][0].y);
+      if (mouse_y > daygrid.rows[i][0].y && mouse_y < daygrid.rows[i][0].y+daygrid.rows[i][0].h){
+        return i;
+      }
+    }
+  }
+  else{
+    for (let i=grid.rows.length-1; i>=0; i--){
+      console.log(mouse_y.toString() + " => grid => " + grid.rows[i][0].y);
+      if (mouse_y > grid.rows[i][0].y && mouse_y < grid.rows[i][0].y+grid.rows[i][0].h){
+        return i;
+      }
+    }
+  }
+  return false;
+}
+
+
 function draw() {
-  if (mouseIsPressed){
-    btn.collides();
-    savebtn.collides();
-    if (mouseButton === LEFT){
-      if (mouseY > editable_area){
-        for (var i=0; i<griditems.length; i++){
-          if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
-            if(row == -1){
-              row = Math.floor(i/grid.cols.length);
-            }
-            if (row == Math.floor(i/grid.cols.length)){
-              if (!btn.state){
-                if (griditems[i].selected && griditems[i].group == curr_group){
-                  continue;
-                }
-                cntbox.count();
-                griditems[i].set_color(curr_color);
-                griditems[i].set_group(curr_group);
-                griditems[i].select();
-                edited = true;
+  if (edit_mode){
+    if (mouseIsPressed){
+      btn.collides();
+      // savebtn.collides();
+      if (mouseButton === LEFT){
+        if (mouseY > editable_area){
+          let colliding_row = get_colliding_row(mouseY);
+          if (!colliding_row){
+            print("no colliding row");
+            return;
+          }
+          for (var i=0; i<griditems.length; i++){
+            console.log(griditems[i].collides(mouseX, mouseY));
+
+            if (griditems[i].collides(mouseX, mouseY) && !jobtypes.get(griditems[i].jobtype_id).indb){
+              if(row == -1){
+                row = Math.floor(i/grid.cols.length);
               }
-              else {
-                griditems[i].deselect();
-                edited = true;
+              if (row == Math.floor(i/grid.cols.length)){
+                if (!btn.state){
+                  if (griditems[i].selected && griditems[i].group == curr_group){
+                    continue;
+                  }
+                  cntbox.count();
+                  griditems[i].set_color(curr_color);
+                  griditems[i].set_group(curr_group);
+                  griditems[i].select();
+                  edited = true;
+                }
+                else {
+                  griditems[i].deselect();
+                  edited = true;
+                }
               }
             }
           }
@@ -294,6 +335,18 @@ class Jobtype {
 
 }
 
+function resume_default_view(){
+  clear();
+  btn.draw();
+  dayview = false;
+  grid.make_colheaders();
+  grid.make_rowheaders();
+  for (let i=0; i<griditems.length; i++){
+    griditems[i].set_default_coords();
+    griditems[i].show();
+  }
+}
+
 
 class Grid {
   constructor(){
@@ -308,9 +361,6 @@ class Grid {
   }
 
   insert_predefs(){
-    // console.log("hai");
-    // console.log(jt_id_to_griditems);
-    console.log(predef_jobs);
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
     let c = 0;
     let _maxid = -1;
@@ -318,8 +368,6 @@ class Grid {
       // curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
       c++;
-      // console.log(curr_color);
-      // console.log(jt_id_to_griditems);
       if (jt_id_to_griditems.size == 0){
         return;
       }
@@ -328,17 +376,12 @@ class Grid {
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_pre();
         jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_jobid(val["id"]);
-        console.log(val["id"]);
       }
     }
   }
 
   update_predefs(){
-    // console.log("hai");
-    // console.log(jt_id_to_griditems);
-    console.log(indb_jts);
     for (let i = 0; i < indb_jts.length; i++){
-      console.log(indb_jts[i]);
       // console.log(jt_id_to_griditems);
       if (jobtypes.size > 0){
         jobtypes.get(indb_jts[i]["id"]).set_indb();
@@ -349,38 +392,32 @@ class Grid {
         days.get(parseInt(indb_days[i]["id"])).set_indb();
       }
     }
-
     for (let i = 0; i < indb_jobs.length; i++){
       if (job_instances_id.size > 0){
-        job_instances_id.get(parseInt(indb_jobs[i]["id"])).set_indb();
+        jt_id_to_griditems.get(parseInt(indb_jobs[i]["id"])).set_pre();
       }
     }
-
-      // for (let t=val["abs_start"]; t<val["abs_end"]; t++){
-      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
-      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
-      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_pre();
-      //   jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_jobid(val["id"]);
-      //   console.log(val["id"]);
-      // }
-    }
+  }
 
   deselect(){
     this.select = !this.select;
   }
 
+
   make_data_row(name, y, jobtype_id, row, special=false){
     let x = rowheaderwidth;
     let l = [];
+    // editable_rows_start = 0;
     for (let i=0; i<num_cols; i++){
       let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, special=special);
       r.show();
       griditems.push(r);
       l.push(r);
-      x += col_width;
+      x += default_col_width;
     }
     if (jobtypes.get(jobtype_id).indb){
       editable_area = y + row_height;
+      // editable_rows_start = 0;
     }
     this.rows.push(l);
     jt_id_to_griditems.set(jobtype_id, l);
@@ -427,7 +464,108 @@ class Grid {
     for (let i=0; i<num_cols; i++){
       for (let j=0; j<24; j++){
         this.insert_text(j.toString(), x, y);
-        x += col_width;
+        x += default_col_width;
+      }
+    }
+  }
+
+  make_rowheaders(){
+    let y = rowheadertexty;
+    for (let i=0; i<num_jobs; i++){
+      this.insert_text(jobnames[i], 0, y);
+      y += row_height;
+    }
+  }
+}
+
+function create_dayview(day){
+  dayview = true;
+  daygrid = new Daygrid(grid, day);
+}
+
+class Daygrid {
+  constructor(whole_grid, day){
+    // whole_grid: Grid object, day: day index.
+    clear();
+    btn.draw();
+    this.col_width = (ww - rowheaderwidth) / 24;
+    this.whole_grid = whole_grid;
+    this.startcol = day * 24;
+    this.endcol = this.startcol + 24;
+    this.rows = [];
+    this.cols = [];
+    this.make_colheaders();
+    this.make_rowheaders();
+
+    this.calc_rows_and_cols();
+    this.update_coords();
+    // console.log("Grid constructed.");
+  }
+
+  calc_rows_and_cols(){
+    for (let i=0; i<this.whole_grid.rows.length; i++){
+      this.rows.push(this.whole_grid.rows[i].slice(this.startcol, this.endcol));
+      // console.log(i);
+    }
+    let col = [];
+    for (let i=0; i<24; i++){
+      for (let j=0; j<num_jobs; j++){
+        col.push(this.rows[j][i])
+      }
+      this.cols.push(col)
+      col = [];
+    }
+  }
+
+  update_coords(){
+    clear();
+    btn.draw();
+    this.make_colheaders();
+    this.make_rowheaders();
+    let y = headerheight;
+    console.log(row_height);
+    console.log("__________");
+    for (let i=0; i<this.whole_grid.rows.length; i++){
+      for (let j=0; j<this.whole_grid.rows[i]; j++){
+        this.whole_grid.rows[i][j].unset_coords();
+      }
+    }
+    for (let i=0; i<this.rows.length; i++){
+      let x = rowheaderwidth;
+      for (let j=0; j<24; j++){
+        this.rows[i][j].set_new_coords(x, y, this.col_width, row_height);
+        this.rows[i][j].show();
+        x += this.col_width;
+      }
+      y += row_height;
+      console.log(y);
+    }
+  }
+
+  generate_random_color(){
+    let r = random(255); // r is a random number between 0 - 255
+    let g = random(255); // g is a random number betwen 100 - 200
+    let b = random(200); // b is a random number between 0 - 100
+    let a = random(200,255); // a is a random number between 200 - 255
+    return color(r, g, b, a);
+  }
+
+  insert_text(t, x, y){
+    fill(0);
+    // stroke(1);
+    textFont('Helvetica');
+    textSize(12);
+    text(t, x, y);
+    pop();
+  }
+
+  make_colheaders(){
+    let x = headertextx;
+    let y = headertexty;
+    for (let i=0; i<1; i++){
+      for (let j=0; j<24; j++){
+        this.insert_text(j.toString(), x, y);
+        x += this.col_width;
       }
     }
   }
@@ -442,8 +580,9 @@ class Grid {
 }
 
 
+
 class Griditem {
-  constructor(name, id, x, y, time, jobtype_id, row, special=false, w=col_width, h=row_height) {
+  constructor(name, id, x, y, time, jobtype_id, row, special=false, w=default_col_width, h=row_height) {
     this.name = name; // name of job
     this.special = special;
     this.id = id;
@@ -455,6 +594,10 @@ class Griditem {
     this.y = y; // upper left corner
     this.w = w;
     this.h = h;
+    this.default_x = x;
+    this.default_y = y;
+    this.default_w = w;
+    this.default_h = h;
     this.content = "";
     this.color = default_colors[this.id%2];
     this.defaultcolor = default_colors[this.id%2];
@@ -472,10 +615,31 @@ class Griditem {
 
   collides(x, y) {
     let ret = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h
-    if (ret){
-      this.set_color("green");
-    }
+    // if (ret){
+    //   this.set_color("green");
+    // }
     return ret
+  }
+
+  set_new_coords(x, y, w, h){
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
+
+  set_default_coords(){
+    this.x = this.default_x;
+    this.y = this.default_y;
+    this.w = this.default_w;
+    this.h = this.default_h;
+  }
+
+  unset_coords(){
+    this.x = false;
+    this.y = false;
+    this.w = false;
+    this.h = false;
   }
 
   set_jobid(jid){
@@ -561,9 +725,9 @@ class Job {
     this.start = start;
     this.end = start + dur;
     this.during = dur;
-    console.log(days_arr);
-    console.log(this.end);
-    console.log(Math.floor(this.end/24));
+    // console.log(days_arr);
+    // console.log(this.end);
+    // console.log(Math.floor(this.end/24));
     this.start_day_id = days_arr[Math.floor(this.start/24)].id;
     // console.log(this.start_day_id);
     if (this.end >= num_cols){

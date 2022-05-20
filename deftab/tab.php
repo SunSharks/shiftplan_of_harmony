@@ -77,6 +77,7 @@ session_start();
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
+    save_data();
     let day_values = [];
     let job_values = [];
     let jt_values = [];
@@ -154,8 +155,6 @@ session_start();
     $jtar = $_POST['jobtypes'];
     if (isset($jtar) && !$_SESSION["jts_indb"]){
       $jtvals = process_postval($jtar);
-      echo $jtvals;
-
       for ($i=0; $i<count($jtvals); $i++){
         $jobsql = insert_jobtype_sql($jtvals[$i]);
         echo $jobsql;
@@ -176,8 +175,6 @@ session_start();
     if (isset($jar) && !$_SESSION["jobs_indb"]){
       $jvals = process_postval($jar);
       for ($i=0; $i<count($jvals); $i++){
-        // echo "<br><br>jas<br>";
-
         $jobsql2 = insert_job_sql($jvals[$i]);
         printf($jobsql2."<br><br>");
         if ($jobsql2 != ""){
@@ -204,6 +201,9 @@ session_start();
 <body>
   <a href="./index.php">Back to definitions</a>
   <div style='position:absolute;top:500px;left:450px'>
+    <button type="button" onclick="create_dayview(0)">DAY 1</button>
+    <button type="button" onclick="create_dayview(1)">DAY 2</button>
+    <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
     <input name='days' type=hidden>
     <input name='jobs' type=hidden>
@@ -211,17 +211,14 @@ session_start();
     <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
   </form>
   </div>
+  <main>
+  </main>
   <?php
-  if (empty($_GET)){
+  if ($_SESSION["jobs_indb"]){
     echo "Geschafft.";
-  }
-  else{
-    echo "Tabelle";
-    echo "<main>";
-    echo "</main>";
+    echo "<script>unset_edit_mode();</script>";
   }
   ?>
-
 
 
 </body>

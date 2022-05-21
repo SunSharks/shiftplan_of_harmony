@@ -323,7 +323,6 @@ function draw() {
   let lastidx = griditems.length - 1;
   if (edit_mode){
     if (mouseIsPressed){
-      btn.collides();
       // savebtn.collides();
       if (mouseButton === LEFT){
         if (mouseY > editable_area){
@@ -366,13 +365,16 @@ function draw() {
       }
     }
   }
+}
+
+function mousePressed(){
   if (deletion_mode){
-    if (mouseIsPressed){
-      for (let i=0; i<del_btns.length; i++){
-        del_btns[i].collides();
-      }
-      btn.collides();
+    for (let i=0; i<del_btns.length; i++){
+      del_btns[i].collides();
     }
+  }
+  else{
+    btn.collides();
   }
 }
 
@@ -879,14 +881,15 @@ Button.prototype.change_mode = function() {
     return;
   }
   else if (this.func.startsWith("delete")){
-    if (this.state == 0){
-      console.log("set_del");
-      jobtypes.get(parseInt(this.func.slice(6))).set_delete();
-    }
-    else{
-      console.log("unset_del");
-      jobtypes.get(parseInt(this.func.slice(6))).unset_delete();
-    }
+      if (this.state == 0){
+        console.log("set_del");
+        jobtypes.get(parseInt(this.func.slice(6))).set_delete();
+      }
+      else{
+        console.log("unset_del");
+        jobtypes.get(parseInt(this.func.slice(6))).unset_delete();
+      }
+
   }
   this.state = !this.state;
   this.text = this.texts[+this.state];

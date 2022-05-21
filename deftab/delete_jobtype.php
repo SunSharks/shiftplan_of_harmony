@@ -65,11 +65,31 @@ session_start();
     }
     return $jobs;
   }
+
+  function fetch_jts(){
+    $pdo = connect();
+    $sql = get_jobtypes_sql();
+    $js = perform_query($pdo, $sql);
+    $jts = [];
+    foreach ($js as $j){
+      $tmp = array();
+      foreach ($j as $key=>$val){
+        if (strlen($key) > 1){
+          $tmp[$key] = $val;
+        }
+      }
+      array_push($jts, $tmp);
+    }
+    return $jts;
+  }
   ?>
   <?php
     $jobs = fetch_jobs();
     $jsjobs = json_encode($jobs);
     $_SESSION["jobs"] = $jsjobs;
+    $jts = fetch_jts();
+    $jsjobs = json_encode($jts);
+    $_SESSION["jts"] = $jsjobs;
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
   ?>
 
@@ -80,7 +100,7 @@ session_start();
     for (var [key, value] of jobtypes.entries()){
       console.log(jobtypes.get(key).delete);
       if (jobtypes.get(key).delete === true){
-        deljobs.push(jobtypes.get(key));
+        deljobs.push(jobtypes.get(key).id);
       }
     }
     document.Form.deljobs.value = JSON.stringify(deljobs);
@@ -121,11 +141,27 @@ session_start();
     }
   }
 
-  $deljobs = $_POST['deljobs'];
-  if (isset($deljobs)){
-    printf("<br>Delete".json_encode($deljobs));
+  $djs = $_POST['deljobs'];
+  printf($djs);
+  if (isset($djs)){
+    $djs = ltrim($djs, "[");
+    $djs = rtrim($djs, "]");
+    $deljobs = explode(",", $djs);
+    $pdo = connect();
+    printf("<br>Delete".$deljobs);
+    for ($i=0; $i<count($deljobs); $i++){
+      printf($deljobs[$i]);
+      perform_query($pdo, delete_jobtype_sql(json_decode($deljobs[$i])));
+    }
+    $pdo = null;
     $_SESSION["deleted"] = true;
     unset($_POST['deljobs']);
+    $jobs = fetch_jobs();
+    $jsjobs = json_encode($jobs);
+    $_SESSION["jobs"] = $jsjobs;
+    $jts = fetch_jts();
+    $jsjobs = json_encode($jts);
+    $_SESSION["jts"] = $jsjobs;
   }
 
     // $cmd = $_POST['magic_field'];
@@ -149,14 +185,13 @@ session_start();
     }
     ?>
     <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
-  <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
+  <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
     <input name="deljobs" type=hidden>
     <input name="DELETE" type="submit" value="DELETE">
   </form>
   </div>
   <?php
   if ($_SESSION["jobs_indb"]){
-    echo "Geschafft.";
     $_SESSION["jobs"] = json_encode(fetch_jobs());
     $d_s = $_SESSION["days"];
     $jt_s = $_SESSION["jts"];

@@ -54,28 +54,27 @@ session_start();
   <script> make_day_instances(<?php echo json_encode($days); ?>); </script>
 
   <?php
+  function fetch_jobs(){
     $pdo = connect();
     $sql = get_jobs_sql();
     $js = perform_query($pdo, $sql);
-    // printf(json_encode($js));
-    // printf(json_encode(count($js[0])));
-
     $jobs = [];
     foreach ($js as $j){
       $tmp = array();
       foreach ($j as $key=>$val){
         if (strlen($key) > 1){
           $tmp[$key] = $val;
-          // printf($key." => ".$val);
-          // printf("<br>");
-          // printf("<br>");
         }
       }
       array_push($jobs, $tmp);
     }
+    return $jobs;
+  }
   ?>
   <?php
+    $jobs = fetch_jobs();
     $jsjobs = json_encode($jobs);
+    $_SESSION["jobs"] = $jsjobs;
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
   ?>
 
@@ -143,15 +142,16 @@ session_start();
       for ($i=0; $i<count($dayvals); $i++){
         $daysql = insert_day_sql($dayvals[$i]);
         if ($daysql != ""){
-          echo "<br".$daysql;
+          // echo "<br".$daysql;
           $pdo = connect();
           perform_query($pdo, $daysql);
           $pdo = null;
           $d = json_encode($dayvals[$i]);
-          echo "<script>insert_day_indb($d);</script>";
+          // echo "<script>insert_day_indb($d);</script>";
         }
       }
       $_SESSION["days_indb"] = true;
+      $_SESSION["days"] = json_encode($dayvals);
       unset($_POST['days']);
     }
 
@@ -162,15 +162,14 @@ session_start();
       for ($i=0; $i<count($jtvals); $i++){
         $jobsql = insert_jobtype_sql($jtvals[$i]);
         if ($jobsql != ""){
-          echo $jobsql;
           $pdo = connect();
           perform_query($pdo, $jobsql);
           $pdo = null;
           $d = json_encode($jtvals[$i]);
-          echo "<script>insert_jobtype_indb($d);</script>";
         }
       }
       $_SESSION["jts_indb"] = true;
+      $_SESSION["jts"] = json_encode($jtvals);
       unset($_POST['jobtypes']);
     }
 
@@ -180,17 +179,14 @@ session_start();
       for ($i=0; $i<count($jvals); $i++){
         $jobsql2 = insert_job_sql($jvals[$i]);
         if ($jobsql2 != ""){
-          printf("<br>".$jobsql2."<br>");
           $pdo2 = connect();
           perform_query($pdo2, $jobsql2);
           $d = json_encode($jvals[$i]);
-          echo "<script>insert_job_indb($d);</script>";
         }
       }
       $_SESSION["jobs_indb"] = true;
       unset($_POST['jobs']);
     }
-  // echo "----_______----";
   ?>
 
 </head>
@@ -211,15 +207,21 @@ session_start();
     <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
   </form>
   </div>
-  <main>
-  </main>
   <?php
   if ($_SESSION["jobs_indb"]){
     echo "Geschafft.";
+    $_SESSION["jobs"] = json_encode(fetch_jobs());
+    $d_s = $_SESSION["days"];
+    $jt_s = $_SESSION["jts"];
+    $j_s = $_SESSION["jobs"];
+    echo "<script>set_post_request_mode();</script>";
+    echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
+    // echo "<script> insert_predefined_jobs($jsjobs);</script>";
     echo "<script>unset_edit_mode();</script>";
   }
   ?>
-
+  <main>
+  </main>
 
 </body>
 </html>

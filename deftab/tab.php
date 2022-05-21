@@ -33,15 +33,18 @@ session_start();
 
   <?php
   $num_days = 0;
-  $days = array();
-  foreach($_GET as $key=>$val){
-    if (str_starts_with($key, "day")){
-      $days[substr($key, 3)] = $val;
-      $num_days++;
+  if (!empty($_GET)){
+    $days = array();
+    foreach($_GET as $key=>$val){
+      if (str_starts_with($key, "day")){
+        $days[substr($key, 3)] = $val;
+        $num_days++;
+      }
+      else if (str_starts_with($key, "PREday")){
+        $num_days++;
+      }
     }
-    else if (str_starts_with($key, "PREday")){
-      $num_days++;
-    }
+    $_SESSION["dayvals"] = $days;
   }
   ?>
 
@@ -138,20 +141,27 @@ session_start();
 
     $dayar = $_POST['days'];
     if (isset($dayar) && !$_SESSION["days_indb"]){
+      $days = array();
       $dayvals = process_postval($dayar);
+      $num_days = 0;
       for ($i=0; $i<count($dayvals); $i++){
         $daysql = insert_day_sql($dayvals[$i]);
+
         if ($daysql != ""){
           // echo "<br".$daysql;
           $pdo = connect();
           perform_query($pdo, $daysql);
           $pdo = null;
           $d = json_encode($dayvals[$i]);
+          array_push($days, $dayvals[$i]->date);
+          echo $dayvals[$i]->date;
           // echo "<script>insert_day_indb($d);</script>";
         }
+        $num_days++;
       }
       $_SESSION["days_indb"] = true;
       $_SESSION["days"] = json_encode($dayvals);
+      $_SESSION["dayvals"] = $days;
       unset($_POST['days']);
     }
 

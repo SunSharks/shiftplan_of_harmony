@@ -1,6 +1,8 @@
 let request_mode = "get";
 let get_params  = new Map();
 let edit_mode = true;
+let deletion_mode = false;
+let del_btns = [];
 //  JOBS
 let jt_id_to_griditems = new Map();
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
@@ -14,6 +16,7 @@ let max_jobid = -1;
 let indb_jts = [];
 let indb_jobs = [];
 let editable_area = 0;
+let del_idxs = [];
 
 // DAYS
 let days = new Map();
@@ -69,7 +72,14 @@ function unset_edit_mode(){
   edit_mode = false;
 }
 
+function set_deletion_mode(){
+  deletion_mode = true;
+}
 
+function unset_deletion_mode(){
+  deletion_mode = false;
+
+}
 
 get_params = () => {
     // Address of the current window
@@ -356,6 +366,14 @@ function draw() {
       }
     }
   }
+  if (deletion_mode){
+    if (mouseIsPressed){
+      for (let i=0; i<del_btns.length; i++){
+        del_btns[i].collides();
+      }
+      btn.collides();
+    }
+  }
 }
 
 
@@ -380,6 +398,7 @@ class Jobtype {
     this.name;
     this.special = false;
     this.indb = false;
+    this.delete = false;
   }
 
   set_special(){
@@ -392,6 +411,14 @@ class Jobtype {
 
   set_indb(){
     this.indb = true;
+  }
+
+  set_delete(){
+    this.delete = true;
+  }
+
+  unset_delete(){
+    this.delete = false;
   }
 
 }
@@ -531,9 +558,19 @@ class Grid {
 
   make_rowheaders(){
     let y = rowheadertexty;
-    for (let i=0; i<num_jobs; i++){
-      this.insert_text(jobnames[i], 0, y);
-      y += row_height;
+    if (deletion_mode){
+      for (var [key, value] of jobtypes.entries()){
+        let new_btn = new Button(0, y, rowheaderwidth, headerheight, "delete"+key.toString(), false, ["delete\n"+jobtypes.get(key).name, "keep\n"+jobtypes.get(key).name]);
+        new_btn.draw();
+        del_btns.push(new_btn);
+        y += row_height;
+      }
+    }
+    else{
+      for (let i=0; i<num_jobs; i++){
+        this.insert_text(jobnames[i], 0, y);
+        y += row_height;
+      }
     }
   }
 }
@@ -837,11 +874,21 @@ Button.prototype.change_mode = function() {
     if (this.state == 0 && edited == true){
       save_data();
       edited = false;
+      this.draw();
+    }
+    return;
+  }
+  else if (this.func.startsWith("delete")){
+    if (this.state == 0){
+      console.log("set_del");
+      jobtypes.get(parseInt(this.func.slice(6))).set_delete();
+    }
+    else{
+      console.log("unset_del");
+      jobtypes.get(parseInt(this.func.slice(6))).unset_delete();
     }
   }
-  else{
-    this.state = !this.state;
-  }
+  this.state = !this.state;
   this.text = this.texts[+this.state];
   this.draw();
 }

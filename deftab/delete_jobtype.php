@@ -32,31 +32,11 @@ session_start();
   <?php include("db.php"); ?>
 
   <?php
-  $num_days = 0;
-  if (!empty($_GET)){
-    $days = array();
-    foreach($_GET as $key=>$val){
-      if (str_starts_with($key, "day")){
-        $days[substr($key, 3)] = $val;
-        $num_days++;
-      }
-      else if (str_starts_with($key, "PREday")){
-        $num_days++;
-      }
-      if (str_starts_with($key, "pleace_delete_py")){
-        printf($val);
-        // delete_jobtype_sql((int)$val);
-      }
-    }
-    $_SESSION["dayvals"] = $days;
-    $_SESSION['num_days'] = $num_days;
-  }
-  else{
     $pdo = connect();
     $days = perform_query($pdo, get_days_sql());
     $_SESSION['num_days'] = count($days);
+    $_SESSION["view_days"] = $days;
     $pdo = null;
-  }
   ?>
 
   <script src="./p5/p5.min.js"></script>
@@ -65,8 +45,8 @@ session_start();
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
   <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
   <script src=deftabsketch.js></script>
-  <script> unset_deletion_mode(); </script>
-  <script> make_day_instances(<?php echo json_encode($days); ?>); </script>
+  <script> set_deletion_mode(); </script>
+  <script> make_day_instances(<?php echo json_encode($_SESSION["view_days"]); ?>); </script>
 
   <?php
   function fetch_jobs(){
@@ -96,28 +76,17 @@ session_start();
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
-    let day_values = [];
-    let job_values = [];
-    let jt_values = [];
-    save_data();
-    for (let i=0; i<days_arr.length; i++){
-      day_values.push(JSON.stringify(days_arr[i]));
-    }
+    let deljobs = [];
     for (var [key, value] of jobtypes.entries()){
-      jt_values.push(JSON.stringify(value));
+      console.log(jobtypes.get(key).delete);
+      if (jobtypes.get(key).delete === true){
+        deljobs.push(jobtypes.get(key));
+      }
     }
-    for (let i=0; i<job_instances.length; i++){
-      job_values.push(JSON.stringify(job_instances[i]));
-    }
-    console.log(job_values);
-    console.log(job_instances);
-    document.Form.days.value = day_values;
-    document.Form.jobtypes.value = jt_values;
-    document.Form.jobs.value = job_values;
+    document.Form.deljobs.value = JSON.stringify(deljobs);
+    console.log(JSON.stringify(deljobs));
   }
-
   </script>
-
 
 <?php
 // // WARNINGS
@@ -152,67 +121,12 @@ session_start();
     }
   }
 
-    $dayar = $_POST['days'];
-    if (isset($dayar) && !$_SESSION["days_indb"]){
-      $days = array();
-      $dayvals = process_postval($dayar);
-      $num_days = 0;
-      for ($i=0; $i<count($dayvals); $i++){
-        $daysql = insert_day_sql($dayvals[$i]);
-
-        if ($daysql != ""){
-          // echo "<br".$daysql;
-          $pdo = connect();
-          perform_query($pdo, $daysql);
-          $pdo = null;
-          $d = json_encode($dayvals[$i]);
-          array_push($days, $dayvals[$i]->date);
-          echo $dayvals[$i]->date;
-          // echo "<script>insert_day_indb($d);</script>";
-        }
-        $num_days++;
-      }
-      $_SESSION["days_indb"] = true;
-      $_SESSION["days"] = json_encode($dayvals);
-      $_SESSION["dayvals"] = $days;
-      $_SESSION['num_days'] = $num_days;
-      unset($_POST['days']);
-    }
-
-    // echo count($vals);
-    $jtar = $_POST['jobtypes'];
-    if (isset($jtar) && !$_SESSION["jts_indb"]){
-      $jtvals = process_postval($jtar);
-      $jt_names = array();
-      for ($i=0; $i<count($jtvals); $i++){
-        $jobsql = insert_jobtype_sql($jtvals[$i]);
-        $jt_names[$jtvals[$i]->name] = $jtvals[$i];
-        if ($jobsql != ""){
-          $pdo = connect();
-          perform_query($pdo, $jobsql);
-          $pdo = null;
-          $d = json_encode($jtvals[$i]);
-        }
-      }
-      $_SESSION["jts_indb"] = true;
-      $_SESSION["jts"] = json_encode($jtvals);
-      unset($_POST['jobtypes']);
-    }
-
-    $jar = $_POST['jobs'];
-    if (isset($jar) && !$_SESSION["jobs_indb"]){
-      $jvals = process_postval($jar);
-      for ($i=0; $i<count($jvals); $i++){
-        $jobsql2 = insert_job_sql($jvals[$i]);
-        if ($jobsql2 != ""){
-          $pdo2 = connect();
-          perform_query($pdo2, $jobsql2);
-          $d = json_encode($jvals[$i]);
-        }
-      }
-      $_SESSION["jobs_indb"] = true;
-      unset($_POST['jobs']);
-    }
+  $deljobs = $_POST['deljobs'];
+  if (isset($deljobs)){
+    printf("<br>Delete".json_encode($deljobs));
+    $_SESSION["deleted"] = true;
+    unset($_POST['deljobs']);
+  }
 
     // $cmd = $_POST['magic_field'];
     // if (isset($cmd)){
@@ -227,7 +141,7 @@ session_start();
 </head>
 
 <body>
-  <a href="./index.php">Back to definitions</a>
+  <a href="./tab.php">Back to Table.</a>
   <div style='position:absolute;top:500px;left:450px'>
     <?php
     for ($i=0; $i<$_SESSION['num_days']; $i++){
@@ -236,10 +150,8 @@ session_start();
     ?>
     <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
-    <input name='days' type=hidden>
-    <input name='jobs' type=hidden>
-    <input name='jobtypes' type=hidden>
-    <input name="INSERT INTO DB" type="submit" value="INSERT INTO DB">
+    <input name="deljobs" type=hidden>
+    <input name="DELETE" type="submit" value="DELETE">
   </form>
   </div>
   <?php
@@ -257,12 +169,7 @@ session_start();
   ?>
   <main>
   </main>
-  <a href="./delete_jobtype.php">Delete a Jobtype</a>
 
-  <!-- <form name="magic" method="post" onsubmit=<?php proof_magic()?> action="tab.php">
-    <input name='magic_field'>
-    <input name="send magic" type="submit" value="send">
-  </form> -->
 
 </body>
 </html>

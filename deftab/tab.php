@@ -45,6 +45,13 @@ session_start();
       }
     }
     $_SESSION["dayvals"] = $days;
+    $_SESSION['num_days'] = $num_days;
+  }
+  else{
+    $pdo = connect();
+    $days = perform_query($pdo, get_days_sql());
+    $_SESSION['num_days'] = count($days);
+    $pdo = null;
   }
   ?>
 
@@ -162,6 +169,7 @@ session_start();
       $_SESSION["days_indb"] = true;
       $_SESSION["days"] = json_encode($dayvals);
       $_SESSION["dayvals"] = $days;
+      $_SESSION['num_days'] = $num_days;
       unset($_POST['days']);
     }
 
@@ -205,7 +213,7 @@ session_start();
   <a href="./index.php">Back to definitions</a>
   <div style='position:absolute;top:500px;left:450px'>
     <?php
-    for ($i=0; $i<$num_days; $i++){
+    for ($i=0; $i<$_SESSION['num_days']; $i++){
       echo "<button type='button' onclick='create_dayview($i)'>DAY $i</button>";
     }
     ?>
@@ -232,6 +240,8 @@ session_start();
   ?>
   <main>
   </main>
+
+  <!-- <form name="magic" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php"> -->
 
 </body>
 </html>

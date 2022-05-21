@@ -887,15 +887,3 @@ class Countbox{
     }
   }
 }
-
-
-// var myDiv = createDiv('Welcome to GeeksforGeeks');
-//
-//   // Set the position of div element
-//   myDiv.position(150, 100);
-//
-//   // Set the font-size of text
-//   myDiv.style('font-size', '24px');
-//
-//   // Set the font color
-//   myDiv.style('color', 'white');

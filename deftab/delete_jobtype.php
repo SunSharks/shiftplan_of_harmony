@@ -48,49 +48,15 @@ session_start();
   <script> set_deletion_mode(); </script>
   <script> make_day_instances(<?php echo json_encode($_SESSION["view_days"]); ?>); </script>
 
-  <?php
-  function fetch_jobs(){
-    $pdo = connect();
-    $sql = get_jobs_sql();
-    $js = perform_query($pdo, $sql);
-    $jobs = [];
-    foreach ($js as $j){
-      $tmp = array();
-      foreach ($j as $key=>$val){
-        if (strlen($key) > 1){
-          $tmp[$key] = $val;
-        }
-      }
-      array_push($jobs, $tmp);
-    }
-    return $jobs;
-  }
 
-  function fetch_jts(){
-    $pdo = connect();
-    $sql = get_jobtypes_sql();
-    $js = perform_query($pdo, $sql);
-    $jts = [];
-    foreach ($js as $j){
-      $tmp = array();
-      foreach ($j as $key=>$val){
-        if (strlen($key) > 1){
-          $tmp[$key] = $val;
-        }
-      }
-      array_push($jts, $tmp);
-    }
-    return $jts;
-  }
-  ?>
   <?php
     $jobs = fetch_jobs();
     $jsjobs = json_encode($jobs);
     $_SESSION["jobs"] = $jsjobs;
+    echo "<script> insert_predefined_jobs($jsjobs);</script>";
     $jts = fetch_jts();
     $jsjobs = json_encode($jts);
     $_SESSION["jts"] = $jsjobs;
-    echo "<script> insert_predefined_jobs($jsjobs);</script>";
   ?>
 
 
@@ -142,15 +108,15 @@ session_start();
   }
 
   $djs = $_POST['deljobs'];
-  printf($djs);
+  // printf($djs);
   if (isset($djs)){
     $djs = ltrim($djs, "[");
     $djs = rtrim($djs, "]");
     $deljobs = explode(",", $djs);
     $pdo = connect();
-    printf("<br>Delete".$deljobs);
+    // printf("<br>Delete".$deljobs);
     for ($i=0; $i<count($deljobs); $i++){
-      printf($deljobs[$i]);
+      // printf($deljobs[$i]);
       perform_query($pdo, delete_jobtype_sql(json_decode($deljobs[$i])));
     }
     $pdo = null;

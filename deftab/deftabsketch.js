@@ -154,6 +154,7 @@ function assign_params(map){
       if (key.startsWith("PREjob")){
         if (jobtypes.has(id)){
           jobtypes.get(id).set_indb();
+          jobtypes.get(id).set_name(value);
         }
         else{
           let new_jt = new Jobtype(id);
@@ -454,6 +455,8 @@ class Grid {
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
     let c = 0;
     let _maxid = -1;
+    console.log(jt_id_to_griditems);
+    console.log(predef_jobs);
     for (var [key, val] of predef_jobs.entries()){
       // curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
@@ -461,11 +464,14 @@ class Grid {
       if (jt_id_to_griditems.size == 0){
         return;
       }
+      while (!jt_id_to_griditems.has(val["jt_primary"])){
+        val["jt_primary"]++;
+      }
       for (let t=val["abs_start"]; t<val["abs_end"]; t++){
-        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_color(curr_color, true);
-        jt_id_to_griditems.get(val["jt_primary".toString()])[t].select();
-        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_pre();
-        jt_id_to_griditems.get(val["jt_primary".toString()])[t].set_jobid(val["id"]);
+        jt_id_to_griditems.get(val["jt_primary"])[t].set_color(curr_color, true);
+        jt_id_to_griditems.get(val["jt_primary"])[t].select();
+        jt_id_to_griditems.get(val["jt_primary"])[t].set_pre();
+        jt_id_to_griditems.get(val["jt_primary"])[t].set_jobid(val["id"]);
       }
     }
   }

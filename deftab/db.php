@@ -94,13 +94,39 @@ function insert_job_sql($job_json){
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, $job_json->start_day_id, $job_json->end_day_id, $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
 }
 
-
-
-function test(){
-  echo "testitest";
+function fetch_jobs(){
+  $pdo = connect();
+  $sql = get_jobs_sql();
+  $js = perform_query($pdo, $sql);
+  $jobs = [];
+  foreach ($js as $j){
+    $tmp = array();
+    foreach ($j as $key=>$val){
+      if (strlen($key) > 1){
+        $tmp[$key] = $val;
+      }
+    }
+    array_push($jobs, $tmp);
+  }
+  return $jobs;
 }
 
-
+function fetch_jts(){
+  $pdo = connect();
+  $sql = get_jobtypes_sql();
+  $js = perform_query($pdo, $sql);
+  $jts = [];
+  foreach ($js as $j){
+    $tmp = array();
+    foreach ($j as $key=>$val){
+      if (strlen($key) > 1){
+        $tmp[$key] = $val;
+      }
+    }
+    array_push($jts, $tmp);
+  }
+  return $jts;
+}
 
 function connect(){
   // CONNECT TO DATABASE
@@ -176,8 +202,8 @@ function get_jobbox_html($id, $jobname, $special){
     $checked = "";
   }
   $html = "<div id='jobbox$id' class='jobbox'>
-<label for='checkbox' name='cb_label$id' id='cb_label$id'>Helper</label>
-<input type='checkbox' class='jobbox' id='special$id' name='special$id' value='special$id' $checked>
+<label for='checkbox' name='cb_label$id' onclick='return false;' id='cb_label$id'>Helper</label>
+<input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $checked>
 <input name='PREjob$id' type=hidden>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div> ";
   $job_cnt++;

@@ -68,24 +68,7 @@ session_start();
   <script> unset_deletion_mode(); </script>
   <script> make_day_instances(<?php echo json_encode($days); ?>); </script>
 
-  <?php
-  function fetch_jobs(){
-    $pdo = connect();
-    $sql = get_jobs_sql();
-    $js = perform_query($pdo, $sql);
-    $jobs = [];
-    foreach ($js as $j){
-      $tmp = array();
-      foreach ($j as $key=>$val){
-        if (strlen($key) > 1){
-          $tmp[$key] = $val;
-        }
-      }
-      array_push($jobs, $tmp);
-    }
-    return $jobs;
-  }
-  ?>
+
   <?php
     $jobs = fetch_jobs();
     $jsjobs = json_encode($jobs);
@@ -254,6 +237,11 @@ session_start();
     // echo "<script> insert_predefined_jobs($jsjobs);</script>";
     echo "<script>unset_edit_mode();</script>";
   }
+  // else{
+  //   if ($_SESSION["deleted"] === true){
+  //     echo "<script> insert_predefined_jobs($jsjobs);</script>";
+  //   }
+  // }
   ?>
   <main>
   </main>

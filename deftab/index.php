@@ -111,6 +111,11 @@ session_start();
   $_SESSION["days_indb"] = false;
   $_SESSION["jts_indb"] = false;
   $_SESSION["jobs_indb"] = false;
+  if ($_SESSION["deleted"] === false){
+    $_SESSION["days_indb"] = true;
+    $_SESSION["jts_indb"] = true;
+    $_SESSION["jobs_indb"] = true;
+  }
   ?>
 
 </body>

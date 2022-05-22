@@ -239,7 +239,9 @@ function setup() {
   // console.log(predef_jobs);
   grid.insert_predefs();
   // grid.update_predefs();
-  cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
+  if (edit_mode === true){
+    cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
+  }
 }
 
 
@@ -349,7 +351,9 @@ function draw() {
                   if (use_grid.rows[colliding_row][i].selected && use_grid.rows[colliding_row][i].group == curr_group){
                     continue;
                   }
-                  cntbox.count();
+                  if (edit_mode === true){
+                    cntbox.count();
+                  }
                   use_grid.rows[colliding_row][i].set_color(curr_color);
                   use_grid.rows[colliding_row][i].set_group(curr_group);
                   use_grid.rows[colliding_row][i].select();
@@ -384,7 +388,10 @@ function mouseReleased() {
     curr_color = grid.generate_random_color();
     curr_group += 1;
     row = -1;
-    cntbox.reset_counter();
+    if (edit_mode === true){
+      cntbox.reset_counter();
+    }
+
 }
 
 function clean_it_up(){

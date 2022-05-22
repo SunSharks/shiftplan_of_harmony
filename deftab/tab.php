@@ -237,6 +237,7 @@ session_start();
     // echo "<script> insert_predefined_jobs($jsjobs);</script>";
     echo "<script>unset_edit_mode();</script>";
   }
+  
   // else{
   //   if ($_SESSION["deleted"] === true){
   //     echo "<script> insert_predefined_jobs($jsjobs);</script>";

@@ -1,0 +1,49 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+h1 {text-align: center;}
+p {text-align: center;}
+
+.day {
+  background: rgb(188, 212, 153);
+  margin-left: 250pt;
+}
+.daybox {
+  float:left;
+  padding: 100;
+}
+.inner_daybox {
+  display: block;
+  padding: 100;
+}
+
+.PREjobbox {
+  background: #cfc339;
+  display: inline;
+  padding: 100;
+  margin: 100;
+}
+
+#add_job {
+  background: #cfc339;
+  display: inline;
+  padding: 100;
+  margin: 100;
+}
+
+.jobbox {
+  background: #cfc379;
+  display: block;
+  padding: 100;
+  margin: 100;
+}
+/* .jobbox {
+  display: inline;
+} */
+#del_day {
+  display: inline;
+}
+#add_day {
+  display: inline;
+}

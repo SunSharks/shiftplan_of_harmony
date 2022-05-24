@@ -1,3 +1,6 @@
+
+
+
 <?php
 // (A) SETTINGS - CHANGE TO YOUR OWN !
 error_reporting(E_ALL & ~E_NOTICE);
@@ -12,8 +15,10 @@ $day_cnt = 0;
 // $days = [];
 $job_cnt = 0;
 
+
 function get_days_sql(){
-  return "SELECT * FROM Days";
+  $ret = "SELECT * FROM Days ORDER BY date ASC";
+  return $ret;
 }
 
 function insert_day_sql($day){
@@ -94,38 +99,33 @@ function insert_job_sql($job_json){
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, $job_json->start_day_id, $job_json->end_day_id, $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
 }
 
-function fetch_jobs(){
+function fetch_it($sql){
   $pdo = connect();
-  $sql = get_jobs_sql();
-  $js = perform_query($pdo, $sql);
-  $jobs = [];
-  foreach ($js as $j){
+  $sql_ret = perform_query($pdo, $sql);
+  $pdo = null;
+  $vals = [];
+  foreach ($sql_ret as $s){
     $tmp = array();
-    foreach ($j as $key=>$val){
+    foreach ($s as $key=>$val){
       if (strlen($key) > 1){
         $tmp[$key] = $val;
       }
     }
-    array_push($jobs, $tmp);
+    array_push($vals, $tmp);
   }
-  return $jobs;
+  return $vals;
 }
 
-function fetch_jts(){
+function get_table_maxid_sql($table){
+  return "SELECT MAX(id) FROM $table";
+}
+
+function fetch_maxid($table){
   $pdo = connect();
-  $sql = get_jobtypes_sql();
-  $js = perform_query($pdo, $sql);
-  $jts = [];
-  foreach ($js as $j){
-    $tmp = array();
-    foreach ($j as $key=>$val){
-      if (strlen($key) > 1){
-        $tmp[$key] = $val;
-      }
-    }
-    array_push($jts, $tmp);
-  }
-  return $jts;
+  $sql = get_table_maxid_sql($table);
+  $ret = perform_query($pdo, $sql);
+  $ret = $ret[0]["MAX(id)"];
+  return $ret;
 }
 
 function connect(){
@@ -162,16 +162,6 @@ function perform_query($pdo, $sql){
 }
 
 function get_daybox_html_readonly($id, $dayname, $date){
-//   <label for="start">Start date:</label>
-//
-// <input type="date" id="start" name="trip-start"
-//        value="2018-07-22"
-//        min="2018-01-01" max="2018-12-31">
-  // $html = "<div id='daybox$id' class='daybox'>
-  // <input type='text' name='day$id' id='day$id' value='$dayname' readonly>
-  // <br>
-  // <input type='date' name='date$id' id='date$id' value='$date'>
-  // </div>";
   $html = "<div id='daybox$id' class='daybox'>
   <div id='day_label$id' class='inner_daybox'>
   <label for='day$id'>$dayname</label>
@@ -201,7 +191,7 @@ function get_jobbox_html($id, $jobname, $special){
   else{
     $checked = "";
   }
-  $html = "<div id='jobbox$id' class='jobbox'>
+  $html = "<div id='jobbox$id' class='PREjobbox'>
 <label for='checkbox' name='cb_label$id' onclick='return false;' id='cb_label$id'>Helper</label>
 <input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $checked>
 <input name='PREjob$id' type=hidden>

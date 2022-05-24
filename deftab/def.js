@@ -1,5 +1,9 @@
-let name_special = "helper";
+let name_special = "Helper";
+const daynames = [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 let days = [];
+let dates_qs = [];
+let day_instances = [];
+let day_maxid = 0;
 let numdays = 0;
 let numjobs = 0;
 let abs_numjobs = 0;
@@ -8,9 +12,10 @@ let num_db_jobs = 0;
 let maxid = 0;
 
 
-function set_days(d){
-  // console.log(d);
-  days = d;
+function set_days(d, maxid){
+  console.log(d);
+  day_instances.push(new Day(d.date));
+  day_maxid = maxid;
   numdays = d.length;
 }
 
@@ -51,26 +56,45 @@ function hide_it() {
 function create_daybox(){
     // First create a DIV element.
   // console.log(parseInt(numdays) + days.length);
-  let id = parseInt(numdays) + days.length;
+  let id = ++day_maxid;
   let new_box = document.createElement('div');
   new_box.setAttribute("id", "daybox"+id.toString());
   new_box.setAttribute("class", "daybox");
-    // Then add the content (a new input box) of the element.
+
+  let innerdaydate = document.createElement('div');
+  innerdaydate.setAttribute("id", "divday"+id.toString());
+  innerdaydate.setAttribute("class", "inner_daybox");
+
+  let innerdayinput = document.createElement('date');
+  innerdayinput.setAttribute("id", "day"+id.toString());
+  // innerdayinput.setAttribute("onchange", "show_date(" + id.toString() + ")");
+  innerdayinput.innerHTML = "<br><input type='date' name='day" + id.toString() + "' required>";
+
   let innerdaylabel = document.createElement('div');
   innerdaylabel.setAttribute("id", "day_label"+id.toString());
   innerdaylabel.setAttribute("class", "inner_daybox");
+  // innerdaylabel.innerHTML = "<label for='day" + id.toString() + "'></label>"
 
-  let innerdaydate = document.createElement('div');
-  innerdaydate.setAttribute("id", "day"+id.toString());
-  innerdaydate.setAttribute("class", "inner_daybox");
-  innerdaylabel.innerHTML = "<label for='day" + id.toString() + "'></label>"
-  innerdaydate.innerHTML = "<input type='date' name='day" + id.toString() + "' id='day" + id.toString() + "' required>";
+
+  console.log(innerdayinput.id);
   // Finally put it where it is supposed to appear.
+  innerdaydate.appendChild(innerdayinput);
   new_box.appendChild(innerdaylabel);
   new_box.appendChild(innerdaydate);
   document.getElementById("add_day").appendChild(new_box);
   days.push(new_box);
-  numdays++;
+
+
+  const input = document.querySelector("#"+innerdayinput.id);
+  const log = document.getElementById("day_label"+id.toString());
+  input.addEventListener('onchange', updateValue);
+  dates_qs.push(input);
+
+}
+
+function updateValue(e) {
+  console.log(e.target.value);
+  log.textContent = e.target.value;
 }
 
 function create_jobbox(){
@@ -111,7 +135,6 @@ function delete_daybox(){
   // console.log(days);
   id = days[days.length-1].id;
   let d = days.pop();
-  numdays--;
   const element = document.getElementById(d.id);
   element.remove();
 }
@@ -177,4 +200,13 @@ function make_day_instances(d){
     let tmp = new Day(d[i]);
     // console.log(tmp);
   }
+}
+
+function show_date(id){
+  console.log("day" + id);
+  console.log(document.getElementById("day" + id).value);
+  let date = document.getElementById("day" + id).value;
+  let tmp = new Date(date);
+  document.getElementById("day_label"+id).setAttribute("value", daynames[tmp.getDay()]);
+  return daynames[tmp.getDay()];
 }

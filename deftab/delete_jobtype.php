@@ -32,29 +32,23 @@ session_start();
   <?php include("db.php"); ?>
 
   <?php
-    $pdo = connect();
-    $days = perform_query($pdo, get_days_sql());
+    $days = fetch_it(get_days_sql());
     $_SESSION['num_days'] = count($days);
     $_SESSION["view_days"] = $days;
-    $pdo = null;
   ?>
 
   <script src="./p5/p5.min.js"></script>
- <!-- <script src="./p5/addons/p5.sound.js"></script> -->
-  <!-- <script defer src=https://cdn.JsDelivr.net/npm/p5></script>
-  <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.dom.min.js></script>
-  <script defer src=https://cdn.JsDelivr.net/npm/p5/lib/addons/p5.sound.min.js></script> -->
   <script src=deftabsketch.js></script>
   <script> set_deletion_mode(); </script>
   <script> make_day_instances(<?php echo json_encode($_SESSION["view_days"]); ?>); </script>
 
 
   <?php
-    $jobs = fetch_jobs();
+    $jobs = fetch_it(get_jobs_sql());
     $jsjobs = json_encode($jobs);
     $_SESSION["jobs"] = $jsjobs;
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
-    $jts = fetch_jts();
+    $jts = fetch_it(get_jobtypes_sql());
     $jsjobs = json_encode($jts);
     $_SESSION["jts"] = $jsjobs;
   ?>
@@ -84,7 +78,6 @@ session_start();
     $js = explode("}", $postar);
     $vals = [];
     if (isset($postar)){
-      // echo count($js);
       for ($i=0;$i<count($js);$i++){
         $j = json_encode(utf8_encode($js[$i]));
         if (str_ends_with($j, '"') || str_ends_with($j, '"')){
@@ -108,36 +101,24 @@ session_start();
   }
 
   $djs = $_POST['deljobs'];
-  // printf($djs);
   if (isset($djs)){
     $djs = ltrim($djs, "[");
     $djs = rtrim($djs, "]");
     $deljobs = explode(",", $djs);
     $pdo = connect();
-    // printf("<br>Delete".$deljobs);
     for ($i=0; $i<count($deljobs); $i++){
-      // printf($deljobs[$i]);
       perform_query($pdo, delete_jobtype_sql(json_decode($deljobs[$i])));
     }
     $pdo = null;
     $_SESSION["deleted"] = true;
     unset($_POST['deljobs']);
-    $jobs = fetch_jobs();
+    $jobs = fetch_it(get_jobs_sql());
     $jsjobs = json_encode($jobs);
     $_SESSION["jobs"] = $jsjobs;
-    $jts = fetch_jts();
+    $jts = fetch_it(get_jobtypes_sql());
     $jsjobs = json_encode($jts);
     $_SESSION["jts"] = $jsjobs;
   }
-
-    // $cmd = $_POST['magic_field'];
-    // if (isset($cmd)){
-    //   printf($cmd);
-    //   printf($jt_names);
-    //   if ($cmd === "DELETE THIS"){
-    //     printf()
-    //   }
-    // }
   ?>
 
 </head>
@@ -157,16 +138,13 @@ session_start();
   </form>
   </div>
   <?php
-  if ($_SESSION["jobs_indb"]){
-    $_SESSION["jobs"] = json_encode(fetch_jobs());
-    $d_s = $_SESSION["days"];
+    $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
+    $d_s = json_encode($_SESSION["days"]);
     $jt_s = $_SESSION["jts"];
     $j_s = $_SESSION["jobs"];
     echo "<script>set_post_request_mode();</script>";
     echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
-    // echo "<script> insert_predefined_jobs($jsjobs);</script>";
     echo "<script>unset_edit_mode();</script>";
-  }
   ?>
   <main>
   </main>

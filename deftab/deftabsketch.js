@@ -212,15 +212,18 @@ function setup() {
     assign_params(get_params);
     console.log("__get");
   }
-  createCanvas(windowWidth-5, windowHeight-5);
-  if (request_mode === "post"){
-    background(242, 199, 87, 200);
-  }
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
   row_height = (windowHeight-10 - headerheight) / num_jobs;
   if (row_height > 100){
     row_height = 100;
+    createCanvas(windowWidth-5, row_height*num_jobs+150);
+  }
+  else{
+    createCanvas(windowWidth-5, windowHeight-5);
+  }
+  if (request_mode === "post"){
+    background(242, 199, 87, 200);
   }
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
@@ -464,21 +467,21 @@ class Grid {
     let _maxid = -1;
     console.log(jt_id_to_griditems);
     console.log(predef_jobs);
-    for (var [key, val] of predef_jobs.entries()){
+    for (var i=0; i< predef_jobs.length; i++){
       // curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
       c++;
       if (jt_id_to_griditems.size == 0){
         return;
       }
-      while (!jt_id_to_griditems.has(val["jt_primary"])){
-        val["jt_primary"]++;
+      while (!jt_id_to_griditems.has(predef_jobs[i]["jt_primary"])){
+        predef_jobs[i]["jt_primary"]++;
       }
-      for (let t=val["abs_start"]; t<val["abs_end"]; t++){
-        jt_id_to_griditems.get(val["jt_primary"])[t].set_color(curr_color, true);
-        jt_id_to_griditems.get(val["jt_primary"])[t].select();
-        jt_id_to_griditems.get(val["jt_primary"])[t].set_pre();
-        jt_id_to_griditems.get(val["jt_primary"])[t].set_jobid(val["id"]);
+      for (let t=predef_jobs[i]["abs_start"]; t<predef_jobs[i]["abs_end"]; t++){
+        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_color(curr_color, true);
+        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].select();
+        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_pre();
+        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_jobid(predef_jobs[i]["id"]);
       }
     }
   }
@@ -533,14 +536,14 @@ class Grid {
       this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
       y += row_height;
     }
-    let col = [];
-    for (let i=0; i<num_cols; i++){
-      for (let j=0; j<num_rows; j++){
-        col.push(this.rows[j][i])
-      }
-      this.cols.push(col)
-      col = [];
-    }
+    // let col = [];
+    // for (let i=0; i<num_cols; i++){
+    //   for (let j=0; j<num_rows; j++){
+    //     col.push(this.rows[j][i])
+    //   }
+    //   this.cols.push(col)
+    //   col = [];
+    // }
   }
 
   generate_random_color(){
@@ -807,9 +810,11 @@ class Day{
 }
 
 function make_day_instances(d){
+  let dns = [];
   for (const key in d){
     // console.log(`${key}: ${d[key]}`);
     let tmp = new Day(d[key], parseInt(key), indb=false);
+    dns.push(tmp.name);
   }
 }
 

@@ -29,7 +29,10 @@ session_start();
 
   </style>
 
-  <?php include("db.php"); ?>
+  <?php
+  include("db.php");
+  regain_integrity();
+   ?>
 
   <?php
     $days = fetch_it(get_days_sql());
@@ -46,11 +49,11 @@ session_start();
   <?php
     $jobs = fetch_it(get_jobs_sql());
     $jsjobs = json_encode($jobs);
-    $_SESSION["jobs"] = $jsjobs;
+    $_SESSION["jobs"] = $jobs;
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
     $jts = fetch_it(get_jobtypes_sql());
-    $jsjobs = json_encode($jts);
-    $_SESSION["jts"] = $jsjobs;
+    // $jsjobs = json_encode($jts);
+    $_SESSION["jts"] = $jts;
   ?>
 
 
@@ -101,23 +104,30 @@ session_start();
   }
 
   $djs = $_POST['deljobs'];
+  printf($djs);
   if (isset($djs)){
-    $djs = ltrim($djs, "[");
-    $djs = rtrim($djs, "]");
-    $deljobs = explode(",", $djs);
-    $pdo = connect();
-    for ($i=0; $i<count($deljobs); $i++){
-      perform_query($pdo, delete_jobtype_sql(json_decode($deljobs[$i])));
+    if (!empty($djs)){
+      $djs = ltrim($djs, "[");
+      $djs = rtrim($djs, "]");
+      $deljobs = explode(",", $djs);
+      $pdo = connect();
+      for ($i=0; $i<count($deljobs); $i++){
+        $sql = delete_jobtype_sql(json_decode($deljobs[$i]));
+        if ($sql === ""){
+          continue;
+        }
+        perform_query($pdo, $sql);
+      }
+      $pdo = null;
+      $_SESSION["deleted"] = true;
     }
-    $pdo = null;
-    $_SESSION["deleted"] = true;
     unset($_POST['deljobs']);
     $jobs = fetch_it(get_jobs_sql());
-    $jsjobs = json_encode($jobs);
-    $_SESSION["jobs"] = $jsjobs;
+    // $jsjobs = json_encode($jobs);
+    $_SESSION["jobs"] = $jobs;
     $jts = fetch_it(get_jobtypes_sql());
-    $jsjobs = json_encode($jts);
-    $_SESSION["jts"] = $jsjobs;
+    // $jsjobs = json_encode($jts);
+    $_SESSION["jts"] = $jts;
   }
   ?>
 
@@ -127,8 +137,9 @@ session_start();
   <a href="./tab.php">Back to Table.</a>
   <div style='position:absolute;top:500px;left:450px'>
     <?php
-    for ($i=0; $i<$_SESSION['num_days']; $i++){
-      echo "<button type='button' onclick='create_dayview($i)'>DAY $i</button>";
+    for ($i=0; $i<count($_SESSION['days']); $i++){
+      $in = $_SESSION["days"][$i]["name"]."<br>".$_SESSION["days"][$i]["date"];
+      echo "<button type='button' onclick='create_dayview($i)'>$in</button>";
     }
     ?>
     <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
@@ -140,7 +151,7 @@ session_start();
   <?php
     $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
     $d_s = json_encode($_SESSION["days"]);
-    $jt_s = $_SESSION["jts"];
+    $jt_s = json_encode($_SESSION["jts"]);
     $j_s = $_SESSION["jobs"];
     echo "<script>set_post_request_mode();</script>";
     echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";

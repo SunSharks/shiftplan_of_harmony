@@ -21,7 +21,10 @@ session_start();
     }
   </script> -->
 
-  <?php include("db.php"); ?>
+  <?php
+  include("db.php");
+  regain_integrity();
+   ?>
   <script src=def.js></script>
 </head>
 

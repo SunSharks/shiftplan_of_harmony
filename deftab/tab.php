@@ -29,7 +29,10 @@ session_start();
 
   </style>
 
-  <?php include("db.php"); ?>
+  <?php
+  include("db.php");
+  regain_integrity();
+   ?>
 
   <script language="javascript">
   function insertarrayintohiddenformfield(){
@@ -178,7 +181,7 @@ session_start();
         }
       }
       $_SESSION["jts_indb"] = true;
-      $_SESSION["jts"] = json_encode($jtvals);
+      $_SESSION["jts"] = $jtvals;
       unset($_POST['jobtypes']);
     }
 
@@ -222,19 +225,12 @@ session_start();
     echo "Geschafft.";
     $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
     $d_s = json_encode($_SESSION["days"]);
-    $jt_s = $_SESSION["jts"];
+    $jt_s = json_encode($_SESSION["jts"]);
     $j_s = $_SESSION["jobs"];
     echo "<script>set_post_request_mode();</script>";
     echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
     echo "<script>unset_edit_mode();</script>";
   }
-
-
-  // else{
-  //   if ($_SESSION["deleted"] === true){
-  //     echo "<script> insert_predefined_jobs($jsjobs);</script>";
-  //   }
-  // }
   ?>
   <main>
   </main>

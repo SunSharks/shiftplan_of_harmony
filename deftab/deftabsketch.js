@@ -239,8 +239,12 @@ function setup() {
   btn.draw();
   // savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   // savebtn.draw();
-  // console.log(predef_jobs);
-  grid.insert_predefs();
+  console.log(jt_id_to_griditems);
+  console.log(predef_jobs);
+  // if (request_mode != "get"){
+    grid.insert_predefs();
+  // }
+
   // grid.update_predefs();
   if (edit_mode === true){
     cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
@@ -532,6 +536,7 @@ class Grid {
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     let cnt = 0;
+    console.log(jobtypes);
     for (var [key, value] of jobtypes.entries()){
       this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
       y += row_height;
@@ -670,7 +675,7 @@ class Daygrid {
   }
 
   make_colheaders(){
-    let x = headertextx;
+    let x = headertextx + this.col_width/2;
     let y = headertexty;
     for (let i=0; i<1; i++){
       for (let j=0; j<24; j++){
@@ -900,11 +905,11 @@ Button.prototype.change_mode = function() {
   }
   else if (this.func.startsWith("delete")){
       if (this.state == 0){
-        console.log("set_del");
+        // console.log("set_del");
         jobtypes.get(parseInt(this.func.slice(6))).set_delete();
       }
       else{
-        console.log("unset_del");
+        // console.log("unset_del");
         jobtypes.get(parseInt(this.func.slice(6))).unset_delete();
       }
 

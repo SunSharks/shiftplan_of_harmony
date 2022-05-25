@@ -234,12 +234,8 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth-5;
   wh = windowHeight-5;
-  //  #E2ABAB
-// #E2C7AB
-// #E2E2AB
-// #C7E2AB
-  default_colors = [[color(220, 220, 220), color(230, 230, 230)], [color(226, 216, 171), color(226, 226, 171)]];
-  default_special_colors = [[color(220, 235, 220), color(230, 250, 230)],[color(199, 226, 171), color(232, 248, 210)]];
+  default_colors = [[color(246, 232, 184), color(255, 255, 204)], [color(229, 216, 171), color(241, 241, 185)]];
+  default_special_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();

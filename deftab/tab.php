@@ -206,7 +206,6 @@ session_start();
 </head>
 
 <body>
-  <a href="./index.php">Back to definitions</a>
   <div style='position:absolute;top:0px;left:0px'>
     <p>
     <div id="daybtns" style='position:absolute;top:0px;left:0px'>
@@ -219,13 +218,8 @@ session_start();
       ?>
   </div>
   </p>
-  <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
-    <input name='days' type=hidden>
-    <input name='jobs' type=hidden>
-    <input name='jobtypes' type=hidden>
-    <input name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
-  </form>
-  </div>
+  <div style='position:absolute;top:0px;left:0px;width:90px'>
+  <a href="./index.php">Back to definitions</a>
   <?php
   if ($_SESSION["jobs_indb"] || (empty($_GET) && empty($_POST))){
     echo "Geschafft.";
@@ -238,17 +232,27 @@ session_start();
     echo "<script>unset_edit_mode();</script>";
   }
   ?>
-  <br>
-  <br>
-  <br>
-  <br>
+</div>
+  <br><br><br>
   <p>
   <div id="p5tab">
     <main>
     </main>
 </div>
 </p>
-  <a href="./delete_jobtype.php">Delete a Jobtype</a>
+<form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
+  <input name='days' type=hidden>
+  <input name='jobs' type=hidden>
+  <input name='jobtypes' type=hidden>
+  <input name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
+</form>
+<a href="./delete_jobtype.php">Delete a Jobtype</a>
+</div>
+<!-- <br> -->
+<!-- <p>
+<div>
 
+</div>
+</p> -->
 </body>
 </html>

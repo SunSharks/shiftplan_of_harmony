@@ -134,7 +134,6 @@ session_start();
 </head>
 
 <body>
-  <a href="./tab.php">Back to Table.</a>
   <div style='position:absolute;top:0px;left:0px'>
     <p>
     <div id="daybtns" style='position:absolute;top:0px;left:0px'>
@@ -147,30 +146,30 @@ session_start();
       ?>
   </div>
   </p>
-  <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
-    <input name="deljobs" type=hidden>
-    <input name="DELETE" type="submit" value="DELETE">
-  </form>
   </div>
-  <?php
-    $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
-    $d_s = json_encode($_SESSION["days"]);
-    $jt_s = json_encode($_SESSION["jts"]);
-    $j_s = $_SESSION["jobs"];
-    echo "<script>set_post_request_mode();</script>";
-    echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
-    echo "<script>unset_edit_mode();</script>";
-  ?>
-  <br>
-  <br>
-  <br>
-  <br>
+  <div style='position:absolute;top:0px;left:0px;width:90px'>
+    <a href="./tab.php">Back to Table.</a>
+    <?php
+      $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
+      $d_s = json_encode($_SESSION["days"]);
+      $jt_s = json_encode($_SESSION["jts"]);
+      $j_s = $_SESSION["jobs"];
+      echo "<script>set_post_request_mode();</script>";
+      echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
+      echo "<script>unset_edit_mode();</script>";
+    ?>
+  </div>
+  <br><br><br>
   <p>
   <div id="p5tab">
     <main>
     </main>
 </div>
 </p>
+<form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
+  <input name="deljobs" type=hidden>
+  <input name="DELETE" type="submit" value="DELETE">
+</form>
 
 </body>
 </html>

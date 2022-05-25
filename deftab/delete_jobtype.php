@@ -135,14 +135,18 @@ session_start();
 
 <body>
   <a href="./tab.php">Back to Table.</a>
-  <div style='position:absolute;top:500px;left:450px'>
-    <?php
-    for ($i=0; $i<count($_SESSION['days']); $i++){
-      $in = $_SESSION["days"][$i]["name"]."<br>".$_SESSION["days"][$i]["date"];
-      echo "<button type='button' onclick='create_dayview($i)'>$in</button>";
-    }
-    ?>
-    <button type="button" onclick="resume_default_view()">WHOLE VIEW</button>
+  <div style='position:absolute;top:0px;left:0px'>
+    <p>
+    <div id="daybtns" style='position:absolute;top:0px;left:0px'>
+      <button id="wholeviewbtn" type="button" onclick="resume_default_view()">WHOLE VIEW</button>
+      <?php
+      for ($i=0; $i<count($_SESSION['days']); $i++){
+        $in = $_SESSION["days"][$i]["name"]."<br>".$_SESSION["days"][$i]["date"];
+        echo "<button class=daybtn id=daybtn$i type='button' onclick='create_dayview($i)'>$in</button>";
+      }
+      ?>
+  </div>
+  </p>
   <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
     <input name="deljobs" type=hidden>
     <input name="DELETE" type="submit" value="DELETE">
@@ -157,9 +161,16 @@ session_start();
     echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
     echo "<script>unset_edit_mode();</script>";
   ?>
-  <main>
-  </main>
-
+  <br>
+  <br>
+  <br>
+  <br>
+  <p>
+  <div id="p5tab">
+    <main>
+    </main>
+</div>
+</p>
 
 </body>
 </html>

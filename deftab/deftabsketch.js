@@ -78,7 +78,6 @@ function set_deletion_mode(){
 
 function unset_deletion_mode(){
   deletion_mode = false;
-
 }
 
 get_params = () => {
@@ -217,11 +216,14 @@ function setup() {
   row_height = (windowHeight-10 - headerheight) / num_jobs;
   if (row_height > 100){
     row_height = 100;
-    createCanvas(windowWidth-5, row_height*num_jobs+150);
+    let canv = createCanvas(windowWidth-5, row_height*num_jobs+150);
+    canv.parent("p5tab");
   }
   else{
-    createCanvas(windowWidth-5, windowHeight-5);
+    let canv = createCanvas(windowWidth-5, windowHeight-5);
+    canv.parent("p5tab");
   }
+
   if (request_mode === "post"){
     background(242, 199, 87, 200);
   }
@@ -232,15 +234,19 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth-5;
   wh = windowHeight-5;
-  default_colors = [color(220, 220, 220), color(230, 230, 230)];
-  default_special_colors = [color(220, 235, 220), color(230, 250, 230)];
+  //  #E2ABAB
+// #E2C7AB
+// #E2E2AB
+// #C7E2AB
+  default_colors = [[color(220, 220, 220), color(230, 230, 230)], [color(226, 216, 171), color(226, 226, 171)]];
+  default_special_colors = [[color(220, 235, 220), color(230, 250, 230)],[color(199, 226, 171), color(232, 248, 210)]];
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
   // savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   // savebtn.draw();
-  console.log(jt_id_to_griditems);
-  console.log(predef_jobs);
+  // console.log(jt_id_to_griditems);
+  // console.log(predef_jobs);
   // if (request_mode != "get"){
     grid.insert_predefs();
   // }
@@ -248,6 +254,23 @@ function setup() {
   // grid.update_predefs();
   if (edit_mode === true){
     cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
+  }
+  let daybtn_div = document.getElementById("daybtns");
+  let w = rowheaderwidth.toString() + "px";
+  daybtn_div.style.setProperty('left', w);
+  // let dayselection = document.getElementById("dayselection");
+  // dayselection.style.setProperty('left', w);
+
+  let wholeviewbtn = document.getElementById("wholeviewbtn");
+  wholeviewbtn.style.setProperty('left', w);
+  w = (windowWidth-5-rowheaderwidth).toString() + "px";
+  wholeviewbtn.style.setProperty('width', w);
+
+  let daywidth = default_col_width * 24;
+  for (let i=0; i<num_days; i++){
+    let w = daywidth.toString() + "px";
+    let daybtn = document.getElementById("daybtn"+i.toString());
+    daybtn.style.setProperty('width', w);
   }
 }
 
@@ -350,6 +373,7 @@ function draw() {
           }
           for (var i=0; i<use_grid.rows[colliding_row].length; i++){
             if (use_grid.rows[colliding_row][i].collides(mouseX, mouseY) && !jobtypes.get(use_grid.rows[colliding_row][i].jobtype_id).indb){
+              console.log("colides" + use_grid.rows[colliding_row][i].name);
               if(row == -1){
                 row = Math.floor(i/grid.cols.length);
               }
@@ -466,7 +490,7 @@ class Grid {
   }
 
   insert_predefs(){
-    let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan']
+    let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan'];
     let c = 0;
     let _maxid = -1;
     console.log(jt_id_to_griditems);
@@ -517,8 +541,13 @@ class Grid {
     let x = rowheaderwidth;
     let l = [];
     // editable_rows_start = 0;
+    let day = 0;
     for (let i=0; i<num_cols; i++){
-      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, special=special);
+      if ((i % 24 === 0) && i != 0){
+        day++;
+      }
+      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, day, special=special);
+
       r.show();
       griditems.push(r);
       l.push(r);
@@ -541,21 +570,26 @@ class Grid {
       this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
       y += row_height;
     }
-    // let col = [];
-    // for (let i=0; i<num_cols; i++){
-    //   for (let j=0; j<num_rows; j++){
-    //     col.push(this.rows[j][i])
-    //   }
-    //   this.cols.push(col)
-    //   col = [];
-    // }
+    let col = [];
+    for (let i=0; i<num_cols; i++){
+      for (let j=0; j<num_rows; j++){
+        col.push(this.rows[j][i])
+      }
+      this.cols.push(col)
+      col = [];
+    }
   }
 
   generate_random_color(){
-    let r = random(255); // r is a random number between 0 - 255
-    let g = random(255); // g is a random number betwen 100 - 200
-    let b = random(200); // b is a random number between 0 - 100
-    // let a = random(200,255); // a is a random number between 200 - 255
+    let r;
+    let g;
+    let b;
+    while ((r === g) && (r === b)){
+      r = Math.floor(Math.random() * 156) + 100; // r is a random number between 100 - 255
+      g = Math.floor(Math.random() * 156) + 100; // g is a random number betwen 100 - 255
+      b = Math.floor(Math.random() * 101) + 100; // b is a random number between 100 - 200
+      // let a = Math.random(200,255); // a is a random number between 200 - 255
+    }
     return color(r, g, b);
   }
 
@@ -697,7 +731,7 @@ class Daygrid {
 
 
 class Griditem {
-  constructor(name, id, x, y, time, jobtype_id, row, special=false, w=default_col_width, h=row_height) {
+  constructor(name, id, x, y, time, jobtype_id, row, day, special=false, w=default_col_width, h=row_height) {
     this.name = name; // name of job
     this.special = special;
     this.id = id;
@@ -714,18 +748,18 @@ class Griditem {
     this.default_w = w;
     this.default_h = h;
     this.content = "";
-    this.color = default_colors[this.id%2];
-    this.defaultcolor = default_colors[this.id%2];
-    if (this.special){
-      this.color = default_special_colors[this.id%2];
-      this.defaultcolor = default_special_colors[this.id%2];
-    }
-
     this.group = -1;
     this.selected = false;
     this.editable = true;
     this.pre = false;
     this.jobid = -1;
+    this.day = day;
+    this.color = default_colors[this.day%2][this.id%2];
+    this.defaultcolor = default_colors[this.day%2][this.id%2];
+    if (this.special){
+      this.color = default_special_colors[this.day%2][this.id%2];
+      this.defaultcolor = default_special_colors[this.day%2][this.id%2];
+    }
   }
 
   collides(x, y) {
@@ -871,7 +905,7 @@ Button.prototype.draw = function() {
   // stroke(0);
   if (this.func == "deselect"){
     if(this.state){
-      fill(default_colors[0]);
+      fill(default_colors[0][0]);
     }
     else{
       fill(this.color[0], this.color[1], (this.color[2]+20*this.state)%255);
@@ -920,10 +954,16 @@ Button.prototype.change_mode = function() {
 }
 
 function generate_random_color(){
-  let r = Math.random(255); // r is a random number between 0 - 255
-  let g = Math.random(255); // g is a random number betwen 100 - 200
-  let b = Math.random(200); // b is a random number between 0 - 100
-  // let a = Math.random(200,255); // a is a random number between 200 - 255
+  let r;
+  let g;
+  let b;
+  while ((r === g) && (r === b)){
+    r = Math.floor(Math.random() * 156) + 100; // r is a random number between 100 - 255
+    g = Math.floor(Math.random() * 156) + 100; // g is a random number betwen 100 - 255
+    b = Math.floor(Math.random() * 156) + 100; // b is a random number between 100 - 255
+    // let a = Math.random(200,255); // a is a random number between 200 - 255
+  }
+
   return [r, g, b];
 }
 

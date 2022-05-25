@@ -161,10 +161,9 @@ session_start();
   </div>
   <br><br><br>
   <p>
-  <div id="p5tab">
+  <div id="p5tab"></div>
     <main>
     </main>
-</div>
 </p>
 <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
   <input name="deljobs" type=hidden>

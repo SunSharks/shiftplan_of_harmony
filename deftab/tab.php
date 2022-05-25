@@ -162,8 +162,9 @@ session_start();
           // echo "<script>insert_day_indb($d);</script>";
         }
       }
+      $days = fetch_it(get_days_sql());
+      $_SESSION['days'] = $days;
       $_SESSION["days_indb"] = true;
-      $_SESSION["days"] = $dayvals;
       unset($_POST['days']);
     }
 
@@ -196,6 +197,7 @@ session_start();
           $pdo2 = connect();
           perform_query($pdo2, $jobsql2);
           $d = json_encode($jvals[$i]);
+          // printf($jobsql2);
         }
       }
       $_SESSION["jobs_indb"] = true;
@@ -234,18 +236,17 @@ session_start();
   ?>
 </div>
   <br><br><br>
-  <p>
-  <div id="p5tab">
+  <div id="p5tab"></div>
     <main>
     </main>
-</div>
-</p>
-<form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
-  <input name='days' type=hidden>
-  <input name='jobs' type=hidden>
-  <input name='jobtypes' type=hidden>
-  <input name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
-</form>
+    <div id="insertform">
+      <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
+        <input name='days' type=hidden>
+        <input name='jobs' type=hidden>
+        <input name='jobtypes' type=hidden>
+        <input id="insertbtn" name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
+      </form>
+    </div>
 <a href="./delete_jobtype.php">Delete a Jobtype</a>
 </div>
 <!-- <br> -->

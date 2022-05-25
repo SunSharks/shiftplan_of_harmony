@@ -29,6 +29,7 @@ session_start();
 </head>
 
 <body>
+  <h1>Definitionen</h1>
   <div id="definition">
     <form action="tab.php"  method="get">
       <div class="day">
@@ -48,6 +49,7 @@ session_start();
       <div id="job">
         <!-- Fetch predefined jobtypes. -->
         <br><br>
+        <div id="add_predef_jobs">
         <?php
           $jobtypes = fetch_it(get_jobtypes_sql());
           foreach ($jobtypes as $j) {
@@ -58,6 +60,7 @@ session_start();
         set_jobs(<?php echo json_encode($jobtypes); ?>);
         // console.log(test);
         </script>
+      </div>
         <br>
         <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
       </div>

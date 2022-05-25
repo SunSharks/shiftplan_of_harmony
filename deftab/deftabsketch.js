@@ -214,15 +214,15 @@ function setup() {
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
   row_height = (windowHeight-10 - headerheight) / num_jobs;
+  let canv;
   if (row_height > 100){
     row_height = 100;
-    let canv = createCanvas(windowWidth-5, row_height*num_jobs+150);
-    canv.parent("p5tab");
+    canv = createCanvas(windowWidth-5, row_height*num_jobs+150);
   }
   else{
-    let canv = createCanvas(windowWidth-5, windowHeight-5);
-    canv.parent("p5tab");
+    canv = createCanvas(windowWidth-5, windowHeight-5);
   }
+  canv.parent("p5tab");
 
   if (request_mode === "post"){
     background(242, 199, 87, 200);

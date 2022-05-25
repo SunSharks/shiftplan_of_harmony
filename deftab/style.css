@@ -6,10 +6,10 @@ h1 {text-align: center;}
 p {text-align: center;}
 
 .day {
-  background: rgb(188, 212, 153);
   margin-left: 250pt;
 }
 .daybox {
+  background: rgb(188, 212, 153);
   float:left;
   padding: 100;
 }
@@ -19,22 +19,38 @@ p {text-align: center;}
 }
 
 .PREjobbox {
-  background: #cfc339;
+  background: rgb(10, 99, 0);
   display: inline;
+  padding: 100;
+  margin: 100;
+}
+
+.outerjobbox {
+  display: block;
+  padding: 100;
+  margin: 100;
+}
+
+#add_predef_jobs {
+  background: rgb(188, 100, 153);
+  float: left;
+  display: block;
   padding: 100;
   margin: 100;
 }
 
 #add_job {
-  background: #cfc339;
-  display: inline;
+  background: rgb(188, 212, 153);
+  float: left;
+  display: block;
   padding: 100;
   margin: 100;
 }
 
 .jobbox {
-  background: #cfc379;
-  display: block;
+  background: rgb(100, 99, 0);
+  float: left;
+  display: inline;
   padding: 100;
   margin: 100;
 }

@@ -76,7 +76,7 @@ function create_daybox(){
   // innerdaylabel.innerHTML = "<label for='day" + id.toString() + "'></label>"
 
 
-  console.log(innerdayinput.id);
+  // console.log(innerdayinput.id);
   // Finally put it where it is supposed to appear.
   innerdaydate.appendChild(innerdayinput);
   new_box.appendChild(innerdaylabel);
@@ -100,35 +100,51 @@ function updateValue(e) {
 function create_jobbox(){
   let id = ++maxid;
   // console.log(maxid);
+  let outer_div = document.createElement('div');
+  outer_div.setAttribute("class", "outerjobbox");
+  let input_div = document.createElement('div');
+  input_div.setAttribute("id", "jobbox"+id.toString());
+  input_div.setAttribute("class", "jobbox");
+  input_div.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
+  outer_div.appendChild(input_div);
+  let label_div = document.createElement('div');
+  label_div.setAttribute("class", "jobbox");
+  let label = document.createElement('label');
+  label.setAttribute("class", "jobbox");
+  label.setAttribute("for", "checkbox");
+  label.setAttribute("name", "cb_label"+id.toString());
+  label.setAttribute("id", "cb_label"+id.toString());
+  label.innerHTML = name_special;
+  label_div.appendChild(label);
+  outer_div.appendChild(label_div);
+  let check_box_div = document.createElement('div');
+  check_box_div.setAttribute("class", "jobbox");
   var check_box = document.createElement('checkbox');
   check_box.setAttribute("class", "jobbox");
   check_box.setAttribute("id", "special"+id.toString());
   check_box.setAttribute("name", "special"+id.toString());
   check_box.setAttribute("value", "special"+id.toString());
   check_box.innerHTML = "<input type='checkbox' name='special" + id.toString() + "'>";
-  let label = document.createElement('label');
-  label.setAttribute("for", "checkbox");
-  label.setAttribute("name", "cb_label"+id.toString());
-  label.setAttribute("id", "cb_label"+id.toString());
-  label.innerHTML = name_special;
-// <label for="smoking" name="yesnos" id="yesnos">No</label>
-  let new_box = document.createElement('div');
-  new_box.setAttribute("id", "jobbox"+id.toString());
-  new_box.setAttribute("class", "jobbox");
+  check_box_div.appendChild(check_box);
+  outer_div.appendChild(check_box_div);
+
+  let btn_div = document.createElement('div');
+  btn_div.setAttribute("class", "jobbox");
   let btn_box = document.createElement('button');
+  // btn_box.setAttribute("class", "jobbox");
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
   btn_box.innerHTML = "<button type='button' class='inlinebtn' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
+  btn_div.appendChild(btn_box);
+  outer_div.appendChild(btn_div);
   // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
-  new_box.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
+
   // alert(id.toString());
-  jobtypes[id] = new_box;
+  jobtypes[id] = input_div;
   numjobs++;
   abs_numjobs++;
     // Finally put it where it is supposed to appear.
-  label.appendChild(check_box);
-  document.getElementById("add_job").appendChild(label);
-  document.getElementById("add_job").appendChild(btn_box);
-  document.getElementById("add_job").appendChild(new_box);
+  // label.appendChild(check_box);
+  document.getElementById("add_job").appendChild(outer_div);
 }
 
 function delete_daybox(){
@@ -147,6 +163,8 @@ function delete_jobbox(id){
   numjobs--;
   const e = document.getElementById("cb_label"+id.toString());
   e.remove();
+  const cb = document.getElementById("special"+id.toString());
+  cb.remove();
   delete jobtypes[id];
 }
 

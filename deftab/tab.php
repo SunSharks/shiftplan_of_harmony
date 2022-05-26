@@ -17,15 +17,45 @@ session_start();
     }
     h1 {text-align: center;}
     p {text-align: center;}
-    .daybox {
-      display: inline;
-      padding: 100;
+    div {display: block;}
+    #insertbtn {
+      width: 30%;
+      float:left;
+      display: inline-block;
+      padding: 15px 25px;
+      margin-top: 60px;
+      margin-left: 10px;
+      margin-right: 5px;
+      font-size: 24px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      outline: none;
+      color: #fff;
+      background-color: #c7e3ab;
+      border: none;
+      border-radius: 15px;
+    }
 
+    #insertbtn:hover {background-color: #3e8e41}
+
+    #insertbtn:active {
+      background-color: #82ceb4;
+      transform: translateY(4px);
     }
-    .day {
-      padding: 100;
-      margin: 100;
+
+    #delete_link_div {
+      width: 30%;
+      float:left;
+      display: inline-block;
+      padding: 15px 25px;
+      margin-top: 60px;
+      margin-left: 10px;
+      margin-right: 5px;
+      font-size: 24px;
     }
+
+
 
 
 
@@ -247,7 +277,9 @@ session_start();
         <input id="insertbtn" name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
       </form>
     </div>
-<a href="./delete_jobtype.php">Delete a Jobtype</a>
+    <div id="delete_link_div">
+      <a href="./delete_jobtype.php" id="delete_link">Delete a Jobtype</a>
+    </div>
 </div>
 <!-- <br> -->
 <!-- <p>

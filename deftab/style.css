@@ -6,7 +6,8 @@ h1 {text-align: center;}
 p {text-align: center;}
 
 .day {
-  margin-left: 250pt;
+  /* margin-left: 250pt; */
+  float: right;
 }
 .daybox {
   background: rgb(188, 212, 153);
@@ -18,7 +19,15 @@ p {text-align: center;}
   padding: 100;
 }
 
+#job {
+  position:relative;
+  float: left;
+  display: block;
+  width: 20%;
+}
+
 #add_job {
+  position:relative;
   background: rgb(188, 212, 153);
   float: left;
   display: block;

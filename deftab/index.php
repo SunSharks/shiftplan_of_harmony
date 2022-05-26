@@ -43,8 +43,8 @@ session_start();
             }
           ?>
           <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
-          <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
-          <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
+          <div id="add_day"><button id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>
+          <div id="del_day"><button id="del_day_btn" type="button" onclick="delete_daybox();">-</button><br></div>
         </div>
 
         <div id="job">

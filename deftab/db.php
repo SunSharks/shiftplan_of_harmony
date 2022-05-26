@@ -203,13 +203,15 @@ function get_jobbox_html($id, $jobname, $special){
     $checked = "checked";
     $helper = "Helper";
     $style = "style='background:rgb(188, 100, 153)'";
+    $divstyle = ";background:rgb(188, 100, 153)";
   }
   else{
     $checked = "";
     $helper = "";
     $style = "";
+    $divstyle = "";
   }
-  $html = "<div class='outerjobbox' style='margin:100;padding:100'>
+  $html = "<div class='outerjobbox' style='margin:5px;padding:5px'>
 <p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div>

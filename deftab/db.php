@@ -209,7 +209,8 @@ function get_jobbox_html($id, $jobname, $special){
     $helper = "";
     $style = "";
   }
-  $html = "<div class='outerjobbox'>
+  $html = "<div class='outerjobbox' style='margin:100;padding:100'>
+<p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div>
 <div class='jobbox'>
@@ -217,7 +218,7 @@ function get_jobbox_html($id, $jobname, $special){
 <div class='jobbox'>
 <label for='checkbox' $style name='cb_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
 <div class='jobbox'>
-<input name='PREjob$id' type=hidden></div></div>";
+<input name='PREjob$id' type=hidden></div></p></div>";
   $job_cnt++;
   return $html;
 }

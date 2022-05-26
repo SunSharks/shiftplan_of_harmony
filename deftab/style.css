@@ -1,9 +1,13 @@
 body {
-  padding: 0;
-  margin: 0;
+  padding: 20px;
+  margin: 0px;
 }
 h1 {text-align: center;}
 p {text-align: center;}
+
+#submitdivbtn {
+  width: 100%;
+}
 
 .day {
   /* margin-left: 250pt; */
@@ -12,11 +16,11 @@ p {text-align: center;}
 .daybox {
   background: rgb(188, 212, 153);
   float:left;
-  padding: 100;
+  margin: 1px;
+  padding: 1px;
 }
 .inner_daybox {
   display: block;
-  padding: 100;
 }
 
 #job {
@@ -26,13 +30,17 @@ p {text-align: center;}
   width: 20%;
 }
 
+#add_job_btn {
+
+}
+
 #add_job {
   position:relative;
-  background: rgb(188, 212, 153);
+  /* background: rgb(188, 212, 153); */
   float: left;
   display: block;
-  /* padding: 100;
-  margin: 100; */
+  padding: 100;
+  margin: 100;
 }
 
 .PREjobbox {
@@ -44,10 +52,13 @@ p {text-align: center;}
 
 .outerjobbox {
   display: block;
-  background: rgb(0, 151, 139);
+  /* background: rgb(0, 151, 139); */
+  padding: 100;
+  margin: 100;
 }
 
 #add_predef_jobs {
+  background: #c7e3ab;
   float: left;
   display: block;
   padding: 100;
@@ -62,13 +73,12 @@ p {text-align: center;}
 
 
 .jobbox {
-  background: rgb(100, 200, 0);
+  /* background: rgb(100, 200, 0); */
   float: left;
   display: inline;
-  /* padding: 100;
-  margin: 100; */
+  padding: 100;
+  margin: 100;
 }
-
 
 
 
@@ -87,3 +97,45 @@ p {text-align: center;}
   float: left;
   display: inline;
 } */
+
+#add_job_btn {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+#add_job_btn:hover {background-color: #3e8e41}
+
+#add_job_btn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}
+
+#submitdivbtn {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+#submitdivbtn:hover {background-color: #3e8e41}
+
+#submitdivbtn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}

@@ -48,9 +48,13 @@ session_start();
         </div>
 
         <div id="job">
-          <!-- Fetch predefined jobtypes. -->
-          <br><br>
+          <!-- Fetch predefined jobtypes. LANG!-->
+          <br><h2>Schichten</h2><br>
           <div id="add_predef_jobs">
+            <!-- LANG! -->
+            <p>
+            Folgende Schichten sind bereits in der Datenbank. <br>
+          </p>
             <?php
               $jobtypes = fetch_it(get_jobtypes_sql());
               foreach ($jobtypes as $j) {
@@ -63,13 +67,14 @@ session_start();
             </script>
           </div>
           <div id="add_job">
-            <button type="button" onclick="create_jobbox();">+</button>
+            <!-- LANG! -->
+            <button id="add_job_btn" type="button" onclick="create_jobbox();">Neue Tätigkeit hinzufügen</button>
             <!-- <br> -->
             <!-- <div id="new_j"></div> -->
           </div>
         </div>
-        <div>
-          <p><input type="submit" value="Show me the table!"></p>
+        <div id="submitdiv">
+          <p><input id="submitdivbtn" type="submit" value="Zur Schichttabelle."></p>
         </div>
       </div>
     </form>

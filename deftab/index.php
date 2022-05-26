@@ -32,39 +32,46 @@ session_start();
   <h1>Definitionen</h1>
   <div id="definition">
     <form action="tab.php"  method="get">
-      <div class="day">
-        <!-- Fetch predefined days. -->
-        <?php
-          $_SESSION["days"] = fetch_it(get_days_sql());
-          $max_dayid = fetch_maxid("Days");
-          foreach ($_SESSION["days"] as $d) {
-            printf(get_daybox_html_readonly($d["id"], $d["name"], $d["date"]));
-          }
-        ?>
-        <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
-        <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
-        <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
-      </div>
+      <div id="inform">
+        <div class="day">
+          <!-- Fetch predefined days. -->
+          <?php
+            $_SESSION["days"] = fetch_it(get_days_sql());
+            $max_dayid = fetch_maxid("Days");
+            foreach ($_SESSION["days"] as $d) {
+              printf(get_daybox_html_readonly($d["id"], $d["name"], $d["date"]));
+            }
+          ?>
+          <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
+          <div id="add_day"><button type="button" onclick="create_daybox();">+</button></div>
+          <div id="del_day"><button type="button" onclick="delete_daybox();">-</button><br></div>
+        </div>
 
-      <div id="job">
-        <!-- Fetch predefined jobtypes. -->
-        <br><br>
-        <div id="add_predef_jobs">
-        <?php
-          $jobtypes = fetch_it(get_jobtypes_sql());
-          foreach ($jobtypes as $j) {
-            printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
-          }
-        ?>
-        <script>
-        set_jobs(<?php echo json_encode($jobtypes); ?>);
-        // console.log(test);
-        </script>
+        <div id="job">
+          <!-- Fetch predefined jobtypes. -->
+          <br><br>
+          <div id="add_predef_jobs">
+            <?php
+              $jobtypes = fetch_it(get_jobtypes_sql());
+              foreach ($jobtypes as $j) {
+                printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
+              }
+            ?>
+            <script>
+            set_jobs(<?php echo json_encode($jobtypes); ?>);
+            // console.log(test);
+            </script>
+          </div>
+          <div id="add_job">
+            <button type="button" onclick="create_jobbox();">+</button>
+            <!-- <br> -->
+            <!-- <div id="new_j"></div> -->
+          </div>
+        </div>
+        <div>
+          <p><input type="submit" value="Show me the table!"></p>
+        </div>
       </div>
-        <br>
-        <div id="add_job"><button type="button" onclick="create_jobbox();">+</button><br></div>
-      </div>
-  <div><p><input type="submit" value="Show me the table!"></p></div>
     </form>
   </div>
 

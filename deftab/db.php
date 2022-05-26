@@ -202,18 +202,20 @@ function get_jobbox_html($id, $jobname, $special){
   if ($special){
     $checked = "checked";
     $helper = "Helper";
+    $style = "style='background:rgb(188, 100, 153)'";
   }
   else{
     $checked = "";
     $helper = "";
+    $style = "";
   }
   $html = "<div class='outerjobbox'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div>
 <div class='jobbox'>
-<label for='checkbox' name='cb_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
-<div class='jobbox'>
 <input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $checked></div>
+<div class='jobbox'>
+<label for='checkbox' $style name='cb_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
 <div class='jobbox'>
 <input name='PREjob$id' type=hidden></div></div>";
   $job_cnt++;

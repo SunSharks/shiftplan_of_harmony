@@ -9,7 +9,7 @@ let numjobs = 0;
 let abs_numjobs = 0;
 let jobtypes = new Map();
 let num_db_jobs = 0;
-let maxid = 0;
+let job_maxid = 0;
 
 
 function set_days(d, maxid){
@@ -29,7 +29,7 @@ function set_jobs(j){
       _maxid = jobtypes[i.id].id;
     }
   }
-  maxid = _maxid;
+  job_maxid = _maxid;
   numjobs = j.length;
   abs_numjobs = j.length;
   num_db_jobs = j.length;
@@ -98,25 +98,17 @@ function updateValue(e) {
 }
 
 function create_jobbox(){
-  let id = ++maxid;
+  let id = ++job_maxid;
   // console.log(maxid);
   let outer_div = document.createElement('div');
   outer_div.setAttribute("class", "outerjobbox");
+
   let input_div = document.createElement('div');
   input_div.setAttribute("id", "jobbox"+id.toString());
   input_div.setAttribute("class", "jobbox");
-  input_div.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required><br>";
+  input_div.innerHTML = "<input type='text' name='job" + id.toString() + "' id='job"   + id.toString() + "' required>";
   outer_div.appendChild(input_div);
-  let label_div = document.createElement('div');
-  label_div.setAttribute("class", "jobbox");
-  let label = document.createElement('label');
-  label.setAttribute("class", "jobbox");
-  label.setAttribute("for", "checkbox");
-  label.setAttribute("name", "cb_label"+id.toString());
-  label.setAttribute("id", "cb_label"+id.toString());
-  label.innerHTML = name_special;
-  label_div.appendChild(label);
-  outer_div.appendChild(label_div);
+
   let check_box_div = document.createElement('div');
   check_box_div.setAttribute("class", "jobbox");
   var check_box = document.createElement('checkbox');
@@ -128,17 +120,26 @@ function create_jobbox(){
   check_box_div.appendChild(check_box);
   outer_div.appendChild(check_box_div);
 
+  let label_div = document.createElement('div');
+  label_div.setAttribute("class", "jobbox");
+  let label = document.createElement('label');
+  label.setAttribute("class", "jobbox");
+  label.setAttribute("for", "checkbox");
+  label.setAttribute("name", "cb_label"+id.toString());
+  label.setAttribute("id", "cb_label"+id.toString());
+  label.innerHTML = name_special;
+  label_div.appendChild(label);
+  outer_div.appendChild(label_div);
+
   let btn_div = document.createElement('div');
   btn_div.setAttribute("class", "jobbox");
   let btn_box = document.createElement('button');
-  // btn_box.setAttribute("class", "jobbox");
+  btn_box.setAttribute("class", "jobbox");
   btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-  btn_box.innerHTML = "<button type='button' class='inlinebtn' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
+  btn_box.innerHTML = "<button type='button' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
   btn_div.appendChild(btn_box);
   outer_div.appendChild(btn_div);
-  // print("<button type='button' content='-' onclick='delete_jobbox(" + id.toString() + ");'>");
 
-  // alert(id.toString());
   jobtypes[id] = input_div;
   numjobs++;
   abs_numjobs++;

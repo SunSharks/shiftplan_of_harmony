@@ -10,56 +10,7 @@ session_start();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>schedule definition</title>
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-    }
-    h1 {text-align: center;}
-    p {text-align: center;}
-    div {display: block;}
-    #insertbtn {
-      width: 30%;
-      float:left;
-      display: inline-block;
-      padding: 15px 25px;
-      margin-top: 60px;
-      margin-left: 10px;
-      margin-right: 5px;
-      font-size: 24px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      outline: none;
-      color: #fff;
-      background-color: #c7e3ab;
-      border: none;
-      border-radius: 15px;
-    }
-
-    #insertbtn:hover {background-color: #3e8e41}
-
-    #insertbtn:active {
-      background-color: #82ceb4;
-      transform: translateY(4px);
-    }
-
-    #delete_link_div {
-      width: 30%;
-      float:left;
-      display: inline-block;
-      padding: 15px 25px;
-      margin-top: 60px;
-      margin-left: 10px;
-      margin-right: 5px;
-      font-size: 24px;
-    }
-
-
-
-
-
-  </style>
+  <link rel="stylesheet" type="text/css" href="tabstyle.css">
 
   <?php
   include("db.php");

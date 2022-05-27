@@ -213,14 +213,14 @@ function setup() {
   }
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
-  row_height = (windowHeight-10 - headerheight) / num_jobs;
+  row_height = (windowHeight-20 - headerheight) / num_jobs;
   let canv;
   if (row_height > 100){
     row_height = 100;
-    canv = createCanvas(windowWidth-5, row_height*num_jobs+150);
+    canv = createCanvas(windowWidth-5, row_height*num_jobs+100);
   }
   else{
-    canv = createCanvas(windowWidth-5, windowHeight-5);
+    canv = createCanvas(windowWidth-5, windowHeight-20);
   }
   canv.parent("p5tab");
 
@@ -234,6 +234,7 @@ function setup() {
   rowheadertexty = headerheight + row_height / 2;
   ww = windowWidth-5;
   wh = windowHeight-5;
+  // COLOR DEFINITION!
   default_colors = [[color(246, 232, 184), color(255, 255, 204)], [color(229, 216, 171), color(241, 241, 185)]];
   default_special_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
   grid = new Grid();

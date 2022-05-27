@@ -102,7 +102,7 @@ function create_jobbox(){
   // console.log(maxid);
   let outer_div = document.createElement('div');
   outer_div.setAttribute("class", "outerjobbox");
-
+  outer_div.setAttribute("id", "outerjobbox"+id.toString());
   let input_div = document.createElement('div');
   input_div.setAttribute("id", "jobbox"+id.toString());
   input_div.setAttribute("class", "jobbox");
@@ -131,14 +131,29 @@ function create_jobbox(){
   label_div.appendChild(label);
   outer_div.appendChild(label_div);
 
-  let btn_div = document.createElement('div');
-  btn_div.setAttribute("class", "jobbox");
-  let btn_box = document.createElement('button');
+  // let btn_div = document.createElement('div');
+  // btn_div.setAttribute("class", "jobbox");
+  let btn_box = document.createElement('div');
   btn_box.setAttribute("class", "jobbox");
-  btn_box.setAttribute("id", "jobdelbtn"+id.toString());
-  btn_box.innerHTML = "<button type='button' onclick='delete_jobbox(" + id.toString() + ");'>-</button>";
-  btn_div.appendChild(btn_box);
-  outer_div.appendChild(btn_div);
+  // btn_box.setAttribute("id", "jobdelbtn"+id.toString());
+  // btn_box.style.borderRadius = "5px";
+  // btn_box.style.float = "left";
+  // btn_box.style.display = "inline-block";
+  // btn_box.style.padding = "5px";
+  // btn_box.style.fontSize = "24px";
+  // btn_box.style.textAlign = "center";
+  // btn_box.style.cursor = "pointer";
+  // btn_box.style.textDecoration = "none";
+  // btn_box.style.outline = "none";
+  // btn_box.style.color = "#fff";
+  // btn_box.style.backgroundColor = "#c7e3ab";
+  // btn_box.style.border = "none";
+
+  // btn_box.setAttribute('style', 'width:5%;float:left;display:inline-block;padding:5px;border-radius:15px;
+  // font-size:24px;cursor:pointer;text-align:center;text-decoration:none;outline:none;color:#fff;background-color:#c7e3ab;border:none;');
+  btn_box.innerHTML = "<button id='jobdelbtn"+id.toString() + "' type='button' onclick='delete_jobbox(" + id.toString() + ");'>Löschen</button>"; // LANG!!
+  // btn_div.appendChild(btn_box);
+  outer_div.appendChild(btn_box);
 
   jobtypes[id] = input_div;
   numjobs++;
@@ -166,6 +181,8 @@ function delete_jobbox(id){
   e.remove();
   const cb = document.getElementById("special"+id.toString());
   cb.remove();
+  const outer = document.getElementById("outerjobbox"+id.toString());
+  outer.remove();
   delete jobtypes[id];
 }
 

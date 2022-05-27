@@ -3,16 +3,20 @@ body {
   margin: 0px;
   block-size: fit-content;
 }
-h1 {text-align: center;}
-p {text-align: left;
+h1 {
+  text-align: center;
+}
+p {
+  text-align: left;
   margin: 10px;
 }
-
 .day {
   /* margin-left: 250pt; */
   float: right;
   width: fit-content;
 }
+
+
 .daybox {
   background: rgb(188, 212, 153);
   float:left;
@@ -40,6 +44,7 @@ p {text-align: left;
   position:relative;
   background: #f6e8b8;
   float: left;
+  width: fit-content;
   display: block;
   padding: 100;
   margin: 100;
@@ -52,6 +57,33 @@ p {text-align: left;
   padding: 10px;
   margin: 10px;
 }
+
+/* #jobdelbtn {
+  width: 5%;
+  float:left;
+  display: inline-block;
+  padding: 0;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+#jobdelbtn:hover {background-color: #3e8e41}
+
+#jobdelbtn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+} */
+
 
 #add_predef_jobs {
   background: #c7e3ab;
@@ -73,8 +105,28 @@ p {text-align: left;
   /* background: rgb(100, 200, 0); */
   float: left;
   display: inline;
-  padding: 100;
-  margin: 100;
+  /* padding: 10px; */
+  /* margin: 2px 3px; */
+}
+
+[id^="jobdelbtn"] {
+  padding: 0px 20px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 5px;
+  }
+
+[id^="jobdelbtn"]:hover {background-color: #3e8e41}
+
+[id^="jobdelbtn"]:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
 }
 
 #del_day {
@@ -153,6 +205,8 @@ p {text-align: left;
 
 #submitdivbtn {
   width: 60%;
+  bottom: 0;
+  right: 0;
   height: 300px;
   float:right;
   display: inline-block;

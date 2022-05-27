@@ -203,7 +203,7 @@ function get_jobbox_html($id, $jobname, $special){
     $checked = "checked";
     $helper = "Helper";
     $style = "style='background:rgb(188, 100, 153)'";
-    $divstyle = ";background:rgb(188, 100, 153)";
+    $divstyle = ";border:2px solid #e2001e;border-radius:5px";
   }
   else{
     $checked = "";
@@ -211,7 +211,7 @@ function get_jobbox_html($id, $jobname, $special){
     $style = "";
     $divstyle = "";
   }
-  $html = "<div class='outerjobbox' style='margin:5px;padding:5px'>
+  $html = "<div class='outerjobbox' style='height:fit-content;margin:8px;padding:8px'>
 <p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' value='$jobname' readonly></div>

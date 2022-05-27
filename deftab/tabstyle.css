@@ -1,0 +1,123 @@
+body {
+  padding: 20;
+  margin: 50;
+}
+h1 {text-align: center;}
+p {text-align: center;}
+div {display: block;}
+
+#wholeviewbtn {
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #82ceb4;
+  border: none;
+  border-radius: 5px;
+}
+#wholeviewbtn:hover {background-color: #dff8c3}
+
+#wholeviewbtn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}
+
+#delete_link_div {
+  width: 30%;
+  float:left;
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 60px;
+  margin-left: 10px;
+  margin-right: 5px;
+  font-size: 24px;
+}
+
+
+#insertbtn {
+  width: 80%;
+  float:left;
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 60px;
+  margin-left: 10px;
+  margin-right: 5px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+#insertbtn:hover {background-color: #3e8e41}
+
+#insertbtn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}
+
+#delete_link_div {
+  width: 30%;
+  float:left;
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 60px;
+  margin-left: 10px;
+  margin-right: 5px;
+  font-size: 24px;
+}
+
+/*
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+#head_line {
+  width: 100%;
+  height: 10%;
+  overflow: auto;
+}
+
+#backtodefs {
+  width: 100px;
+  height: 100%;
+  float: left;
+}
+
+#daybtns {
+  width: 100%;
+  height: 50%;
+  float: left;
+}
+
+#wholeviewbtn {
+  width: 100%;
+  height: 50%;
+  float: left;
+}
+
+#p5tab {
+  width: 100%;
+  height: 70%;
+}
+
+#insert_into_db_form {
+  display: none;
+}
+
+#insertDBbtn {
+  width: 100%;
+  height: 10%;
+  display: block;
+}
+
+#dellink {
+  color: #f49cac;
+} */

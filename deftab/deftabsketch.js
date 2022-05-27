@@ -110,6 +110,7 @@ function get_params_readonly(ds, jts, js){
   for (let i=0; i<jts.length; i++){
     let id = jts[i]["id"];
     let new_jt = new Jobtype(id);
+    console.log(jts[i]);
     new_jt.set_name(jts[i]["name"]);
     new_jt.set_indb();
     if (jts[i]["special"] === true){
@@ -358,7 +359,7 @@ function draw() {
         if (mouseY > editable_area){
           let colliding_row = get_colliding_row(mouseY);
           if (colliding_row === false){
-            console.log("no colliding row");
+            // console.log("no colliding row");
             return;
           }
           let use_grid;
@@ -370,7 +371,7 @@ function draw() {
           }
           for (var i=0; i<use_grid.rows[colliding_row].length; i++){
             if (use_grid.rows[colliding_row][i].collides(mouseX, mouseY) && !jobtypes.get(use_grid.rows[colliding_row][i].jobtype_id).indb){
-              console.log("colides" + use_grid.rows[colliding_row][i].name);
+              // console.log("colides" + use_grid.rows[colliding_row][i].name);
               if(row == -1){
                 row = Math.floor(i/grid.cols.length);
               }
@@ -611,6 +612,7 @@ class Grid {
   }
 
   make_rowheaders(){
+    console.log(jobnames);
     let y = rowheadertexty;
     if (deletion_mode){
       for (var [key, value] of jobtypes.entries()){

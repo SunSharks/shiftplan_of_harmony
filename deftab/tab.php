@@ -8,6 +8,8 @@ session_start();
 
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>schedule definition</title>
   <link rel="stylesheet" type="text/css" href="tabstyle.css">
@@ -83,9 +85,11 @@ session_start();
 
 
   <?php
+    $jts = fetch_it(get_jobtypes_sql());
+    $_SESSION["jts"] = $jts;
     $jobs = fetch_it(get_jobs_sql());
     $jsjobs = json_encode($jobs);
-    $_SESSION["jobs"] = $jsjobs;
+    $_SESSION["jobs"] = $jobs;
     echo "<script> insert_predefined_jobs($jsjobs);</script>";
   ?>
 
@@ -164,8 +168,10 @@ session_start();
           $d = json_encode($jtvals[$i]);
         }
       }
+
       $_SESSION["jts_indb"] = true;
-      $_SESSION["jts"] = $jtvals;
+      $jts = fetch_it(get_jobtypes_sql());
+      $_SESSION["jts"] = $jts;
       unset($_POST['jobtypes']);
     }
 
@@ -206,10 +212,10 @@ session_start();
   <?php
   if ($_SESSION["jobs_indb"] || (empty($_GET) && empty($_POST))){
     echo "Geschafft.";
-    $_SESSION["jobs"] = json_encode(fetch_it(get_jobs_sql()));
+    $_SESSION["jobs"] = fetch_it(get_jobs_sql());
     $d_s = json_encode($_SESSION["days"]);
     $jt_s = json_encode($_SESSION["jts"]);
-    $j_s = $_SESSION["jobs"];
+    $j_s = json_encode($_SESSION["jobs"]);
     echo "<script>set_post_request_mode();</script>";
     echo "<script>get_params_readonly($d_s, $jt_s, $j_s);</script>";
     echo "<script>unset_edit_mode();</script>";

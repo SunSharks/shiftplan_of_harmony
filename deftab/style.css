@@ -32,7 +32,7 @@ p {
   position:relative;
   float: left;
   display: block;
-  width: 30%;
+  width: 40%;
   padding: 10px;
 }
 
@@ -111,7 +111,7 @@ p {
 
 [id^="jobdelbtn"] {
   padding: 0px 20px;
-  font-size: 24px;
+  font-size: 15px;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
@@ -204,10 +204,10 @@ p {
 }
 
 #submitdivbtn {
-  width: 60%;
+  width: 50%;
   bottom: 0;
   right: 0;
-  height: 300px;
+  height: 200px;
   float:right;
   display: inline-block;
   padding: 15px 25px;

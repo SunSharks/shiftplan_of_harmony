@@ -123,10 +123,8 @@ session_start();
     }
     unset($_POST['deljobs']);
     $jobs = fetch_it(get_jobs_sql());
-    // $jsjobs = json_encode($jobs);
     $_SESSION["jobs"] = $jobs;
     $jts = fetch_it(get_jobtypes_sql());
-    // $jsjobs = json_encode($jts);
     $_SESSION["jts"] = $jts;
   }
   ?>

@@ -251,7 +251,7 @@ function setup() {
 
   // grid.update_predefs();
   if (edit_mode === true){
-    cntbox = new Countbox(0, gridendy-10, rowheaderwidth, 50);
+    cntbox = new Countbox(0, gridendy-30, rowheaderwidth, 50);
   }
   let daybtn_div = document.getElementById("daybtns");
   let w = rowheaderwidth.toString() + "px";

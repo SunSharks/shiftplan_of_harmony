@@ -2,11 +2,13 @@ let request_mode = "get";
 let get_params  = new Map();
 let edit_mode = true;
 let deletion_mode = false;
+let view_old_jobs = true;
 let del_btns = [];
 //  JOBS
 let jt_id_to_griditems = new Map();
 let jobnames = []; // "Ordnung", "Springer", "Bar", "Amphitheaterbetreuung", "Alternativebetreuung", "Büro", "Finanzamt", "Wasser", "Technik"
 let jobtypes = new Map(); // {id: <jobtype instance>}
+let new_jobs = [];
 let num_jobs;
 let predef_jobs = [];
 let json_jobs = [];
@@ -68,7 +70,6 @@ function set_get_request_mode(){
 }
 
 function unset_edit_mode(){
-  console.log("unset edit_mode");
   edit_mode = false;
 }
 
@@ -78,6 +79,16 @@ function set_deletion_mode(){
 
 function unset_deletion_mode(){
   deletion_mode = false;
+}
+
+function set_view_old_jobs(){
+  console.log("set_view_old_jobs");
+  view_old_jobs = true;
+}
+
+function unset_view_old_jobs(){
+  console.log("unset_view_old_jobs");
+  view_old_jobs = false;
 }
 
 get_params = () => {
@@ -123,11 +134,14 @@ function get_params_readonly(ds, jts, js){
   predef_jobs = js;
 }
 
-
+// http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&special147=special147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=&show_only_new_jobs=true
 
 
 function assign_params(map){
   let id;
+  if (map.has("show_only_new_jobs")) {
+    view_old_jobs = false;
+  }
   map.forEach (function(value, key){
     if (key.startsWith("day")){
       id = parseInt(key.slice(3));
@@ -152,15 +166,18 @@ function assign_params(map){
     else if (key.startsWith("PRE")){
       id = parseInt(key.slice(6));
       if (key.startsWith("PREjob")){
-        if (jobtypes.has(id)){
-          jobtypes.get(id).set_indb();
-          jobtypes.get(id).set_name(value);
-        }
-        else{
-          let new_jt = new Jobtype(id);
-          new_jt.set_indb();
-          jobtypes.set(id, new_jt);
-        }
+        // if (view_old_jobs === true){
+          if (jobtypes.has(id)){
+              jobtypes.get(id).set_indb();
+              jobtypes.get(id).set_name(value);
+            }
+          else{
+            let new_jt = new Jobtype(id);
+            new_jt.set_indb();
+            jobtypes.set(id, new_jt);
+          }
+          console.log("GET view_old_jobs");
+        // }
       }
       else if (key.startsWith("PREday")){
         if (days.has(id)){
@@ -207,10 +224,10 @@ function insert_job_indb(job_json){
 
 function setup() {
   if (request_mode === "get"){
-    // console.log("get");
+    console.log("get");
     get_params = get_params();
     assign_params(get_params);
-    // console.log("__get");
+    console.log("__get");
   }
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
@@ -228,6 +245,8 @@ function setup() {
   if (request_mode === "post"){
     background(242, 199, 87, 200);
   }
+  console.log(jobtypes);
+  console.log(view_old_jobs);
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
   let corrector = (default_col_width / 2) - txtsize / 2 -1;
@@ -245,7 +264,7 @@ function setup() {
   // savebtn.draw();
   // console.log(jt_id_to_griditems);
   // console.log(predef_jobs);
-  // if (request_mode != "get"){
+  // if (view_old_jobs === true){
     grid.insert_predefs();
   // }
 
@@ -727,6 +746,103 @@ class Daygrid {
   }
 }
 
+class Newjobgrid {
+  constructor(whole_grid){
+    // whole_grid: Grid object, day: day index.
+    clean_it_up();
+    btn.draw();
+    this.ids = [];
+    for (var [key, value] of jobtypes.entries()){
+      if (jobtypes.get(key).indb === false){
+        this.ids.push(jobtypes.get(key).id);
+      }
+    }
+    this.num_jobs = this.ids.length;
+    this.row_height = (windowHeight-20 - headerheight) / this.num_jobs;
+    this.whole_grid = whole_grid;
+    this.startrow = day * 24;
+    this.endrow = this.startcol + 24;
+    this.rows = [];
+    this.cols = [];
+    this.make_colheaders();
+    this.make_rowheaders();
+
+    this.calc_rows_and_cols();
+    this.update_coords();
+  }
+
+  calc_rows_and_cols(){
+    for (let i=0; i<this.whole_grid.rows.length; i++){
+      this.rows.push(this.whole_grid.rows[i].slice(this.startcol, this.endcol));
+    }
+    let col = [];
+    for (let i=0; i<24; i++){
+      for (let j=0; j<num_jobs; j++){
+        col.push(this.rows[j][i])
+      }
+      this.cols.push(col)
+      col = [];
+    }
+  }
+
+  update_coords(){
+    clean_it_up();
+    btn.draw();
+    this.make_colheaders();
+    this.make_rowheaders();
+    let y = headerheight;
+    for (let i=0; i<this.whole_grid.rows.length; i++){
+      for (let j=0; j<this.whole_grid.rows[i]; j++){
+        this.whole_grid.rows[i][j].unset_coords();
+      }
+    }
+    for (let i=0; i<this.rows.length; i++){
+      let x = rowheaderwidth;
+      for (let j=0; j<24; j++){
+        this.rows[i][j].set_new_coords(x, y, this.col_width, row_height);
+        this.rows[i][j].show();
+        x += this.col_width;
+      }
+      y += row_height;
+    }
+  }
+
+  generate_random_color(){
+    let r = random(255); // r is a random number between 0 - 255
+    let g = random(255); // g is a random number betwen 100 - 200
+    let b = random(200); // b is a random number between 0 - 100
+    // let a = random(200,255); // a is a random number between 200 - 255
+    return color(r, g, b);
+  }
+
+  insert_text(t, x, y){
+    fill(0);
+    // stroke(1);
+    textFont('Helvetica');
+    textSize(12);
+    text(t, x, y);
+    pop();
+  }
+
+  make_colheaders(){
+    let x = headertextx + this.col_width/2;
+    let y = headertexty;
+    for (let i=0; i<1; i++){
+      for (let j=0; j<24; j++){
+        this.insert_text(j.toString(), x, y);
+        x += this.col_width;
+      }
+    }
+  }
+
+  make_rowheaders(){
+    let y = rowheadertexty;
+    for (let i=0; i<num_jobs; i++){
+      this.insert_text(jobnames[i], 0, y);
+      y += row_height;
+    }
+  }
+}
 
 
 class Griditem {

@@ -9,6 +9,8 @@ session_start();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="tabstyle.css">
+  
   <title>schedule definition</title>
   <style>
     body {
@@ -165,7 +167,7 @@ session_start();
 </p>
 <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="delete_jobtype.php">
   <input name="deljobs" type=hidden>
-  <input name="DELETE" type="submit" value="DELETE">
+  <input id="deletebtn" name="DELETE" type="submit" value="DELETE">
 </form>
 
 </body>

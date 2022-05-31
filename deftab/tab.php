@@ -54,6 +54,7 @@ session_start();
   if (!empty($_GET)){
     $days = [];
     $new_days = [];
+    $only_new_jobs_found = false;
     foreach($_GET as $key=>$val){
       if (str_starts_with($key, "day")){
         $tmp = array();
@@ -71,7 +72,16 @@ session_start();
         // echo $tmp["name"];
         array_push($days, $tmp);
       }
+      // else if (str_starts_with($key, "show_only_new_jobs")) {
+      //   $_SESSION["view_old_jobs"] = false;
+      //   echo "<script> unset_view_old_jobs();</script>";
+      //   $only_new_jobs_found = true;
+      // }
     }
+    // if ($only_new_jobs_found === false) {
+    //   $_SESSION["view_old_jobs"] = true;
+    // }
+    // http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&special147=special147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=
     $_SESSION["new_days"] = $new_days;
     $_SESSION["days"] = $days;
   }
@@ -226,17 +236,12 @@ session_start();
   ?>
 </div>
   <br><br><br>
-  <?php
-  $jtar = $_POST['jobtypes'];
-  if (isset($jtar) && !$_SESSION["jts_indb"]){
-    echo json_encode($_POST['jobtypes']);
-  }
-  else{
-    echo "<div id='p5tab'></div>";
-    echo "<main></main>";
-  }
-    ?>
 
+    <p>
+    <div id="p5tab" style="overflow:visible"></div>
+      <main>
+      </main>
+  </p>
 
     <div id="insertform">
       <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">

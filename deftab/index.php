@@ -75,7 +75,10 @@ session_start();
           </div>
         </div>
         <div id="submitdiv">
-          <p><input id="submitdivbtn" type="submit" value="Zur Schichttabelle."></p>
+          <p>
+            <input name="show_only_new_jobs" type="checkbox" value="true">Show only new
+            <input id="submitdivbtn" type="submit" value="Zur Schichttabelle.">
+          </p>
         </div>
       </div>
     </form>

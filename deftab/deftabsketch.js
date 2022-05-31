@@ -110,7 +110,7 @@ function get_params_readonly(ds, jts, js){
   for (let i=0; i<jts.length; i++){
     let id = jts[i]["id"];
     let new_jt = new Jobtype(id);
-    console.log(jts[i]);
+    // console.log(jts[i]);
     new_jt.set_name(jts[i]["name"]);
     new_jt.set_indb();
     if (jts[i]["special"] === true){
@@ -207,10 +207,10 @@ function insert_job_indb(job_json){
 
 function setup() {
   if (request_mode === "get"){
-    console.log("get");
+    // console.log("get");
     get_params = get_params();
     assign_params(get_params);
-    console.log("__get");
+    // console.log("__get");
   }
   num_cols = num_days * 24;
   default_col_width = (windowWidth-5 - rowheaderwidth-5) / (num_cols);
@@ -491,8 +491,8 @@ class Grid {
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan'];
     let c = 0;
     let _maxid = -1;
-    console.log(jt_id_to_griditems);
-    console.log(predef_jobs);
+    // console.log(jt_id_to_griditems);
+    // console.log(predef_jobs);
     for (var i=0; i< predef_jobs.length; i++){
       // curr_color = this.generate_random_color();
       curr_color = colors[c%colors.length];
@@ -563,7 +563,7 @@ class Grid {
   assemble_grid(num_rows=num_jobs){
     let y = headerheight;
     let cnt = 0;
-    console.log(jobtypes);
+    // console.log(jobtypes);
     for (var [key, value] of jobtypes.entries()){
       this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
       y += row_height;
@@ -612,7 +612,7 @@ class Grid {
   }
 
   make_rowheaders(){
-    console.log(jobnames);
+    // console.log(jobnames);
     let y = rowheadertexty;
     if (deletion_mode){
       for (var [key, value] of jobtypes.entries()){

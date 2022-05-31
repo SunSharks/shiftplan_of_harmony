@@ -13,7 +13,7 @@ let job_maxid = 0;
 
 
 function set_days(d, maxid){
-  console.log(d);
+  // console.log(d);
   day_instances.push(new Day(d.date));
   day_maxid = maxid;
   numdays = d.length;
@@ -93,7 +93,7 @@ function create_daybox(){
 }
 
 function updateValue(e) {
-  console.log(e.target.value);
+  // console.log(e.target.value);
   log.textContent = e.target.value;
 }
 
@@ -239,8 +239,8 @@ function make_day_instances(d){
 }
 
 function show_date(id){
-  console.log("day" + id);
-  console.log(document.getElementById("day" + id).value);
+  // console.log("day" + id);
+  // console.log(document.getElementById("day" + id).value);
   let date = document.getElementById("day" + id).value;
   let tmp = new Date(date);
   document.getElementById("day_label"+id).setAttribute("value", daynames[tmp.getDay()]);

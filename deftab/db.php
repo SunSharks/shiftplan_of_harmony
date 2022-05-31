@@ -1,6 +1,11 @@
+<!DOCTYPE html>
+<html lang="de">
 
-
-
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
 <?php
 // (A) SETTINGS - CHANGE TO YOUR OWN !
 error_reporting(E_ALL & ~E_NOTICE);
@@ -14,6 +19,22 @@ $day_order = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samsta
 $day_cnt = 0;
 // $days = [];
 $job_cnt = 0;
+
+function repair_umlauts($s){
+  $umlaute = array('%C3%A4', '%C3%B6', '%C3%BC', '%C3%9F', '%C3%84', '%C3%96', '%C3%9C', '%20');
+  $ersetze = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', " ");
+  return str_replace($umlaute, $ersetze, $s);
+}
+
+function recover_umlauts($s){
+  $umlaute = array('u00e4', 'u00f6', 'u00fc', 'u00df', 'u00c4', 'u00d6', 'u00dc');
+  $ersetze = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü');
+  return str_replace($umlaute, $ersetze, $s);
+}
+
+// $s = rawurlencode('ärger');
+// printf(repair_umlauts($s));
+
 
 function regain_integrity(){
   $pdo = connect();
@@ -69,15 +90,14 @@ function insert_jobtype_sql($jt){
   // echo "$sql";
   $jt_indb = perform_query($pdo, $sql);
   if (sizeof($jt_indb) > 0){
-    // printf("jaaas");
     return "";
   }
-
+  $n = repair_umlauts(recover_umlauts(utf8_encode(rawurlencode($jt->name))));
   if ($jt->special == 1){
-    return "INSERT INTO Jobtypes (name, special) VALUES ('$jt->name', true)";
+    return "INSERT INTO Jobtypes (name, special) VALUES ('$n', true)";
   }
   else{
-    return "INSERT INTO Jobtypes (name, special) VALUES ('$jt->name', false)";
+    return "INSERT INTO Jobtypes (name, special) VALUES ('$n', false)";
   }
 }
 
@@ -163,6 +183,8 @@ function perform_query($pdo, $sql){
   // echo $sql;
   // echo "<br> ___";
   try{
+    $stmts = $pdo->prepare('SET NAMES utf8');
+    $stmts->execute();
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $res = $stmt->fetchAll();
@@ -214,7 +236,7 @@ function get_jobbox_html($id, $jobname, $special){
   $html = "<div class='outerjobbox' style='height:fit-content;margin:8px;padding:8px'>
 <p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
-<input type='text' name='job$id' id='job$id' value='$jobname' readonly></div>
+<input type='text' name='job$id' id='job$id' accept-charset='utf-8' value='$jobname' readonly></div>
 <div class='jobbox'>
 <input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $checked></div>
 <div class='jobbox'>
@@ -225,3 +247,5 @@ function get_jobbox_html($id, $jobname, $special){
   return $html;
 }
 ?>
+</body>
+</html>

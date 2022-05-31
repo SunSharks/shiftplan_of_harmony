@@ -34,8 +34,8 @@ session_start();
     for (let i=0; i<job_instances.length; i++){
       job_values.push(JSON.stringify(job_instances[i]));
     }
-    console.log(job_values);
-    console.log(job_instances);
+    // console.log(job_values);
+    // console.log(job_instances);
     document.Form.days.value = day_values;
     document.Form.jobtypes.value = jt_values;
     document.Form.jobs.value = job_values;
@@ -109,7 +109,7 @@ session_start();
     if (isset($postar)){
       // echo count($js);
       for ($i=0;$i<count($js);$i++){
-        $j = json_encode(utf8_encode($js[$i]));
+        $j = recover_umlauts(json_encode($js[$i]));
         if (str_ends_with($j, '"') || str_ends_with($j, '"')){
           $j = substr($j, 0, -1);
         }
@@ -157,15 +157,18 @@ session_start();
     $jtar = $_POST['jobtypes'];
     if (isset($jtar) && !$_SESSION["jts_indb"]){
       $jtvals = process_postval($jtar);
-      $jt_names = array();
+      // $jt_names = array();
       for ($i=0; $i<count($jtvals); $i++){
+        // printf(json_encode($jtvals[$i]->name));
+        // echo utf8_encode(rawurlencode($jtvals[$i]->name));
         $jobsql = insert_jobtype_sql($jtvals[$i]);
-        $jt_names[$jtvals[$i]->name] = $jtvals[$i];
+
+        // $jt_names[$jtvals[$i]->name] = $jtvals[$i];
         if ($jobsql != ""){
           $pdo = connect();
           perform_query($pdo, $jobsql);
           $pdo = null;
-          $d = json_encode($jtvals[$i]);
+          // $d = json_encode($jtvals[$i]);
         }
       }
 
@@ -223,9 +226,18 @@ session_start();
   ?>
 </div>
   <br><br><br>
-  <div id="p5tab"></div>
-    <main>
-    </main>
+  <?php
+  $jtar = $_POST['jobtypes'];
+  if (isset($jtar) && !$_SESSION["jts_indb"]){
+    echo json_encode($_POST['jobtypes']);
+  }
+  else{
+    echo "<div id='p5tab'></div>";
+    echo "<main></main>";
+  }
+    ?>
+
+
     <div id="insertform">
       <form name="Form" method="post" onsubmit="insertarrayintohiddenformfield()" action="tab.php">
         <input name='days' type=hidden>
@@ -238,6 +250,8 @@ session_start();
       <a href="./delete_jobtype.php" id="delete_link">Delete a Jobtype</a>
     </div>
 </div>
+
+
 <!-- <br> -->
 <!-- <p>
 <div>

@@ -54,27 +54,46 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
           <!-- JOBTYPE ROWS -->
           <?php
             foreach ($_SESSION["jts"] as $jt){
-              echo "<tr>";
+              $jt_id = $jt["id"];
+              $rowidstr = "id='row$jt_id'";
+              echo "<tr $rowidstr $row_class $style>";
               $n = $jt["name"];
               echo "<td align='center' height='50'><b>$n</b></td>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
-              $layout = "";
               $idx = 0;
               foreach ($jt_jobs as $j){
                 $id = $j["id"];
                 $span_hours = $j["during"];
                 while ($idx < $j["abs_start"]){
+                  if ($idx % 2 === 0){
+                    $style = "style='background-color:#d3e3c4'";
+                  }
+                  else{
+                    $style = "style='background-color:#edf9e1'";
+                  }
                   $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
-                  echo "<td align='center' height='50'>$inp</td>";
+                  echo "<td $style align='center' height='50'>$inp</td>";
                   $idx++;
                 }
-                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5'>";
-                echo "<td colspan='$span_hours' align='center' height='50'>$inp</td>";
-                $idx = $j["abs_end"]+1;
+                if ($idx % 2 === 0){
+                  $style = "style='background-color:#d3e3c4'";
+                }
+                else{
+                  $style = "style='background-color:#edf9e1'";
+                }
+                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' value='3' min='1' max='5'>";
+                echo "<td $style colspan='$span_hours' align='center' height='50'>$inp</td>";
+                $idx = $j["abs_end"];
               }
-              while ($idx < $_SESSION["num_timecols"]){
+              while ($idx <= $_SESSION["num_timecols"]){
+                if ($idx % 2 === 0){
+                  $style = "style='background-color:#d3e3c4'";
+                }
+                else{
+                  $style = "style='background-color:#edf9e1'";
+                }
                 $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
-                echo "<td align='center' height='50'>$inp</td>";
+                echo "<td $style align='center' height='50'>$inp</td>";
                 $idx++;
               }
               echo "</tr>";

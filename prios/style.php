@@ -11,6 +11,19 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
   table-layout: fixed;
 } -->
 
+input {
+        resize: horizontal;
+        width: 50px;
+    }
+
+    input:active {
+        width: auto;
+    }
+
+    input:focus {
+        min-width: 50px;
+    }
+
 .prios {
   <!-- display: grid;
   grid-template-rows: <?=$grid_template_rows?>;
@@ -19,10 +32,19 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
   padding: 10px;
   overflow: auto;
 }
-.normal_gridit {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  font-size: 10px;
-  text-align: center;
+
+
+[id^="row"] {
+  cursor: pointer;
+  }
+
+[id^="row"]:hover {background-color: #3e8e41}
+
+[id^="row"]:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}
+
+#submitdivbtn {
+  width: fit-content;
 }

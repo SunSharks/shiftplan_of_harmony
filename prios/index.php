@@ -28,7 +28,7 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
   <h1>Prioritäten</h1>
   <div id="prios" class="prios">
     <form action="index.php"  method="post">
-      <table border="5" cellspacing="0" align="center">
+      <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->
             <td rowspan="2" align="center" height="50">
@@ -53,12 +53,14 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
           </tr>
           <!-- JOBTYPE ROWS -->
           <?php
+            $odd_style = "style='background-color:#edf9e1'";
+            $even_style = "style='background-color:#d3e3c4'";
             foreach ($_SESSION["jts"] as $jt){
               $jt_id = $jt["id"];
               $rowidstr = "id='row$jt_id'";
               echo "<tr $rowidstr $row_class $style>";
               $n = $jt["name"];
-              echo "<td align='center' height='50'><b>$n</b></td>";
+              echo "<th class='rowhead' align='left' height='50'><b>$n</b></th>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
               $idx = 0;
               foreach ($jt_jobs as $j){
@@ -66,20 +68,20 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
                 $span_hours = $j["during"];
                 while ($idx < $j["abs_start"]){
                   if ($idx % 2 === 0){
-                    $style = "style='background-color:#d3e3c4'";
+                    $style = $even_style;
                   }
                   else{
-                    $style = "style='background-color:#edf9e1'";
+                    $style = $odd_style;
                   }
                   $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
                   echo "<td $style align='center' height='50'>$inp</td>";
                   $idx++;
                 }
                 if ($idx % 2 === 0){
-                  $style = "style='background-color:#d3e3c4'";
+                  $style = $even_style;
                 }
                 else{
-                  $style = "style='background-color:#edf9e1'";
+                  $style = $odd_style;
                 }
                 $inp = "<input type='number' id='prioinp$id' name='prioinp$id' value='3' min='1' max='5'>";
                 echo "<td $style colspan='$span_hours' align='center' height='50'>$inp</td>";
@@ -87,10 +89,10 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
               }
               while ($idx <= $_SESSION["num_timecols"]){
                 if ($idx % 2 === 0){
-                  $style = "style='background-color:#d3e3c4'";
+                  $style = $even_style;
                 }
                 else{
-                  $style = "style='background-color:#edf9e1'";
+                  $style = $odd_style;
                 }
                 $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
                 echo "<td $style align='center' height='50'>$inp</td>";

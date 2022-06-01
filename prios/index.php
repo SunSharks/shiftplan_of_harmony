@@ -18,70 +18,76 @@ include("db.php");
 regain_integrity();
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
-$_SESSION["jobs"] = fetch_it(get_jobs_sql());
+$_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
 </head>
 
 
 <body>
-  <?php
-  // foreach ($_SESSION["days"] as $d){
-  //   $n = $d["name"];
-  //   echo "<div class='normal_gridit'>$n</div>";
-  // }
-  // foreach ($_SESSION["jts"] as $jt){
-  //   $n = $jt["name"];
-  //   echo "<div class='normal_gridit'>$n</div>";
-  //   foreach ($_SESSION["days"] as $d){
-  //     echo "<div class='inner_grid'>";
-  //     $inp = "<input type='number' id='prioinp' name='prioinp' min='1' max='5'>";
-  //     echo "<div class='grid-item'>INPUT</div>";
-  //     echo "</div>";
-  //   }
-  // }
-  ?>
   <h1>Prioritäten</h1>
   <div id="prios" class="prios">
-    <table border="5" cellspacing="0" align="center">
-        <!--<caption>Timetable</caption>-->
-        <tr> <!-- DAYNAME ROW -->
-          <td rowspan="2" align="center" height="50">
-              <b>Job/Time</b></br>
-          </td>
-          <?php
-          foreach ($_SESSION["days"] as $d){
-            $n = $d["name"];
-            echo "<td colspan='24' align='center' height='50'><b>$n</b></td>";
-          }
-          ?>
-        </tr>
-
-        <tr> <!-- DAYTIME ROW -->
-          <?php
-          foreach ($_SESSION["days"] as $d){
-            for ($i=0; $i<24; $i++){
-              echo "<td align='center' height='50'><b>$i</b></td>";
+    <form action="index.php"  method="post">
+      <table border="5" cellspacing="0" align="center">
+          <!--<caption>Timetable</caption>-->
+          <tr> <!-- DAYNAME ROW -->
+            <td rowspan="2" align="center" height="50">
+                <b>Job/Time</b></br>
+            </td>
+            <?php
+            foreach ($_SESSION["days"] as $d){
+              $n = $d["name"];
+              echo "<td colspan='24' align='center' height='50'><b>$n</b></td>";
             }
-          }
-          ?>
-        </tr>
-        <?php
-        foreach ($_SESSION["jts"] as $jt){
-          echo "<tr>";
-          $n = $jt["name"];
-          echo "<td align='center' height='50'><b>$n</b></td>";
-          foreach ($_SESSION["days"] as $d){
-            for ($i=0; $i<24; $i++){
-              echo "<td align='center' height='50'><b>.</b></td>";
+            ?>
+          </tr>
+
+          <tr> <!-- DAYTIME ROW -->
+            <?php
+            foreach ($_SESSION["days"] as $d){
+              for ($i=0; $i<24; $i++){
+                echo "<td align='center' height='50'><b>$i</b></td>";
+              }
             }
-          }
-          echo "</tr>";
-        }
-        ?>
-
-
+            ?>
+          </tr>
+          <!-- JOBTYPE ROWS -->
+          <?php
+            foreach ($_SESSION["jts"] as $jt){
+              echo "<tr>";
+              $n = $jt["name"];
+              echo "<td align='center' height='50'><b>$n</b></td>";
+              $jt_jobs = fetch_jobtype_jobs($jt["id"]);
+              $layout = "";
+              $idx = 0;
+              foreach ($jt_jobs as $j){
+                $id = $j["id"];
+                $span_hours = $j["during"];
+                while ($idx < $j["abs_start"]){
+                  $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
+                  echo "<td align='center' height='50'>$inp</td>";
+                  $idx++;
+                }
+                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5'>";
+                echo "<td colspan='$span_hours' align='center' height='50'>$inp</td>";
+                $idx = $j["abs_end"]+1;
+              }
+              while ($idx < $_SESSION["num_timecols"]){
+                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
+                echo "<td align='center' height='50'>$inp</td>";
+                $idx++;
+              }
+              echo "</tr>";
+            }
+          ?>
       </table>
+      <div id="submitdiv">
+          <p>
+            <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
+            <input id="submitdivbtn" type="submit" value="Speichern">
+          </p>
+        </div>
+    </form>
   </div>
 
 </body>

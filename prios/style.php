@@ -7,6 +7,9 @@ $grid_template_columns = str_repeat(" auto ", $num_days+1);
 $grid_template_rows = str_repeat(" auto ", $num_jts+1);
  ?>
 
+<!-- table {
+  table-layout: fixed;
+} -->
 
 .prios {
   <!-- display: grid;

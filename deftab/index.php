@@ -25,6 +25,7 @@ session_start();
   <?php
   include("db.php");
   regain_integrity();
+  $_SESSION["deleted"] = "none";
    ?>
   <script src=def.js></script>
 </head>
@@ -76,7 +77,7 @@ session_start();
         </div>
         <div id="submitdiv">
           <p>
-            <input name="show_only_new_jobs" type="checkbox" value="true">Show only new
+            <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
             <input id="submitdivbtn" type="submit" value="Zur Schichttabelle.">
           </p>
         </div>

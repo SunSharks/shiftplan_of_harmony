@@ -27,13 +27,14 @@ td, th {
 }
 div {
   overflow-x: scroll;
-  margin-left: 5em;
+  margin-left: 0;
   overflow-x: visible;
   padding: 0;
 }
 .rowhead {
+  background-color: rgba(134, 180, 105, 0.57);
   position: absolute;
-  width: 50em;
+  width: fit-content;
   left: 0;
   top: auto;
   border: none;

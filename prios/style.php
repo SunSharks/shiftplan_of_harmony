@@ -9,9 +9,9 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
 
 
 .prios {
-  display: grid;
+  <!-- display: grid;
   grid-template-rows: <?=$grid_template_rows?>;
-  grid-template-columns: <?=$grid_template_columns?>;
+  grid-template-columns: <?=$grid_template_columns?>; -->
   background-color: #2196F3;
   padding: 10px;
   overflow: auto;

@@ -9,13 +9,14 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ## TODO
 
-### Appearence
+### deftab
+#### Appearence
 * Calculate & show day of griditems.
 * [DONE] Show how many griditems are currently selected.
 * Red frame around each job after saving for a short time.
 * Nicer css
 
-### Functionality
+#### Functionality
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
 * [DONE] Delete jobtype and corresponding jobs. (button, functionality, security, integrety)
 * [DONE] Link day entries of table Jobs to corresponding entry of table Days.
@@ -30,3 +31,13 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 * Create view to edit only new jobs.
 * Competences.
+
+### prios
+#### index
+* Equal width of table columns.
+* Style fixed table row headers.
+* Nicer css
+
+#### signup
+* Hash PW
+* Autocomplete full name

@@ -21,6 +21,11 @@ $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
+<?php
+if (isset($_POST)){
+  printf(json_encode($_POST));
+}
+?>
 </head>
 
 
@@ -73,8 +78,8 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
                   else{
                     $style = $odd_style;
                   }
-                  $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
-                  echo "<td $style align='center' height='50'>$inp</td>";
+                  $inp = "";
+                  echo "<td $style align='center' width='20px' height='50'>$inp</td>";
                   $idx++;
                 }
                 if ($idx % 2 === 0){
@@ -94,8 +99,8 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
                 else{
                   $style = $odd_style;
                 }
-                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' min='1' max='5' hidden>";
-                echo "<td $style align='center' height='50'>$inp</td>";
+                $inp = "";
+                echo "<td $style align='center'  height='50'>$inp</td>";
                 $idx++;
               }
               echo "</tr>";

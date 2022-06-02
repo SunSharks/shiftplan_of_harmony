@@ -31,7 +31,7 @@ CREATE TABLE Jobs (
 DROP TABLE Users;
 CREATE TABLE Users (
     id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    fullname_id  INT                NOT NULL,
+    fullname_id  INT                NOT NULL UNIQUE,
     pw           VARCHAR(255)       NOT NULL,
     nickname     VARCHAR(255)       NOT NULL UNIQUE,
     email        VARCHAR(255)       NULL

@@ -20,27 +20,41 @@ $full_names = [];
 for ($i=0; $i<count($names_db); $i++){
   array_push($full_names, $names_db[$i]["surname"]." ".$names_db[$i]["famname"]);
 }
-printf(json_encode($full_names));
+// printf(json_encode($full_names));
 $nicknames_db = fetch_it(get_nicknames_sql());
 $nicknames = [];
 for ($i=0; $i<count($nicknames_db); $i++){
   array_push($nicknames, $nicknames_db[$i]["nickname"]);
 }
-printf(json_encode($nicknames));
-// ^(?:(?!test).)*$
-// ^               the beginning of the string
-// (?:             group, but do not capture (0 or more times)
-//  (?!            look ahead to see if there is not:
-//   test          'test'
-//  )              end of look-ahead
-//  .              any character except \n
-// )*              end of grouping
-// $               before an optional \n, and the end of the string
+// printf(json_encode($nicknames));
+
  ?>
-<link rel="stylesheet" type="text/css" href="style.php">
 <?php
 if (isset($_POST["fullname"])){
-  printf(json_encode($_POST));
+  printf(recover_umlauts(json_encode($_POST), "\\"));
+  if ($_POST["psw"] != $_POST["psw-repeat"]){
+    $alert = "Die beiden eingegebenen Passwörter sind nicht identisch.\\r\\nGib bitte zweimal dasselbe Passwort ein.";
+    echo "<script>alert('$alert');</script>";
+  }
+  else{
+    if (empty($_POST["nickname"])){
+      $nickname = $_POST["fullname"];
+    }
+    else{
+      $nickname = $_POST["nickname"];
+    }
+    $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname, $_POST["email"]);
+    $pdo = connect();
+    perform_query($pdo, $sql);
+    $pdo = null;
+    $suc_txt = "<div id='suc_text'>
+      <p>
+      Hallo $nickname.
+        Du wurdest erfolgreich registriert.
+    </p>
+  </div>";
+    printf($suc_txt);
+  }
 }
 ?>
 
@@ -84,12 +98,13 @@ button {
         background-color: lightblue;
     }
 </style>
+<link rel="stylesheet" type="text/css" href="signupstyle.css">
 </head>
 
 
 <body>
   <h1>Initialisierung</h1>
-  <form action="action_page.php" style="border:1px solid #ccc">
+  <form action="signup.php" method="post" style="border:1px solid #ccc">
     <div class="container">
       <!-- LANG! -->
       <p>Herzlich Willkommen. <br>
@@ -103,7 +118,7 @@ button {
       <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
     <?php
       $regex_fn = join("|", $full_names);
-      $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' name='fullname' required>";
+      $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' name='fullname' accept-charset='utf-8' required>";
       printf($s);
       ?>
       <label for="nickname"><b>Spitzname</b></label>  <!-- LANG! -->
@@ -111,19 +126,19 @@ button {
       //       ^(?!(WordA|WordB)$)[a-z A-Z0-9\s]+$
         $regex_nn = "(?!(";
         $regex_nn = $regex_nn . join("|", $nicknames) . ")$)[a-z A-Z0-9\s]+$";
-        $s = "<input type='text' pattern='$regex_nn' placeholder='[optional] Spitzname' name='nickname'>"; //<!-- LANG! -->
+        $s = "<input type='text' pattern='$regex_nn' placeholder='[optional] Spitzname' name='nickname' accept-charset='utf-8'>"; //<!-- LANG! -->
         printf($s);
         ?>
 
       <label for="psw"><b>Passwort</b></label>  <!-- LANG! -->
       <!-- $name, $pw, $nickname, $email -->
-      <input type="password" placeholder="Enter Password" name="psw" required>
+      <input type="password" placeholder="Enter Password" name="psw" accept-charset="utf-8" required>
 
       <label for="psw-repeat"><b>Zur Sicherheit nochmal das Passwort</b></label>
-      <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+      <input type="password" placeholder="Repeat Password" name="psw-repeat" accept-charset="utf-8" required>
 
       <label for="email"><b>E-Mail</b></label>
-      <input type="text" placeholder="Deine Mailadresse, optional." name="email">  <!-- LANG! -->
+      <input type="text" placeholder="[optional] Deine Mailadresse" name="email">  <!-- LANG! -->
 
       <label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me

@@ -3,7 +3,7 @@ import os
 
 out = ""
 skel = "INSERT INTO Names (surname, famname) VALUES ('{SURNAME}', '{FAMNAME}');\n"
-out_path = "names.sql"
+out_path = "_names.sql"
 
 if len(sys.argv) < 3:
     print("usage: create_users_sql.py <init/drop> members.csv [opt: <path/to/output.sql>]")
@@ -16,7 +16,7 @@ else:
       surname    VARCHAR(255) NOT NULL,
       famname    VARCHAR(255) NOT NULL
     );
-    
+
     """
     if len(sys.argv) > 3:
         if not sys.argv[3].endswith(".sql"):

@@ -44,16 +44,22 @@ if (isset($_POST["fullname"])){
       $nickname = $_POST["nickname"];
     }
     $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname, $_POST["email"]);
-    $pdo = connect();
-    perform_query($pdo, $sql);
-    $pdo = null;
-    $suc_txt = "<div id='suc_text'>
-      <p>
-      Hallo $nickname.
-        Du wurdest erfolgreich registriert.
-    </p>
-  </div>";
-    printf($suc_txt);
+    if ($sql != "INDB"){
+      $pdo = connect();
+      perform_query($pdo, $sql);
+      $pdo = null;
+      $suc_txt = "<div id='suc_text'>
+        <p>
+        Hallo $nickname.
+          Du wurdest erfolgreich registriert.
+      </p>
+    </div>";
+      printf($suc_txt);
+    }
+    else{
+      $alert = "Du bist bereits registriert.";
+      echo "<script>alert('$alert');</script>";
+    }
   }
 }
 ?>

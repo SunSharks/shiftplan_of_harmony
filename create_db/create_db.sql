@@ -1,21 +1,20 @@
 DROP TABLE Days;
+DROP TABLE Jobtypes;
+DROP TABLE Jobs;
+
+DROP TABLE Users;
 
 CREATE TABLE Days (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NULL,
   date          DATE NOT NULL UNIQUE
 );
-
-DROP TABLE Jobtypes;
 CREATE TABLE Jobtypes (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NOT NULL,
   competences   INT NULL,
   special       BOOLEAN NOT NULL
 );
-
-DROP TABLE Jobs;
-
 CREATE TABLE Jobs (
     id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     abs_start     INT,
@@ -27,8 +26,6 @@ CREATE TABLE Jobs (
     dt_end        INT,
     jt_primary    INT
 );
-
-DROP TABLE Users;
 CREATE TABLE Users (
     id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     fullname_id  INT                NOT NULL UNIQUE,
@@ -40,7 +37,8 @@ CREATE TABLE Users (
 CREATE TABLE Names (
   id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   surname    VARCHAR(255)     NOT NULL,
-  famname    VARCHAR(255)     NOT NULL
+  famname    VARCHAR(255)     NOT NULL,
+  registered BOOLEAN          NULL DEFAULT 0
 );
 
 DROP TABLE Jobs_without_Jobtypes;

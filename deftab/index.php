@@ -43,6 +43,9 @@ session_start();
             foreach ($_SESSION["days"] as $d) {
               printf(get_daybox_html_readonly($d["id"], $d["name"], $d["date"]));
             }
+            if (empty($_SESSION["days"])){
+              $max_dayid = 0;
+            } 
           ?>
           <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
           <div id="add_day"><button id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>

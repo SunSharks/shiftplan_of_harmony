@@ -139,9 +139,9 @@ function get_params_readonly(ds, jts, js){
 
 function assign_params(map){
   let id;
-  if (map.has("show_only_new_jobs")) {
-    view_old_jobs = false;
-  }
+  // if (map.has("show_only_new_jobs")) {
+  //   view_old_jobs = false;
+  // }
   map.forEach (function(value, key){
     if (key.startsWith("day")){
       id = parseInt(key.slice(3));
@@ -190,7 +190,6 @@ function assign_params(map){
           num_days = days_arr.length;
         }
       }
-
     }
     else if (key.startsWith("special")){
       id = parseInt(key.slice(7));
@@ -246,7 +245,7 @@ function setup() {
     background(242, 199, 87, 200);
   }
   console.log(jobtypes);
-  console.log(view_old_jobs);
+  // console.log(view_old_jobs);
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
   let corrector = (default_col_width / 2) - txtsize / 2 -1;
@@ -257,6 +256,7 @@ function setup() {
   // COLOR DEFINITION!
   default_colors = [[color(246, 232, 184), color(255, 255, 204)], [color(229, 216, 171), color(241, 241, 185)]];
   default_special_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
+
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
   btn.draw();
@@ -265,9 +265,9 @@ function setup() {
   // console.log(jt_id_to_griditems);
   // console.log(predef_jobs);
   // if (view_old_jobs === true){
-    grid.insert_predefs();
+  grid.insert_predefs();
   // }
-
+  console.log("ffe");
   // grid.update_predefs();
   if (edit_mode === true){
     cntbox = new Countbox(0, gridendy-30, rowheaderwidth, 50);
@@ -277,11 +277,13 @@ function setup() {
   daybtn_div.style.setProperty('left', w);
   // let dayselection = document.getElementById("dayselection");
   // dayselection.style.setProperty('left', w);
+  console.log("ffe");
 
   let wholeviewbtn = document.getElementById("wholeviewbtn");
   wholeviewbtn.style.setProperty('left', w);
   w = (windowWidth-5-rowheaderwidth).toString() + "px";
   wholeviewbtn.style.setProperty('width', w);
+  console.log("ffe");
 
   let daywidth = default_col_width * 24;
   for (let i=0; i<num_days; i++){
@@ -289,6 +291,7 @@ function setup() {
     let daybtn = document.getElementById("daybtn"+i.toString());
     daybtn.style.setProperty('width', w);
   }
+  console.log("setup done");
 }
 
 

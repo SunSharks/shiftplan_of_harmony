@@ -28,6 +28,20 @@ CREATE TABLE Jobs (
     jt_primary    INT
 );
 
+DROP TABLE Users;
+CREATE TABLE Users (
+    id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fullname_id  INT                NOT NULL,
+    pw           VARCHAR(255)       NOT NULL,
+    nickname     VARCHAR(255)       NOT NULL UNIQUE,
+    email        VARCHAR(255)       NULL
+);
+
+CREATE TABLE Names (
+  id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  surname    VARCHAR(255)     NOT NULL,
+  famname    VARCHAR(255)     NOT NULL
+);
 
 DROP TABLE Jobs_without_Jobtypes;
 CREATE TABLE Jobs_without_Jobtypes (

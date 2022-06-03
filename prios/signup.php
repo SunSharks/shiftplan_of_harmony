@@ -59,6 +59,7 @@ if (isset($_POST["fullname"])){
     else{
       $alert = "Du bist bereits registriert.";
       echo "<script>alert('$alert');</script>";
+      header('Location: index.php');
     }
   }
 }

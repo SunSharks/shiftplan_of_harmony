@@ -1,6 +1,17 @@
 <?php
 // Start the session
 session_start();
+if(!isset($_SESSION['user'])){
+  header('Location: login.php?redirect=index.php');
+  exit;
+}
+if (!empty($_GET)){
+  if ($_GET["log"] === "out"){
+    unset($_SESSION['user']);
+    header('Location: login.php?redirect=index.php');
+    exit;
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,6 +41,11 @@ if (isset($_POST)){
 
 
 <body>
+  <div id="head_row" class="head_row">
+    <a href="index.php?log=out">
+      <button>logout</button>
+    </a>
+  </div>
   <h1>Prioritäten</h1>
   <div id="prios" class="prios">
     <form action="index.php"  method="post">

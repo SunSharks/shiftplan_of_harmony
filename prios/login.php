@@ -1,6 +1,10 @@
 <?php
 // Start the session
 session_start();
+if(isset($_SESSION['user'])){
+  header('Location: index.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +44,7 @@ if (isset($_POST["username"])){
     if (password_verify($_POST["password"], $user['pw'])){
       /* The password is correct. */
       $login = true;
-      $_SESSION["login"] = true;
+      $_SESSION["user"] = $user;
       $suc_txt = "<div id='suc_text'>
         <p>
         Hallo $nickname.
@@ -48,6 +52,8 @@ if (isset($_POST["username"])){
       </p>
     </div>";
       printf($suc_txt);
+      header('Location: login.php?redirect=index.php');
+      exit;
     }
     else{
       $fail_txt = "<div id='suc_text'>

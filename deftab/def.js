@@ -20,15 +20,16 @@ function set_days(d, maxid){
 }
 
 function set_jobs(j){
-  // console.log(j);
+  console.log(j);
   let _maxid = 0;
   for (let i=0; i<j.length; i++){
-    jobtypes[i.id] = j[i];
-    // console.log(jobtypes[i.id].id);
-    if (_maxid < jobtypes[i.id].id){
-      _maxid = jobtypes[i.id].id;
+    let id = parseInt(j[i].id);
+    jobtypes[id] = j[i];
+    if (_maxid < parseInt(jobtypes[id].id)){
+      _maxid = parseInt(jobtypes[id].id);
     }
   }
+  console.log(_maxid);
   job_maxid = _maxid;
   numjobs = j.length;
   abs_numjobs = j.length;

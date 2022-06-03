@@ -69,7 +69,7 @@ session_start();
             ?>
             <script>
             set_jobs(<?php echo json_encode($jobtypes); ?>);
-            // console.log(test);
+            console.log(<?php echo json_encode($jobtypes); ?>);
             </script>
           </div>
           <div id="add_job">

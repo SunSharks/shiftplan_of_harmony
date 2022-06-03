@@ -113,6 +113,9 @@ get_params = () => {
 function get_params_readonly(ds, jts, js){
   for (let i=0; i<ds.length; i++){
     let id = ds[i]["id"];
+    if(!Number.isInteger(id)){
+      id = parseInt(id);
+    }
     let new_day = new Day(ds[i]["date"], id, indb=true);
     days.set(id, new_day);
     days_arr.push(new_day);
@@ -120,6 +123,9 @@ function get_params_readonly(ds, jts, js){
   }
   for (let i=0; i<jts.length; i++){
     let id = jts[i]["id"];
+    if(!Number.isInteger(id)){
+      id = parseInt(id);
+    }
     let new_jt = new Jobtype(id);
     // console.log(jts[i]);
     new_jt.set_name(jts[i]["name"]);
@@ -244,7 +250,6 @@ function setup() {
   if (request_mode === "post"){
     background(242, 199, 87, 200);
   }
-  console.log(jobtypes);
   // console.log(view_old_jobs);
   gridendy = row_height * num_jobs + headerheight;
   headertexty = headerheight / 2;
@@ -265,6 +270,9 @@ function setup() {
   // console.log(jt_id_to_griditems);
   // console.log(predef_jobs);
   // if (view_old_jobs === true){
+  console.log("ffe");
+  console.log(predef_jobs);
+  // return;
   grid.insert_predefs();
   // }
   console.log("ffe");
@@ -513,7 +521,7 @@ class Grid {
     let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan'];
     let c = 0;
     let _maxid = -1;
-    // console.log(jt_id_to_griditems);
+    console.log(jt_id_to_griditems);
     // console.log(predef_jobs);
     for (var i=0; i< predef_jobs.length; i++){
       // curr_color = this.generate_random_color();
@@ -522,14 +530,15 @@ class Grid {
       if (jt_id_to_griditems.size == 0){
         return;
       }
-      while (!jt_id_to_griditems.has(predef_jobs[i]["jt_primary"])){
-        predef_jobs[i]["jt_primary"]++;
+      let id = parseInt(predef_jobs[i]["jt_primary"]);
+      while (!jt_id_to_griditems.has(id)){
+        id++;
       }
       for (let t=predef_jobs[i]["abs_start"]; t<predef_jobs[i]["abs_end"]; t++){
-        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_color(curr_color, true);
-        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].select();
-        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_pre();
-        jt_id_to_griditems.get(predef_jobs[i]["jt_primary"])[t].set_jobid(predef_jobs[i]["id"]);
+        jt_id_to_griditems.get(id)[t].set_color(curr_color, true);
+        jt_id_to_griditems.get(id)[t].select();
+        jt_id_to_griditems.get(id)[t].set_pre();
+        jt_id_to_griditems.get(id)[t].set_jobid(parseInt(predef_jobs[i]["id"]));
       }
     }
   }
@@ -1057,7 +1066,7 @@ Button.prototype.change_mode = function() {
   }
   else if (this.func.startsWith("delete")){
       if (this.state == 0){
-        // console.log("set_del");
+        console.log(parseInt(this.func.slice(6)));
         jobtypes.get(parseInt(this.func.slice(6))).set_delete();
       }
       else{

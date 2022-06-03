@@ -122,6 +122,68 @@ function get_job_id_sql($id){
   return "SELECT id FROM Jobs WHERE id = $id";
 }
 
+function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
+  // CREATE TABLE TBL_CD( CDnr int, CDTitel varchar(80) NOT NULL, CDduur int, CDprijs varchar(255) check( CDprijs > 0 and CDprijs < 6) )
+  $job_ids = unpack_singleton_fetch(fetch_it("SELECT id from Jobs"));
+  $ret = $drop . 'CREATE TABLE'.' Preferences (
+    user_id INT NOT NULL PRIMARY KEY';
+  for ($i=0; $i<count($job_ids); $i++){
+    $ret = $ret . ",
+    job$job_ids[$i] INT NOT NULL DEFAULT 3 check( job$job_ids[$i] > 0 and job$job_ids[$i] < 6)
+    ";
+  }
+  $ret = $ret .  ");";
+  // printf($ret);
+  return $ret;
+}
+function add_job_to_preferences($id){
+  return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";
+}
+
+function regain_preference_integrity(){
+  $job_ids = unpack_singleton_fetch(fetch_it("SELECT id from Jobs"));
+  $prefcols = unpack_singleton_fetch(fetch_it("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'Preferences'"));
+  $pref_cols = [];
+  // printf(json_encode($prefcols));
+  for ($i=1; $i<count($prefcols); $i++){
+    array_push($pref_cols, substr($prefcols[$i], 3));
+  }
+  $new_jobs = array_diff($job_ids, $pref_cols);
+  printf(json_encode($new_jobs));
+  $del_jobs = array_diff($pref_cols, $job_ids);
+  printf(json_encode($del_jobs));
+  $sql = "";
+  for ($i=0; $i<count($del_jobs); $i++){
+    $sql = $sql . "ALTER TABLE Preferences DROP COLUMN job$del_jobs[$i];
+    ";
+  }
+  for ($i=0; $i<count($new_jobs); $i++){
+    $sql = $sql . "
+    " . add_job_to_preferences($new_jobs[$i]) . ";
+    ";
+  }
+  if ($sql != ""){
+    $pdo = connect();
+    perform_query($pdo, $sql);
+    $pdo = null;
+  }
+}
+
+function unpack_singleton_fetch($fetch){
+  // $fetch = json_encode($fetch);
+  // $regex = "id: |id:";
+  // $rawstr = preg_grep($fetch);
+  // printf(json_encode($fetch));
+  $out = [];
+  for ($i=0; $i<count($fetch); $i++){
+    foreach ($fetch[$i] as $key=>$val){
+      array_push($out, $fetch[$i][$key]);
+    }
+  }
+  // printf(json_encode($out));
+  return $out;
+}
+
 function fetch_it($sql){
   $pdo = connect();
   $sql_ret = perform_query($pdo, $sql);
@@ -161,6 +223,12 @@ function fetch_jobtype_jobs($id){
   $ret = perform_query($pdo, $sql);
   $pdo = null;
   return $ret;
+}
+
+function perform($sql){
+  $pdo = connect();
+  perform_query($pdo, $sql);
+  $pdo = null;
 }
 
 function connect(){

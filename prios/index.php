@@ -1,6 +1,7 @@
 <?php
 // Start the session
 session_start();
+
 if(!isset($_SESSION['user'])){
   header('Location: login.php?redirect=index.php');
   exit;
@@ -26,7 +27,9 @@ if (!empty($_GET)){
 
 <?php
 include("db.php");
+perform(create_preferences_table_sql());
 regain_integrity();
+regain_preference_integrity();
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
@@ -34,7 +37,7 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
 <link rel="stylesheet" type="text/css" href="style.php">
 <?php
 if (isset($_POST)){
-  printf(json_encode($_POST));
+  // printf(json_encode($_POST));
 }
 ?>
 </head>

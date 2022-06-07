@@ -52,7 +52,7 @@ if (isset($_POST["username"])){
       </p>
     </div>";
       printf($suc_txt);
-      header('Location: login.php?redirect=index.php');
+      header('Location: login.php');
       exit;
     }
     else{

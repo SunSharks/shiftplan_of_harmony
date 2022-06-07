@@ -9,6 +9,8 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ## TODO
 
+Barrierefreie Farben! 
+
 ### deftab
 #### Appearence
 * Calculate & show day of griditems.
@@ -39,5 +41,5 @@ In def.js, the `name_special` variable can be changed to change the label for th
 * Nicer css
 
 #### signup
-* Hash PW
+* [DONE] Hash PW
 * Autocomplete full name

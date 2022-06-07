@@ -55,6 +55,8 @@ if (isset($_POST["fullname"])){
       </p>
     </div>";
       printf($suc_txt);
+      header('Location: login.php');
+      exit;
     }
     else{
       $alert = "Du bist bereits registriert.";

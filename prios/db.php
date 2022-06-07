@@ -211,28 +211,25 @@ function get_prios_sql($name_id){
 // ;
 
 function insert_prios_sql($prioinps){
-  $sql1 = "(";
-  $sql2 = " VALUES ";
-  $valsql = "(";
+  $sql1 = "UPDATE Preferences SET ";
+  $sql2 = " WHERE name_id = ";
   $endsql = ";";
 
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
     if ($key === "name_id"){
-      $sql1 = $sql1 . " name_id,";
+      // $sql1 .= " name_id = $val,";
+      $sql2 .= "$val";
     }
     else{
       $jobid = substr($key, 7);
-      $sql1 = $sql1 . " job$jobid,";
-      // $valsql = $valsql . " $prioinps[$key] " . ",";
+      $sql1 .= " job$jobid = $val,";
       // printf(" $prioinps[$key] -> $val ql");
     }
-    $valsql = $valsql . " $val,";
   }
-  $sql1 = substr($sql1, 0, -1) . ")";
-  $valsql  = rtrim($valsql, ",");
-  $sql = "INSERT INTO Preferences " . $sql1 . $sql2 . rtrim($valsql,",") . ")" . $endsql;
+  $sql1 = substr($sql1, 0, -1);
+  $sql = $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
 }

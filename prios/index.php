@@ -43,9 +43,10 @@ $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 <?php
 $tst = substr("Hund", 0, -1);
 if (!empty($_POST)){
-  // printf(json_encode($_POST));
+  printf(json_encode($_POST));
   // perform(insert_prios_sql());
-  insert_prios_sql($_POST);
+  perform(insert_prios_sql($_POST));
+  $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 }
 ?>
 </head>

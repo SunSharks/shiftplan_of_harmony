@@ -3,13 +3,15 @@
 session_start();
 
 if(!isset($_SESSION['user'])){
-  header('Location: login.php?redirect=index.php');
+  header('Location: login.php');
   exit;
 }
 if (!empty($_GET)){
   if ($_GET["log"] === "out"){
     unset($_SESSION['user']);
-    header('Location: login.php?redirect=index.php');
+    // printf(json_encode($_SESSION["user"]));
+    unset($_SESSION["prios"]);
+    header('Location: login.php');
     exit;
   }
 }
@@ -27,17 +29,23 @@ if (!empty($_GET)){
 
 <?php
 include("db.php");
-perform(create_preferences_table_sql());
+// perform(create_preferences_table_sql());
 regain_integrity();
 regain_preference_integrity();
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
+// printf(json_encode($_SESSION["user"]));
+$_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
+// printf(json_encode($_SESSION["prios"]));
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
 <?php
-if (isset($_POST)){
+$tst = substr("Hund", 0, -1);
+if (!empty($_POST)){
   // printf(json_encode($_POST));
+  // perform(insert_prios_sql());
+  insert_prios_sql($_POST);
 }
 ?>
 </head>
@@ -107,7 +115,8 @@ if (isset($_POST)){
                 else{
                   $style = $odd_style;
                 }
-                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' value='3' min='1' max='5'>";
+                $val = $_SESSION["prios"][$id];
+                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' value='$val' min='1' max='5'>";
                 echo "<td $style colspan='$span_hours' align='center' height='50'>$inp</td>";
                 $idx = $j["abs_end"];
               }
@@ -129,6 +138,10 @@ if (isset($_POST)){
       <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
+            <?php
+            $name_id = $_SESSION["user"]["fullname_id"];
+            echo "<input id='name_id' name='name_id' value='$name_id' hidden >";
+            ?>
             <input id="submitdivbtn" type="submit" value="Speichern">
           </p>
         </div>

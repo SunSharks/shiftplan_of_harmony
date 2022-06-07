@@ -1,8 +1,8 @@
 DROP TABLE Days;
 DROP TABLE Jobtypes;
 DROP TABLE Jobs;
-
 DROP TABLE Users;
+
 
 CREATE TABLE Days (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -40,6 +40,8 @@ CREATE TABLE Names (
   famname    VARCHAR(255)     NOT NULL,
   registered BOOLEAN          NULL DEFAULT 0
 );
+
+
 
 DROP TABLE Jobs_without_Jobtypes;
 CREATE TABLE Jobs_without_Jobtypes (

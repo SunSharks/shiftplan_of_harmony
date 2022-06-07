@@ -49,6 +49,8 @@ if (!empty($_POST)){
   $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 }
 ?>
+
+<script src=insert_prios.js></script>
 </head>
 
 
@@ -60,7 +62,7 @@ if (!empty($_POST)){
   </div>
   <h1>Prioritäten</h1>
   <div id="prios" class="prios">
-    <form action="index.php"  method="post">
+    <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->
@@ -117,8 +119,9 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' value='$val' min='1' max='5'>";
+                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' placeholder='$val' min='1' max='5'>";
                 echo "<td $style colspan='$span_hours' align='center' height='50'>$inp</td>";
+                echo "<script>add_prio_id($id);</script>";
                 $idx = $j["abs_end"];
               }
               while ($idx <= $_SESSION["num_timecols"]){

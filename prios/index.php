@@ -131,8 +131,10 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $inp = "<input type='number' id='prioinp$id' name='prioinp$id' placeholder='$val' min='1' max='5'>";
-                echo "<td $style colspan='$span_hours' align='center' height='50'>$inp</td>";
+                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>+</button></div>";
+                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>-</button></div>";
+                $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5'></div>";
+                echo "<div class='priotd'><td $style colspan='$span_hours' align='center' height='50'>$selbut$unselbut$inp</td></div>";
                 echo "<script>add_prio_id($id);</script>";
                 $idx = $j["abs_end"];
               }
@@ -151,6 +153,7 @@ if (!empty($_POST)){
             }
           ?>
       </table>
+      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
       <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->

@@ -15,15 +15,22 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
 } -->
 
 table {
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   border-top: 1px solid #000;
 }
-td, th {
+th {
   margin: 0;
   border: 1px solid #000;
   white-space: nowrap;
   border-top-width: 0px;
+}
+td {
+  margin: 0;
+  <!-- border: 1px solid #000;
+  white-space: nowrap;
+  border-top-width: 0px; -->
 }
 div {
   overflow-x: scroll;
@@ -48,7 +55,7 @@ div {
   letter-spacing: 1em;
 }
 
-input {
+<!-- input {
         resize: horizontal;
         width: 50px;
     }
@@ -59,7 +66,7 @@ input {
 
     input:focus {
         min-width: 50px;
-    }
+    } -->
 
 .prios {
   <!-- display: grid;
@@ -70,16 +77,39 @@ input {
   overflow: auto;
 }
 
+.selbtn {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  display: inline;
+  background-color: rgb(0,255,0);
+}
 
-[id^="row"] {
-  cursor: pointer;
-  }
+.unselbtn {
+  padding: 0px;
+  margin: 0px;
+  height: 90%;
+  width: 100%;
+  display: inline;
+  background-color: rgb(255,0,0);
+}
 
-[id^="row"]:hover {background-color: #3e8e41}
-
-[id^="row"]:active {
-  background-color: #82ceb4;
-  transform: translateY(4px);
+.prioselbut {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  display: inline;
+  background-color: rgb(0,255,0);
+}
+.priounselbut {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  display: inline;
+  background-color: rgb(255,0,0);
 }
 
 #submitdivbtn {

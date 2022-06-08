@@ -112,6 +112,11 @@ button {
 
 
 <body>
+  <div id="head_row" class="head_row">
+    <a href="login.php">
+      <button>Login</button>
+    </a>
+  </div>
   <h1>Initialisierung</h1>
   <form action="signup.php" method="post" style="border:1px solid #ccc">
     <div class="container">

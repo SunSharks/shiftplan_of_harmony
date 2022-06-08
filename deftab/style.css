@@ -260,3 +260,7 @@ p {
   background-color: #82ceb4;
   transform: translateY(4px);
 }
+
+.texts {
+  display: inline-grid;
+}

@@ -9,7 +9,7 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ## TODO
 
-Barrierefreie Farben! 
+Barrierefreie Farben!
 
 ### deftab
 #### Appearence
@@ -32,14 +32,21 @@ Barrierefreie Farben!
 * [DONE] Show predefined jobs in deftabsketch.
 
 * Create view to edit only new jobs.
-* Competences.
+* Competences --> Create file upload (*.txt)
+* Show competences text as info text on hover
+* Button to view competences text as whole Document (optional)
+* Download button for competences text.
 
 ### prios
 #### index
 * Equal width of table columns.
-* Style fixed table row headers.
+* [DONE] Style fixed table row headers.
 * Nicer css
+* selectable rows and columns
 
 #### signup
 * [DONE] Hash PW
 * Autocomplete full name
+
+
+### New file structure

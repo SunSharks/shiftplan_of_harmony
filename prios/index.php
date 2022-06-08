@@ -3,7 +3,7 @@
 session_start();
 
 if(!isset($_SESSION['user'])){
-  header('Location: login.php');
+  header('Location: ../users/login.php?src=../prios/index.php');
   exit;
 }
 if (!empty($_GET)){
@@ -11,7 +11,7 @@ if (!empty($_GET)){
     unset($_SESSION['user']);
     // printf(json_encode($_SESSION["user"]));
     unset($_SESSION["prios"]);
-    header('Location: login.php');
+    header('Location: ../users/login.php?src=../prios/index.php');
     exit;
   }
 }
@@ -28,7 +28,7 @@ if (!empty($_GET)){
 
 
 <?php
-include("db.php");
+include("../users/db.php");
 // perform(create_preferences_table_sql());
 regain_integrity();
 regain_preference_integrity();
@@ -41,9 +41,9 @@ $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
 <?php
-$tst = substr("Hund", 0, -1);
+// $tst = substr("Hund", 0, -1);
 if (!empty($_POST)){
-  printf(json_encode($_POST));
+  // printf(json_encode($_POST));
   // perform(insert_prios_sql());
   perform(insert_prios_sql($_POST));
   $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
@@ -57,7 +57,10 @@ if (!empty($_POST)){
 <body>
   <div id="head_row" class="head_row">
     <a href="index.php?log=out">
-      <button>logout</button>
+      <button class="logbtn">logout</button>
+    </a>
+    <a href="../deftab/index.php">
+      <button>Settings</button>
     </a>
   </div>
   <h1>Prioritäten</h1>

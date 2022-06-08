@@ -6,7 +6,7 @@ function add_prio_id(id){
 }
 
 function placeholder_to_value() {
-  console.log(prio_ids);
+  // console.log(prio_ids);
   let elem;
   for (let i = 0; i < prio_ids.length; i++){
     elem = document.getElementById('prioinp'+prio_ids[i].toString());

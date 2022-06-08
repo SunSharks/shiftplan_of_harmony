@@ -232,3 +232,31 @@ p {
   background-color: #82ceb4;
   transform: translateY(4px);
 }
+
+.logbtn {
+  width: fit-content;
+  bottom: 0;
+  right: 0;
+  height: 30px;
+  display: inline-block;
+  /* padding: 15px 25px;
+  margin-top: 60px;
+  margin-left: 10px;
+  margin-right: 5px; */
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+.logbtn:hover {background-color: #3e8e41}
+
+.logbtn:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}

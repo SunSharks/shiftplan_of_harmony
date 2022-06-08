@@ -1,6 +1,19 @@
 <?php
 // Start the session
 session_start();
+
+if(!isset($_SESSION['user'])){
+  header('Location: ../users/login.php?src=../deftab/index.php');
+  exit;
+}
+if (!empty($_GET)){
+  if ($_GET["log"] === "out"){
+    unset($_SESSION['user']);
+    // printf(json_encode($_SESSION["user"]));
+    header('Location: ../users/login.php?src=../deftab/index.php');
+    exit;
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +44,11 @@ session_start();
 </head>
 
 <body>
-
+  <div id="head_row" class="head_row">
+    <a href="index.php?log=out">
+      <button class="logbtn">logout</button>
+    </a>
+  </div>
   <h1>Definitionen</h1>
   <div id="definition">
     <form action="tab.php"  method="get">
@@ -87,6 +104,11 @@ session_start();
         </div>
       </div>
     </form>
+  </div>
+  <div id="prio_link">
+    <a href="../prios/index.php">
+      <button class="logbtn">Zur Präferenzeneingabe. </button>
+    </a>
   </div>
 
   <?php

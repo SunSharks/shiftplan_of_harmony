@@ -1,18 +1,20 @@
 <?php
 // Start the session
 session_start();
-
+$_SESSION["src"] = "../prios/index.php";
 if(!isset($_SESSION['user'])){
   header('Location: ../users/login.php?src=../prios/index.php');
   exit;
 }
 if (!empty($_GET)){
-  if ($_GET["log"] === "out"){
-    unset($_SESSION['user']);
-    // printf(json_encode($_SESSION["user"]));
-    unset($_SESSION["prios"]);
-    header('Location: ../users/login.php?src=../prios/index.php');
-    exit;
+  if (isset($_GET["log"])){
+    if ($_GET["log"] === "out"){
+      unset($_SESSION['user']);
+      // printf(json_encode($_SESSION["user"]));
+      unset($_SESSION["prios"]);
+      header('Location: ../users/login.php?src=../prios/index.php');
+      exit;
+    }
   }
 }
 ?>
@@ -31,9 +33,15 @@ if (!empty($_GET)){
 include("../users/db.php");
 // perform(create_preferences_table_sql());
 regain_integrity();
+printf("test1");
 regain_preference_integrity();
+printf("test2");
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
+if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
+  header('Location: ../deftab/index.php');
+  exit;
+}
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
 // printf(json_encode($_SESSION["user"]));
 $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
@@ -57,10 +65,10 @@ if (!empty($_POST)){
 <body>
   <div id="head_row" class="head_row">
     <a href="index.php?log=out">
-      <button class="logbtn">logout</button>
+      <button>logout</button>
     </a>
-    <a href="../deftab/index.php">
-      <button>Settings</button>
+    <a href="../deftab/tab.php">
+      <button>shiftplandef</button>
     </a>
   </div>
   <h1>Prioritäten</h1>

@@ -33,9 +33,9 @@ if (!empty($_GET)){
 include("../users/db.php");
 // perform(create_preferences_table_sql());
 regain_integrity();
-printf("test1");
+// printf("test1");
 regain_preference_integrity();
-printf("test2");
+// printf("test2");
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
@@ -67,7 +67,7 @@ if (!empty($_POST)){
     <a href="index.php?log=out">
       <button>logout</button>
     </a>
-    <a href="../deftab/tab.php">
+    <a href="../deftab/index.php">
       <button>shiftplandef</button>
     </a>
   </div>
@@ -104,9 +104,10 @@ if (!empty($_POST)){
             foreach ($_SESSION["jts"] as $jt){
               $jt_id = $jt["id"];
               $rowidstr = "id='row$jt_id'";
+              $title = "title='".$jt["competences"]. "'";
               echo "<tr $rowidstr $row_class $style>";
               $n = $jt["name"];
-              echo "<th class='rowhead' align='left' height='50'><b>$n</b></th>";
+              echo "<th $title class='rowhead' align='left' height='50'><b>$n</b></th>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
               $idx = 0;
               foreach ($jt_jobs as $j){

@@ -12,7 +12,7 @@ CREATE TABLE Days (
 CREATE TABLE Jobtypes (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NOT NULL,
-  competences   INT NULL,
+  competences   TEXT NULL,
   special       BOOLEAN NOT NULL,
   user_id INT NOT NULL
 );
@@ -32,7 +32,8 @@ CREATE TABLE Users (
     fullname_id  INT                NOT NULL UNIQUE,
     pw           VARCHAR(255)       NOT NULL,
     nickname     VARCHAR(255)       NOT NULL UNIQUE,
-    email        VARCHAR(255)       NULL
+    email        VARCHAR(255)       NULL,
+    bias         INT                NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Names (

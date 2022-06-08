@@ -65,6 +65,9 @@ function regain_preference_integrity(){
   - Drops Column job$id if that id is not in Jobs.
   */
   $job_ids = unpack_singleton_fetch(fetch_it("SELECT id from Jobs"));
+  if ($job_ids === -1){
+    return;
+  }
   $prefcols = unpack_singleton_fetch(fetch_it("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'Preferences'"));
   $pref_cols = [];
   // printf(json_encode($job_ids));
@@ -105,7 +108,7 @@ function get_days_sql(){
 }
 
 function get_jobtypes_sql(){
-  return "SELECT id, name, special FROM Jobtypes";
+  return "SELECT id, name, special, competences FROM Jobtypes";
 }
 
 function get_jobtype_id_sql($id){

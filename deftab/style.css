@@ -262,5 +262,27 @@ p {
 }
 
 .texts {
+  margin: 10px;
+  text-align: center;
   display: inline-grid;
+  column-gap: 10px;
+  font-size: 24px;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
+}
+
+.jt_txt {
+  margin: 10px;
+  text-align: center;
+  font-size: 24px;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 15px;
 }

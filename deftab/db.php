@@ -26,8 +26,13 @@ function repair_umlauts($s){
   return str_replace($umlaute, $ersetze, $s);
 }
 
-function recover_umlauts($s){
+function recover_umlauts($s, $bef=""){
   $umlaute = array('u00e4', 'u00f6', 'u00fc', 'u00df', 'u00c4', 'u00d6', 'u00dc');
+  if ($bef != ""){
+    for ($i=0; $i<count($umlaute); $i++){
+      $umlaute[$i] = $bef.$umlaute[$i];
+    }
+  }
   $ersetze = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü');
   return str_replace($umlaute, $ersetze, $s);
 }
@@ -71,7 +76,7 @@ function delete_day_sql($day_id){
 }
 
 function get_jobtypes_sql(){
-  return "SELECT id, name, special FROM Jobtypes";
+  return "SELECT id, name, special, competences FROM Jobtypes";
 }
 
 function get_jobtype_id_sql($id){
@@ -100,6 +105,10 @@ function insert_jobtype_sql($jt){
   else{
     return "INSERT INTO Jobtypes (name, special, user_id) VALUES ('$n', false,  $user_id)";
   }
+}
+
+function insert_infotext_sql($text, $id){
+  return "UPDATE Jobtypes SET competences = '$text' WHERE id=$id";
 }
 
 function delete_jobtype_sql($jt_id){
@@ -163,6 +172,12 @@ function fetch_maxid($table){
   return $ret;
 }
 
+function perform($sql){
+  $pdo = connect();
+  perform_query($pdo, $sql);
+  $pdo = null;
+}
+
 function connect(){
   // CONNECT TO DATABASE
   try {
@@ -221,7 +236,7 @@ function insert_daybox_html($id){
   // printf($html);
 }
 
-function get_jobbox_html($id, $jobname, $special){
+function get_jobbox_html($id, $jobname, $special, $comp){
   if ($special){
     $checked = "checked";
     $helper = "Helper";
@@ -234,7 +249,7 @@ function get_jobbox_html($id, $jobname, $special){
     $style = "";
     $divstyle = "";
   }
-  $html = "<div class='outerjobbox' style='height:fit-content;margin:8px;padding:8px'>
+  $html = "<div class='outerjobbox' title='$comp' style='height:fit-content;margin:8px;padding:8px'>
 <p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' accept-charset='utf-8' value='$jobname' readonly></div>

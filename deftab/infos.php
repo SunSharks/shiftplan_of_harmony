@@ -40,6 +40,15 @@ if (!empty($_GET)){
   regain_integrity();
   $_SESSION["deleted"] = "none";
    ?>
+   <?php
+   // $tst = substr("Hund", 0, -1);
+   if (!empty($_POST)){
+     foreach ($_POST as $key=>$val){
+       $id = substr($key, 6);
+       perform(insert_infotext_sql(recover_umlauts($val, '\\'), $id));
+     }
+   }
+   ?>
   <script src=def.js></script>
 </head>
 
@@ -47,6 +56,12 @@ if (!empty($_GET)){
   <div id="head_row" class="head_row">
     <a href="index.php?log=out">
       <button class="logbtn">logout</button>
+    </a>
+    <a href="index.php">
+      <button class="logbtn">Definitions</button>
+    </a>
+    <a href="tab.php">
+      <button class="logbtn">Tabelle</button>
     </a>
   </div>
   <h1>Infotexte</h1>
@@ -70,18 +85,27 @@ if (!empty($_GET)){
       <?php
         foreach ($jobtypes as $j) {
           $id = $j["id"];
-          printf("<div class='jt_txt' ><textarea id='jt_txt$id' name='jt_txt$id' rows='100' cols='50' ></textarea></div>");
-//                 <textarea id="story" name="story"
-//           rows="5" cols="33">
-// It was a dark and stormy night...
-// </textarea>
+          $name = $j["name"];
+          if ($j["special"] == 1){
+            $name .= " (Helper)";
+          }
+          if (!empty($j["competences"])){
+            $pretext = $j["competences"];
+          }
+          else{
+            $pretext = "";
+          }
+          printf("<div class='jt_txt' >
+          <label for='textarea' style='display:block;text-align:center'>$name</label>
+          <textarea id='jt_txt$id' name='jt_txt$id' rows='100' cols='50' >$pretext</textarea>
+          </div>");
         }
       ?>
         </div>
         <div id="submit_infos_div">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
-            <input id="submit_infos" type="submit" value="Zur Schichttabelle.">
+            <input id="submit_infos" type="submit" value="Infotexte speichern.">
           </p>
         </div>
     </form>

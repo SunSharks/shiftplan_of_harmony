@@ -48,6 +48,9 @@ if (!empty($_GET)){
     <a href="index.php?log=out">
       <button class="logbtn">logout</button>
     </a>
+    <a href="infos.php">
+      <button class="logbtn">Insert info texts</button>
+    </a>
   </div>
   <h1>Definitionen</h1>
   <div id="definition">
@@ -81,7 +84,7 @@ if (!empty($_GET)){
             <?php
               $jobtypes = fetch_it(get_jobtypes_sql());
               foreach ($jobtypes as $j) {
-                printf(get_jobbox_html($j["id"], $j["name"], $j["special"]));
+                printf(get_jobbox_html($j["id"], $j["name"], $j["special"], $j["competences"]));
               }
             ?>
             <script>

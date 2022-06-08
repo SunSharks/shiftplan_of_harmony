@@ -78,7 +78,7 @@ function regain_preference_integrity(){
   // printf(json_encode($new_jobs));
   // printf("--------");
   $del_jobs = array_diff($pref_cols, $job_ids);
-  // printf(json_encode($del_jobs));
+  printf(json_encode($del_jobs));
   $sql = "";
   for ($i=0; $i<count($del_jobs); $i++){
     $sql = $sql . "ALTER TABLE Preferences DROP COLUMN job$del_jobs[$i];

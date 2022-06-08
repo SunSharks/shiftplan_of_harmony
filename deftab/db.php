@@ -85,6 +85,7 @@ function insert_jobtype_sql($jt){
     // echo "indb";
     return "";
   }
+  $user_id = $_SESSION["user"]["id"];
   $pdo = connect();
   $sql = get_jobtype_id_sql($jt->id);
   // echo "$sql";
@@ -94,10 +95,10 @@ function insert_jobtype_sql($jt){
   }
   $n = repair_umlauts(recover_umlauts(utf8_encode(rawurlencode($jt->name))));
   if ($jt->special == 1){
-    return "INSERT INTO Jobtypes (name, special) VALUES ('$n', true)";
+    return "INSERT INTO Jobtypes (name, special, user_id) VALUES ('$n', true, $user_id)";
   }
   else{
-    return "INSERT INTO Jobtypes (name, special) VALUES ('$n', false)";
+    return "INSERT INTO Jobtypes (name, special, user_id) VALUES ('$n', false,  $user_id)";
   }
 }
 

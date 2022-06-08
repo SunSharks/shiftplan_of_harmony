@@ -13,7 +13,8 @@ CREATE TABLE Jobtypes (
   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name          VARCHAR(255) NOT NULL,
   competences   INT NULL,
-  special       BOOLEAN NOT NULL
+  special       BOOLEAN NOT NULL,
+  user_id INT NOT NULL
 );
 CREATE TABLE Jobs (
     id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,

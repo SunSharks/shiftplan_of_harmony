@@ -86,7 +86,7 @@ if (!empty($_GET)){
         foreach ($jobtypes as $j) {
           $id = $j["id"];
           $name = $j["name"];
-          if ($j["special"] == 1){
+          if ($j["helper"] == 1){
             $name .= " (Helper)";
           }
           if (!empty($j["competences"])){

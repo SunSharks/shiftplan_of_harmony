@@ -37,7 +37,7 @@ regain_integrity();
 regain_preference_integrity();
 // printf("test2");
 $_SESSION["days"] = fetch_it(get_days_sql());
-$_SESSION["jts"] = fetch_it(get_jobtypes_sql());
+$_SESSION["jts"] = fetch_it(get_jobtypes_sql("false"));
 if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
   header('Location: ../deftab/index.php');
   exit;
@@ -92,7 +92,13 @@ if (!empty($_POST)){
             <?php
             foreach ($_SESSION["days"] as $d){
               for ($i=0; $i<24; $i++){
-                echo "<td align='center' height='50'><b>$i</b></td>";
+                if($i < 10){
+                  $b = "&nbsp;$i";
+                }
+                else{
+                  $b = $i;
+                }
+                echo "<td align='center' height='50'><b>$b</b></td>";
               }
             }
             ?>

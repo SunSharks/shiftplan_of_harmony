@@ -76,7 +76,7 @@ function delete_day_sql($day_id){
 }
 
 function get_jobtypes_sql(){
-  return "SELECT id, name, special, competences FROM Jobtypes";
+  return "SELECT id, name, helper, special, competences FROM Jobtypes";
 }
 
 function get_jobtype_id_sql($id){
@@ -100,10 +100,16 @@ function insert_jobtype_sql($jt){
   }
   $n = repair_umlauts(recover_umlauts(utf8_encode(rawurlencode($jt->name))));
   if ($jt->special == 1){
-    return "INSERT INTO Jobtypes (name, special, user_id) VALUES ('$n', true, $user_id)";
+    $spec = "true";
   }
   else{
-    return "INSERT INTO Jobtypes (name, special, user_id) VALUES ('$n', false,  $user_id)";
+    $spec = "false";
+  }
+  if ($jt->helper == 1){
+    return "INSERT INTO Jobtypes (name, helper, special, user_id) VALUES ('$n', true, $spec, $user_id)";
+  }
+  else{
+    return "INSERT INTO Jobtypes (name, helper, special, user_id) VALUES ('$n', false, $spec,  $user_id)";
   }
 }
 
@@ -236,8 +242,8 @@ function insert_daybox_html($id){
   // printf($html);
 }
 
-function get_jobbox_html($id, $jobname, $special, $comp){
-  if ($special){
+function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
+  if ($helper){
     $checked = "checked";
     $helper = "Helper";
     $style = "style='background:rgb(188, 100, 153)'";
@@ -249,14 +255,28 @@ function get_jobbox_html($id, $jobname, $special, $comp){
     $style = "";
     $divstyle = "";
   }
-  $html = "<div class='outerjobbox' title='$comp' style='height:fit-content;margin:8px;padding:8px'>
+  if ($special){
+    $special = "sensibel";
+    $specialchecked = "checked";
+    $specialstyle = "";
+  }
+  else{
+    $special = "";
+    $specialchecked = "";
+    $specialstyle = "";
+  }
+  $html = "<div class='outerjobbox' title='$infotext' style='height:fit-content;margin:8px;padding:8px'>
 <p id='jobpar'>
 <div id='jobbox$id' class='jobbox'>
 <input type='text' name='job$id' id='job$id' accept-charset='utf-8' value='$jobname' readonly></div>
 <div class='jobbox'>
-<input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $checked></div>
+<input type='checkbox' class='jobbox' id='helper$id' name='helper$id' onclick='return false;' value='helper$id' $checked></div>
 <div class='jobbox'>
-<label for='checkbox' $style name='cb_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
+<label for='checkbox' $style name='helper_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
+<div class='jobbox'>
+<input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $specialchecked></div>
+<div class='jobbox'>
+<label for='checkbox' $specialstyle name='special_label$id' onclick='return false;' id='cb_label$id'>$special</label></div>
 <div class='jobbox'>
 <input name='PREjob$id' type=hidden></div></p></div>";
   $job_cnt++;

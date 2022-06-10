@@ -84,7 +84,7 @@ if (!empty($_GET)){
             <?php
               $jobtypes = fetch_it(get_jobtypes_sql());
               foreach ($jobtypes as $j) {
-                printf(get_jobbox_html($j["id"], $j["name"], $j["special"], $j["competences"]));
+                printf(get_jobbox_html($j["id"], $j["name"], $j["helper"], $j["competences"], $j["special"]));
               }
             ?>
             <script>

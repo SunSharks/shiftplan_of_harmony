@@ -51,7 +51,7 @@ let num_griditems = 0;
 let curr_color = 'blue';
 let curr_group = 0;
 let default_colors;
-let default_special_colors;
+let default_helper_colors;
 
 // let selected = -1;
 let row = -1;
@@ -130,6 +130,9 @@ function get_params_readonly(ds, jts, js){
     // console.log(jts[i]);
     new_jt.set_name(jts[i]["name"]);
     new_jt.set_indb();
+    if (jts[i]["helper"] === true){
+      new_jt.set_helper();
+    }
     if (jts[i]["special"] === true){
       new_jt.set_special();
     }
@@ -140,7 +143,7 @@ function get_params_readonly(ds, jts, js){
   predef_jobs = js;
 }
 
-// http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&special147=special147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=&show_only_new_jobs=true
+// http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&helper147=helper147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=&show_only_new_jobs=true
 
 
 function assign_params(map){
@@ -195,6 +198,17 @@ function assign_params(map){
           days_arr.push(new_day);
           num_days = days_arr.length;
         }
+      }
+    }
+    else if (key.startsWith("helper")){
+      id = parseInt(key.slice(6));
+      if (jobtypes.has(id)){
+        jobtypes.get(id).set_helper();
+      }
+      else{
+        let new_jt = new Jobtype(id);
+        new_jt.set_helper();
+        jobtypes.set(id, new_jt);
       }
     }
     else if (key.startsWith("special")){
@@ -260,7 +274,7 @@ function setup() {
   wh = windowHeight-5;
   // COLOR DEFINITION!
   default_colors = [[color(246, 232, 184), color(255, 255, 204)], [color(229, 216, 171), color(241, 241, 185)]];
-  default_special_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
+  default_helper_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
 
   grid = new Grid();
   btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
@@ -338,7 +352,7 @@ function save_data(){
   let ret = [];
   for (let i = 0; i<groups.length; i++){
     // console.log(JSON.stringify(groups[i]));
-    let j = new Job(groups[i][0].jobid, groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].special, groups[i][0].pre);
+    let j = new Job(groups[i][0].jobid, groups[i][0].name, groups[i][0].time, groups[i].length, groups[i][0].jobtype_id, groups[i][0].helper, groups[i][0].pre);
     json_jobs.push(JSON.stringify(j));
     // console.log(JSON.stringify(j));
   }
@@ -465,9 +479,14 @@ class Jobtype {
   constructor(id){
     this.id = id;
     this.name;
+    this.helper = false;
     this.special = false;
     this.indb = false;
     this.delete = false;
+  }
+
+  set_helper(){
+    this.helper = true;
   }
 
   set_special(){
@@ -566,7 +585,7 @@ class Grid {
   }
 
 
-  make_data_row(name, y, jobtype_id, row, special=false){
+  make_data_row(name, y, jobtype_id, row, helper=false){
     let x = rowheaderwidth;
     let l = [];
     // editable_rows_start = 0;
@@ -575,7 +594,7 @@ class Grid {
       if ((i % 24 === 0) && i != 0){
         day++;
       }
-      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, day, special=special);
+      let r = new Griditem(name, griditems.length, x, y, i, jobtype_id, row, day, helper=helper);
 
       r.show();
       griditems.push(r);
@@ -596,7 +615,7 @@ class Grid {
     let cnt = 0;
     // console.log(jobtypes);
     for (var [key, value] of jobtypes.entries()){
-      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).special);
+      this.make_data_row(jobtypes.get(key).name, y, jobtypes.get(key).id, cnt++, jobtypes.get(key).helper);
       y += row_height;
     }
     let col = [];
@@ -858,9 +877,9 @@ class Newjobgrid {
 
 
 class Griditem {
-  constructor(name, id, x, y, time, jobtype_id, row, day, special=false, w=default_col_width, h=row_height) {
+  constructor(name, id, x, y, time, jobtype_id, row, day, helper=false, w=default_col_width, h=row_height) {
     this.name = name; // name of job
-    this.special = special;
+    this.helper = helper;
     this.id = id;
     this.row = row;
     this.jobtype_id = jobtype_id;
@@ -883,9 +902,9 @@ class Griditem {
     this.day = day;
     this.color = default_colors[this.day%2][this.id%2];
     this.defaultcolor = default_colors[this.day%2][this.id%2];
-    if (this.special){
-      this.color = default_special_colors[this.day%2][this.id%2];
-      this.defaultcolor = default_special_colors[this.day%2][this.id%2];
+    if (this.helper){
+      this.color = default_helper_colors[this.day%2][this.id%2];
+      this.defaultcolor = default_helper_colors[this.day%2][this.id%2];
     }
   }
 
@@ -986,7 +1005,7 @@ function make_day_instances(d){
 
 
 class Job {
-  constructor(id, name, start, dur, jobtype_id, special=false, indb=false){
+  constructor(id, name, start, dur, jobtype_id, helper=false, indb=false){
     this.id = parseInt(id);
     this.name = name;
     this.start = start;
@@ -1002,7 +1021,7 @@ class Job {
 
     this.dt_start = this.start % 24;
     this.dt_end = this.end % 24;
-    this.special = special;
+    this.helper = helper;
     this.jobtype_id = jobtype_id;
     this.indb = indb;
     job_instances.push(this);

@@ -107,8 +107,16 @@ function get_days_sql(){
   return $ret;
 }
 
-function get_jobtypes_sql(){
-  return "SELECT id, name, special, competences FROM Jobtypes";
+function get_jobtypes_sql($helper='all'){
+  if ($helper === 'all'){
+    return "SELECT id, name, helper, special, competences FROM Jobtypes";
+  }
+  else if ($helper === 'true'){
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1";
+  }
+  else if ($helper === 'false'){
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0";
+  }
 }
 
 function get_jobtype_id_sql($id){

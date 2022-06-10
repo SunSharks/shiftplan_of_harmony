@@ -81,7 +81,7 @@ session_start();
     // if ($only_new_jobs_found === false) {
     //   $_SESSION["view_old_jobs"] = true;
     // }
-    // http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&special147=special147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=
+    // http://localhost/shiftplan/tab.php?PREday1=2022-05-20&PREday2=2022-05-21&PREday3=2022-05-22&PREday6=2022-05-30&PREday5=2022-05-31&PREday4=2022-06-01&job139=B%C3%B6ro&PREjob139=&job140=B%C3%BCro&PREjob140=&job141=%C3%96lmeister&PREjob141=&job142=B%C3%A4cker&PREjob142=&job143=%C3%9Clk&PREjob143=&job144=B%C3%B6sewicht&PREjob144=&job145=Flo%C3%9Ffahrer&PREjob145=&job146=%C3%84ltester&PREjob146=&job147=%C3%9C%C3%B6%C3%9F&helper147=helper147&PREjob147=&job148=%C3%96%C3%A4&PREjob148=&job149=%C3%9C%C3%A4&PREjob149=
     $_SESSION["new_days"] = $new_days;
     $_SESSION["days"] = $days;
   }
@@ -167,6 +167,7 @@ session_start();
     $jtar = $_POST['jobtypes'];
     if (isset($jtar) && !$_SESSION["jts_indb"]){
       $jtvals = process_postval($jtar);
+      echo json_encode($jtvals);
       // $jt_names = array();
       for ($i=0; $i<count($jtvals); $i++){
         // printf(json_encode($jtvals[$i]->name));

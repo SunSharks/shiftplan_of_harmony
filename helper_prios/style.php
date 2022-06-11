@@ -115,3 +115,12 @@ div {
 #submitdivbtn {
   width: fit-content;
 }
+
+#workload {
+       width: 50%;
+       margin: 8px 0;
+       padding: 12px 20px;
+       display: inline-block;
+       border: 2px solid green;
+       box-sizing: border-box;
+   }

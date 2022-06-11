@@ -115,7 +115,6 @@ function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
   // echo $ret;
   return $ret;
 }
-// INSERT INTO Users (fullname_id, pw, nickname, email) SELECT id, "bla", "downlord", "la@bla.py" FROM Names WHERE Names.surname="Lysanne";
 
 function set_name_registered_sql($name_id){
   return "UPDATE Names SET registered = true WHERE Names.id=$name_id";
@@ -142,22 +141,30 @@ function insert_prios_sql($prioinps){
   $sql1 = "UPDATE Preferences SET ";
   $sql2 = " WHERE name_id = ";
   $endsql = ";";
-
+  $workloadsql = "";
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
+    echo "$key => $val <br>";
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";
+      $nameid = $val;
     }
-    else{
+    else if ($key === "workload" && !empty($val)){
+      $workloadsql = "UPDATE Helpers SET workload = $val WHERE fullname_id = ";
+    }
+    else if (str_starts_with($key, "prioinp")){
       $jobid = substr($key, 7);
       $sql1 .= " job$jobid = $val,";
       // printf(" $prioinps[$key] -> $val ql");
     }
   }
+  if (!empty($workloadsql)){
+    $workloadsql .= "$nameid;";
+  }
   $sql1 = substr($sql1, 0, -1);
-  $sql = $sql1 . $sql2 .  $endsql;
+  $sql = $workloadsql . $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
 }

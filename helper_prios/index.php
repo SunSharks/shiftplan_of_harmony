@@ -54,6 +54,9 @@ if (!empty($_POST)){
   // perform(insert_prios_sql());
   perform(insert_prios_sql($_POST));
   $_SESSION["prios"] = fetch_prios($_SESSION["helper"]["fullname_id"]);
+  if (isset($_POST["workload"])){
+    $_SESSION["helper"]["workload"] = $_POST["workload"];
+  }
 }
 ?>
 
@@ -68,8 +71,16 @@ if (!empty($_POST)){
     </a>
   </div>
   <h1>Prioritäten</h1>
-  <div id="prios" class="prios">
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
+      <div id="workload_div">
+        <?php
+        $wl = $_SESSION["helper"]["workload"];
+        // echo "$wl\r\n";
+        echo "<label for='workload'>Wie viele Schichten von jeweils 4 Stunden bist du bereit zu übernehmen?</label>";
+        echo "<input id='workload' name='workload' type='number' placeholder='$wl'>";
+        ?>
+      </div>
+      <div id="prios" class="prios">
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->
@@ -166,8 +177,9 @@ if (!empty($_POST)){
             <input id="submitdivbtn" type="submit" value="Speichern">
           </p>
         </div>
+        </div>
     </form>
-  </div>
+
 
 </body>
 </html>

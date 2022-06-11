@@ -1,7 +1,7 @@
 <?php
 // Start the session
 session_start();
-
+$_SESSION["src"] = "../deftab/index.php";
 if(!isset($_SESSION['user'])){
   header('Location: ../users/login.php?src=../deftab/index.php');
   exit;

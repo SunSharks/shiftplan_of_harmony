@@ -13,18 +13,6 @@ $day_cnt = 0;
 // $days = [];
 $job_cnt = 0;
 
-function regain_integrity(){
-  $pdo = connect();
-  $sql = "DELETE FROM Jobs WHERE jt_primary NOT IN (SELECT id FROM Jobtypes);";
-
-  perform_query($pdo, $sql);
-  $sql = "DELETE FROM Jobs WHERE start_day_id NOT IN (SELECT id FROM Days);";
-  perform_query($pdo, $sql);
-  $sql = "DELETE FROM Jobs WHERE end_day_id NOT IN (SELECT id FROM Days);";
-  perform_query($pdo, $sql);
-  $pdo = null;
-}
-
 function get_days_sql(){
   $ret = "SELECT * FROM Days ORDER BY date ASC";
   return $ret;

@@ -1,6 +1,19 @@
 <?php
 // Start the session
 session_start();
+$_SESSION["src"] = "../deftab/tab.php";
+if(!isset($_SESSION['user'])){
+  header('Location: ../users/login.php?src=../deftab/index.php');
+  exit;
+}
+if (!empty($_GET)){
+  if ($_GET["log"] === "out"){
+    unset($_SESSION['user']);
+    // printf(json_encode($_SESSION["user"]));
+    header('Location: ../users/login.php?src=../deftab/index.php');
+    exit;
+  }
+}
 ?>
 
 <!DOCTYPE html>

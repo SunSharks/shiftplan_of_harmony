@@ -2,6 +2,7 @@
 // Start the session
 session_start();
 
+$_SESSION["src"] = "../deftab/infos.php";
 if(!isset($_SESSION['user'])){
   header('Location: ../users/login.php?src=../deftab/index.php');
   exit;

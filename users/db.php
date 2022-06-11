@@ -9,65 +9,6 @@
 <?php
 include("../db/db_base.php");
 
-// =============================================================================
-// REGAIN INTEGRITY OF DB TABLES.
-function regain_integrity(){
-  /* Regain integrity of Jobs and Days.
-  - Deletes Jobs from table Jobs, if it's jt_primary is not in Jobtypes.
-  - Deletes Jobs from table Jobs, if it's start_day_id or end_day_id is not in Days.
-  */
-  $pdo = connect();
-  $sql = "DELETE FROM Jobs WHERE jt_primary NOT IN (SELECT id FROM Jobtypes);";
-
-  perform_query($pdo, $sql);
-  $sql = "DELETE FROM Jobs WHERE start_day_id NOT IN (SELECT id FROM Days);";
-  perform_query($pdo, $sql);
-  $sql = "DELETE FROM Jobs WHERE end_day_id NOT IN (SELECT id FROM Days);";
-  perform_query($pdo, $sql);
-  $pdo = null;
-}
-
-function regain_preference_integrity(){
-  /* Regain integrity of Jobs and Preferences.
-  - Adds Column job$id for every new job in table Jobs.
-  - Drops Column job$id if that id is not in Jobs.
-  */
-  $job_ids = unpack_singleton_fetch(fetch_it("SELECT id from Jobs"));
-  if ($job_ids === -1){
-    return;
-  }
-  $prefcols = unpack_singleton_fetch(fetch_it("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'Preferences'"));
-  $pref_cols = [];
-  // printf(json_encode($job_ids));
-  // printf("--------");
-  for ($i=1; $i<count($prefcols); $i++){
-    array_push($pref_cols, substr($prefcols[$i], 3));
-  }
-  // printf(json_encode($pref_cols));
-  // printf("\n--------");
-  $new_jobs = array_values(array_diff($job_ids, $pref_cols));
-  // printf(json_encode($new_jobs));
-  // printf("--------");
-  $del_jobs = array_values(array_diff($pref_cols, $job_ids));
-  // printf(json_encode($del_jobs));
-  $sql = "";
-  for ($i=0; $i<count($del_jobs); $i++){
-    $sql = $sql . "ALTER TABLE Preferences DROP COLUMN job$del_jobs[$i];
-    ";
-  }
-  for ($i=0; $i<count($new_jobs); $i++){
-    // check if jobtype special or not
-    $sql = $sql . "
-    " . add_job_to_preferences_sql($new_jobs[$i]) . ";
-    ";
-  }
-  if ($sql != ""){
-    $pdo = connect();
-    perform_query($pdo, $sql);
-    $pdo = null;
-  }
-}
-
 // echo json_encode(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=1 AND special=1;SELECT COUNT(id) FROM Jobtypes WHERE id=2 AND special=1;"))[0]);
 // echo "___";
 // echo json_encode(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=2 AND special=1;"))[0]);
@@ -137,8 +78,8 @@ function get_names_sql(){
 }
 
 function get_name_id_sql($name){
-  $surname = explode(" ", $name)[0];
-  $famname = explode(" ", $name)[1];
+  $surname = explode(" ", $name, 2)[0];
+  $famname = explode(" ", $name, 2)[1];
   return "SELECT id from Names WHERE Names.surname = '$surname' AND Names.famname = '$famname'";
 }
 

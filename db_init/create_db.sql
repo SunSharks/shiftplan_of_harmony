@@ -41,15 +41,17 @@ CREATE TABLE Names (
   id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   surname    VARCHAR(255)     NOT NULL,
   famname    VARCHAR(255)     NOT NULL,
-  registered BOOLEAN          NULL DEFAULT 0
+  registered BOOLEAN          NULL DEFAULT 0,
+  helper     BOOLEAN          NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Helpers (
   id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  fullname     VARCHAR(255)       NOT NULL,
+  fullname_id  INT                NOT NULL UNIQUE,
   pw           VARCHAR(255)       NOT NULL,
   nickname     VARCHAR(255)       NOT NULL UNIQUE,
   email        VARCHAR(255)       NULL,
+  ticketnumber INT                NULL UNIQUE,
   workload     INT                NOT NULL DEFAULT 4
 );
 

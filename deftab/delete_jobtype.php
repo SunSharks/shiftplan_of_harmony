@@ -1,6 +1,19 @@
 <?php
 // Start the session
 session_start();
+$_SESSION["src"] = "../deftab/index.php";
+if(!isset($_SESSION['user'])){
+  header('Location: ../users/login.php?src=../deftab/index.php');
+  exit;
+}
+if (!empty($_GET)){
+  if ($_GET["log"] === "out"){
+    unset($_SESSION['user']);
+    // printf(json_encode($_SESSION["user"]));
+    header('Location: ../users/login.php?src=../deftab/index.php');
+    exit;
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -10,7 +23,7 @@ session_start();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="tabstyle.css">
-  
+
   <title>schedule definition</title>
   <style>
     body {

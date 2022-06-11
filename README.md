@@ -9,7 +9,9 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 ## TODO
 
-Barrierefreie Farben!
+* Barrierefreie Farben!
+* Layout von allem.
+* Mehr utf8s in die encoding Funktionen. 
 
 ### deftab
 #### Appearence

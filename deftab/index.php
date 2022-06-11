@@ -109,7 +109,7 @@ if (!empty($_GET)){
     </form>
   </div>
   <div id="prio_link">
-    <a href="../prios/index.php">
+    <a href="../crew_prios/index.php">
       <button class="logbtn">Zur Präferenzeneingabe. </button>
     </a>
   </div>

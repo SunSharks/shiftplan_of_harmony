@@ -113,6 +113,8 @@ if (!empty($_GET)){
       <button class="logbtn">Zur Präferenzeneingabe. </button>
     </a>
   </div>
+  <div class="enddiv">
+  </div>
 
   <?php
   $_SESSION["days_indb"] = false;

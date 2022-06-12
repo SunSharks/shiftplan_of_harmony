@@ -51,6 +51,9 @@ p {
   margin: 100;
 }
 
+.twins {
+  width: fit-content;
+}
 
 .outerjobbox {
   display: block;
@@ -285,4 +288,20 @@ p {
   background-color: #c7e3ab;
   border: none;
   border-radius: 15px;
+}
+
+.enddiv {
+  height: 1000px;
+  display: hidden;
+}
+
+.twin {
+  float: left;
+  display: inline;
+}
+
+.new_twins_box {
+  float: left;
+  background: rgb(170, 200, 100);
+  display: block;
 }

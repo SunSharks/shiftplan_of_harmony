@@ -180,7 +180,7 @@ if (!empty($_GET)){
     $jtar = $_POST['jobtypes'];
     if (isset($jtar) && !$_SESSION["jts_indb"]){
       $jtvals = process_postval($jtar);
-      echo json_encode($jtvals);
+      // echo json_encode($jtvals);
       // $jt_names = array();
       for ($i=0; $i<count($jtvals); $i++){
         // printf(json_encode($jtvals[$i]->name));
@@ -274,7 +274,6 @@ if (!empty($_GET)){
 <!-- <br> -->
 <!-- <p>
 <div>
-
 </div>
 </p> -->
 </body>

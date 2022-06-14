@@ -17,6 +17,16 @@ CREATE TABLE Jobtypes (
   helper        BOOLEAN NOT NULL DEFAULT 0,
   user_id       INT NOT NULL
 );
+
+CREATE TABLE Twins (
+  id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name          VARCHAR(255) NOT NULL,
+  competences   TEXT NULL,
+  special       BOOLEAN NOT NULL DEFAULT 0,
+  helper        BOOLEAN NOT NULL DEFAULT 0,
+  jt_primary    INT NOT NULL
+);
+
 CREATE TABLE Jobs (
     id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     abs_start     INT,
@@ -34,7 +44,8 @@ CREATE TABLE Users (
     pw           VARCHAR(255)       NOT NULL,
     nickname     VARCHAR(255)       NOT NULL UNIQUE,
     email        VARCHAR(255)       NULL,
-    bias         INT                NOT NULL DEFAULT 0
+    bias         INT                NOT NULL DEFAULT 0,
+    break        INT                NOT NULL DEFAULT 4
 );
 
 CREATE TABLE Names (
@@ -52,20 +63,6 @@ CREATE TABLE Helpers (
   nickname     VARCHAR(255)       NOT NULL UNIQUE,
   email        VARCHAR(255)       NULL,
   ticketnumber INT                NULL UNIQUE,
-  workload     INT                NOT NULL DEFAULT 4
-);
-
-
-DROP TABLE Jobs_without_Jobtypes;
-CREATE TABLE Jobs_without_Jobtypes (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    abs_start     INT,
-    abs_end       INT,
-    during        INT,
-    start_day     VARCHAR(255),
-    end_day       VARCHAR(255),
-    dt_start      INT,
-    dt_end        INT,
-    special		    BOOLEAN NOT NULL
+  workload     INT                NOT NULL DEFAULT 4,
+  break        INT                NOT NULL DEFAULT 4
 );

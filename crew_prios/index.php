@@ -53,6 +53,9 @@ $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 if (!empty($_POST)){
   // printf(json_encode($_POST));
   // perform(insert_prios_sql());
+  if (isset($_POST["breakinp"])){
+    $_SESSION["user"]["break"] = $_POST["breakinp"];
+  }
   perform(insert_prios_sql($_POST));
   $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 }
@@ -74,6 +77,12 @@ if (!empty($_POST)){
   <h1>Prioritäten</h1>
   <div id="prios" class="prios">
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
+      <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
+      <?php
+      $break = $_SESSION["user"]["break"];
+      echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' onchange='on_input($id)' placeholder='$break' min='0' max='8'></input></div>";
+      ?>
+
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->

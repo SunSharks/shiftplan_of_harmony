@@ -95,6 +95,10 @@ function regain_preference_integrity(){
   }
 }
 
+function add_job_to_preferences_sql($id){
+  return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";
+}
+
 function fetch_it($sql){
   $pdo = connect();
   $sql_ret = perform_query($pdo, $sql);
@@ -159,6 +163,11 @@ function perform_query($pdo, $sql){
     echo $sql . "<br>" . $e->getMessage();
   }
 }
+
+function get_min_jobduring_sql(){
+  return "SELECT MAX(during) FROM Jobs";
+}
+
 ?>
 </body>
 </html>

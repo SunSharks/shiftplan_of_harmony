@@ -190,9 +190,9 @@ class Basic_Jobbox{
     if (basic_name === "job"){
       jobtypes[id] = input_div;
     }
-    if (basic_name.endsWith("twin")){
+    if (basic_name === "twin"){
         twins[id] = input_div;
-        prefix = "twin_";
+        prefix = "twin";
     }
     let helper_check_box_div = this.create_jobbox_elem("div", "jobbox");
     inp_inner_html = "<input type='checkbox' name='" + prefix + "helper" + id.toString() + "'>";
@@ -207,7 +207,7 @@ class Basic_Jobbox{
 
     let special_check_box_div = this.create_jobbox_elem("div", "jobbox");
     special_check_box_div.setAttribute("class", "jobbox");
-    inp_inner_html = "<input type='checkbox' name='special" + id.toString() + "'>";
+    inp_inner_html = "<input type='checkbox' name='" + prefix+ "special" + id.toString() + "'>";
     let special_check_box = this.create_jobbox_elem("checkbox", "jobbox", prefix+"special"+id.toString(), inp_inner_html, prefix+"special"+id.toString(), prefix+"special"+id.toString());
     special_check_box_div.appendChild(special_check_box);
     outer_div.appendChild(special_check_box_div);
@@ -246,22 +246,20 @@ class Jobbox extends Basic_Jobbox{
     this.create_jobbox_addons();
     jobboxes.set(this.id, this);
     console.log(jobboxes);
-    this.twins_ids = document.getElementById("twins_ids"+this.id.toString());
+    // this.twins_ids = document.getElementById("twins_ids"+this.id.toString());
   }
 
   create_jobbox_addons(){
-    let inp_inner_html = "<button id='add_twin_btn"+this.id.toString() + "' type='button' onclick='add_twinbox(" + this.id.toString() + ");'>Add twin</button>"; // LANG!!
-    let add_twin_div = this.create_jobbox_elem("div", "jobbox", "add_twin_div"+this.id.toString(), inp_inner_html);
-
-    let new_twins_box = this.create_jobbox_elem("div", "new_twins_box", "new_twins_box"+this.id.toString());
-    add_twin_div.appendChild(new_twins_box);
-    this.outer_div.appendChild(add_twin_div);
+    let inp_inner_html;
+    // inp_inner_html = "<button id='add_twin_btn"+this.id.toString() + "' type='button' onclick='add_twinbox(" + this.id.toString() + ");'>Add twin</button>"; // LANG!!
+    // let add_twin_div = this.create_jobbox_elem("div", "jobbox", "add_twin_div"+this.id.toString(), inp_inner_html);
+    //
+    // let new_twins_box = this.create_jobbox_elem("div", "new_twins_box", "new_twins_box"+this.id.toString());
+    // add_twin_div.appendChild(new_twins_box);
+    // this.outer_div.appendChild(add_twin_div);
     inp_inner_html = "<button id='jobdelbtn"+this.id.toString() + "' type='button' onclick='delete_jobbox(" + this.id.toString() + ");'>Löschen</button>"; // LANG!!
     let btn_box = this.create_jobbox_elem("div", "jobbox", "delbtndiv"+ this.id.toString(), inp_inner_html);
     this.outer_div.appendChild(btn_box);
-    inp_inner_html = "<input type='text' name='" + "twins_ids"+this.id.toString() + "' id='" + "twins_ids"+this.id.toString() + "' hidden>";
-    let twins_ids_div = this.create_jobbox_elem("div", "jobbox", "twins_ids_div"+this.id.toString(), inp_inner_html);
-    this.outer_div.appendChild(twins_ids_div);
     numjobs++;
     abs_numjobs++;
     document.getElementById("add_job").appendChild(this.outer_div);
@@ -297,10 +295,10 @@ function create_jobbox(){
 function add_twinbox(jobid){
   let new_twin = new Twinbox(jobid);
   console.log("add twinbox");
-  console.log(jobboxes.get(parseInt(jobid)).twins_ids);
+  // console.log(jobboxes.get(parseInt(jobid)).twins_ids);
   jobboxes.get(parseInt(jobid)).twins.set(parseInt(new_twin.id), new_twin);
   let tids = Array.from(jobboxes.get(parseInt(jobid)).twins.keys() );
-  jobboxes.get(parseInt(jobid)).twins_ids.value = JSON.stringify(tids);
+  // jobboxes.get(parseInt(jobid)).twins_ids.value = JSON.stringify(tids);
 }
 
 function delete_twinbox(jobid, twinid){
@@ -310,7 +308,7 @@ function delete_twinbox(jobid, twinid){
   jobboxes.get(parseInt(jobid)).twins.get(parseInt(twinid)).outer_div.innerHTML = "";
   jobboxes.get(parseInt(jobid)).twins.delete(parseInt(twinid));
   let tids = Array.from(jobboxes.get(parseInt(jobid)).twins.keys() );
-  jobboxes.get(parseInt(jobid)).twins_ids.value = JSON.stringify(tids);
+  // jobboxes.get(parseInt(jobid)).twins_ids.value = JSON.stringify(tids);
 }
 
 
@@ -330,18 +328,11 @@ class Twinbox extends Basic_Jobbox{
     this.create_basic_jobbox(this.id, this.outer_div, "twin");
     let param = this.jobbox_id.toString() + ", " + this.id.toString();
     let inp_inner_html = "<button id='twindelbtn"+this.id.toString() + "' type='button' onclick='delete_twinbox("+ param + ");'>Löschen</button>"; // LANG!!
-    let btn_box = this.create_jobbox_elem("div", "jobbox", "twindelbtndiv"+ this.id.toString(), inp_inner_html);
+    let btn_box = this.create_jobbox_elem("div", "twin", "twindelbtndiv"+ this.id.toString(), inp_inner_html);
     this.outer_div.appendChild(btn_box);
+    inp_inner_html = "<input type='text' name='" + this.id.toString() + "twinof" + "' value='" + this.jobbox_id.toString() + "' id='" + "twins_ids"+this.id.toString() + "' hidden>";
+    let twins_job = this.create_jobbox_elem("div", "twin", "twins_job_div"+this.id.toString(), inp_inner_html);
+    this.outer_div.appendChild(twins_job);
     this.mother_div.appendChild(this.outer_div);
   }
-
 }
-
-// http://localhost/deftab/tab.php?PREday1=2022-06-03&PREday2=2022-06-04&PREday3=2022-06-06&PREday4=2022-06-07&PREday5=2022-06-08&job1=Bar&PREjob1=&job2=Bar&special2=special2&PREjob2=&job3=B%C3%BCro&PREjob3=&job4=Technik&PREjob4=&job5=B%C3%BChnenbetreuung&PREjob5=&job21=Crew+sensibel&special21=special21&PREjob21=&job22=Crew+unsensibel&PREjob22=&job23=Helper+sensibel&helper23=helper23&special23=special23&PREjob23=&job24=Helper+unsensibel&helper24=helper24&PREjob24=&job25=t1&twin1=twin11&twin_helper1=on&special1=on&twin4=twin12&job26=t2&twin2=twin21&twin5=twin22&twin_helper5=on&special5=on
-
-// http://localhost/deftab/tab.php?PREday1=2022-06-03&PREday2=2022-06-04&PREday3=2022-06-06&PREday4=2022-06-07&PREday5=2022-06-08&job1=Bar&PREjob1=&job2=Bar&special2=special2&PREjob2=&job3=B%C3%BCro&PREjob3=&job4=Technik&PREjob4=&job5=B%C3%BChnenbetreuung&PREjob5=&job21=Crew+sensibel&special21=special21&PREjob21=&job22=Crew+unsensibel&PREjob22=&job23=Helper+sensibel&helper23=helper23&special23=special23&PREjob23=&job24=Helper+unsensibel&helper24=helper24&PREjob24=&job27=t1&twin3=t11&twin4=t12&twins_ids27=&job28=t2&twin5=t21&twin6=t22&twins_ids28=
-
-// http://localhost/deftab/tab.php?PREday1=2022-06-03&PREday2=2022-06-04&PREday3=2022-06-06&PREday4=2022-06-07&PREday5=2022-06-08&job1=Bar&PREjob1=&job2=Bar&special2=special2&PREjob2=&job3=B%C3%BCro&PREjob3=&job4=Technik&PREjob4=&job5=B%C3%BChnenbetreuung&PREjob5
-// =&job21=Crew+sensibel&special21=special21&PREjob21=&job22=Crew+unsensibel&PREjob22=&job23=Helper+sensibel&helper
-//23=helper23&special23=special23&PREjob23=&job24=Helper+unsensibel&helper24=helper24&PREjob24=&job25=t1&PREjob25=&job26=t2&PREjo
-//b26=&job27=t1&twin1=t11&twin2=t12&twins_ids27=%5B1%2C2%5D&job28=t2&twin3=t21&twin4=t22&twins_ids28=%5B3%2C4%5D&job30=t3&twins_ids30=

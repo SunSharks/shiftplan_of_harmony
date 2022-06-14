@@ -19,6 +19,7 @@ let indb_jts = [];
 let indb_jobs = [];
 let editable_area = 0;
 let del_idxs = [];
+let twins = new Map();
 
 // DAYS
 let days = new Map();
@@ -220,6 +221,61 @@ function assign_params(map){
         let new_jt = new Jobtype(id);
         new_jt.set_special();
         jobtypes.set(id, new_jt);
+      }
+    }
+    else if (key.endsWith("twinof")){
+      jobid = parseInt(key.slice(0, -6));
+      twin_id = parseInt(value);
+      if (twins.has(twin_id)){
+        twins.get(twin_id).set_jobid(jobid);
+      }
+      else{
+        let new_twin = new Twin(twin_id);
+        new_twin.set_jobid(jobid);
+        twins.set(twin_id, jobid);
+      }
+      if (jobtypes.has(jobid)){
+        jobtypes.get(jobid).add_twin_id(twin_id);
+      }
+      else{
+        let new_jt = new Jobtype(id);
+        new_jt.add_twin_id(twin_id);
+        jobtypes.set(jobid, new_jt);
+      }
+    }
+    else if (key.startsWith("twin")){
+        if (key.startsWith("twinhelper")){
+          twin_id = parseInt(key.slice(10));
+          if (twins.has(twin_id)){
+            twins.get(twin_id).set_helper();
+          }
+          else{
+            let new_twin = new Twin(twin_id);
+            new_twin.set_helper();
+            twins.set(twin_id, new_twin);
+          }
+      }
+      else if (key.startsWith("twinspecial")){
+        twin_id = parseInt(key.slice(11));
+        if (twins.has(twin_id)){
+          twins.get(twin_id).set_special();
+        }
+        else{
+          let new_twin = new Twin(twin_id);
+          new_twin.set_special();
+          twins.set(twin_id, new_twin);
+        }
+      }
+      else{
+        twin_id = parseInt(key.slice(4));
+        if (twins.has(twin_id)){
+          twins.get(twin_id).set_name(value);
+        }
+        else{
+          let new_twin = new Twin(twin_id);
+          new_twin.set_name(value);
+          twins.set(twin_id, new_twin);
+        }
       }
     }
   })
@@ -483,6 +539,7 @@ class Jobtype {
     this.special = false;
     this.indb = false;
     this.delete = false;
+    this.twins = [];
   }
 
   set_helper(){
@@ -509,6 +566,22 @@ class Jobtype {
     this.delete = false;
   }
 
+  add_twin_id(t){
+    this.twins.push(t);
+  }
+
+}
+
+
+class Twin extends Jobtype{
+  constructor(twin_id){
+    super(twin_id);
+    this.id = twin_id;
+  }
+
+  set_jobid(job_id){
+    this.jobid = job_id;
+  }
 }
 
 function resume_default_view(){

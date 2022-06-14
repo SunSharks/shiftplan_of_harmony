@@ -15,6 +15,7 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
 } -->
 
 table {
+  margin-left: 100px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -28,6 +29,8 @@ th {
 }
 td {
   margin: 0;
+  width: fit-content;
+  height: fit-content;
   <!-- border: 1px solid #000;
   white-space: nowrap;
   border-top-width: 0px; -->

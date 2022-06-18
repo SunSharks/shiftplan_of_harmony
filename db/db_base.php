@@ -16,6 +16,7 @@ define("DB_USER", "root");
 define("DB_PASSWORD", "");
 
 
+
 // =============================================================================
 // REPAIR UTF8 - ENCODING (brute force and ugly.)
 function repair_umlauts($s){
@@ -65,17 +66,18 @@ function regain_preference_integrity(){
   }
   $prefcols = unpack_singleton_fetch(fetch_it("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'Preferences'"));
   $pref_cols = [];
-  // printf(json_encode($job_ids));
-  // printf("--------");
+
   for ($i=1; $i<count($prefcols); $i++){
     array_push($pref_cols, substr($prefcols[$i], 3));
   }
-  // printf(json_encode($pref_cols));
-  // printf("\n--------");
   $new_jobs = array_values(array_diff($job_ids, $pref_cols));
-  // printf(json_encode($new_jobs));
-  // printf("--------");
   $del_jobs = array_values(array_diff($pref_cols, $job_ids));
+  // printf(json_encode($job_ids));
+  // printf("--------\r\n");
+  // printf(json_encode($pref_cols));
+  // printf("\n--------\r\n");
+  // printf(json_encode($new_jobs));
+  // printf("--------\r\n");
   // printf(json_encode($del_jobs));
   $sql = "";
   for ($i=0; $i<count($del_jobs); $i++){
@@ -88,6 +90,7 @@ function regain_preference_integrity(){
     " . add_job_to_preferences_sql($new_jobs[$i]) . ";
     ";
   }
+  // printf($sql);
   if ($sql != ""){
     $pdo = connect();
     perform_query($pdo, $sql);
@@ -95,7 +98,12 @@ function regain_preference_integrity(){
   }
 }
 
+
 function add_job_to_preferences_sql($id){
+  $jtid = unpack_singleton_fetch(perform("SELECT jt_primary FROM Jobs WHERE id=$id;"))[0];
+  if (unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=$jtid AND special=1;"))[0] === "1"){
+    return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 5";
+  }
   return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";
 }
 

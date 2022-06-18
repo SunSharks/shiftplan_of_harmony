@@ -61,10 +61,6 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
   return $ret;
 }
 
-function add_job_to_preferences_sql($id){
-  return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";
-}
-
 function get_nicknames_sql(){
   return "SELECT nickname from Helpers";
 }
@@ -142,14 +138,15 @@ function insert_prios_sql($prioinps){
   $sql2 = " WHERE name_id = ";
   $endsql = ";";
   $workloadsql = "";
+  $breaksql = "";
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
-    echo "$key => $val <br>";
+    // echo "$key => $val <br>";
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";
-      $nameid = $val;
+      $name_id = $val;
     }
     else if ($key === "workload" && !empty($val)){
       $workloadsql = "UPDATE Helpers SET workload = $val WHERE fullname_id = ";
@@ -159,12 +156,24 @@ function insert_prios_sql($prioinps){
       $sql1 .= " job$jobid = $val,";
       // printf(" $prioinps[$key] -> $val ql");
     }
+    else if ($key === "breakinp" && !empty($val)){
+      // echo "$val";
+      $breaksql .= "UPDATE Helpers SET break = $val WHERE fullname_id = ";
+    }
   }
   if (!empty($workloadsql)){
     $workloadsql .= "$nameid;";
   }
+  if (!empty($breaksql)){
+    $breaksql .= "$name_id;";
+  }
+
+  if ($sql1 === "UPDATE Preferences SET "){
+    return "";
+  }
+
   $sql1 = substr($sql1, 0, -1);
-  $sql = $workloadsql . $sql1 . $sql2 .  $endsql;
+  $sql = $breaksql . $workloadsql . $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
 }

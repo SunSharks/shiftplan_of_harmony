@@ -9,6 +9,11 @@
 <?php
 include("../db/db_base.php");
 
+error_reporting(-1); // reports all errors
+ini_set("display_errors", "1"); // shows all errors
+ini_set("log_errors", 1);
+ini_set("error_log", "php-error.log");
+
 // echo json_encode(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=1 AND special=1;SELECT COUNT(id) FROM Jobtypes WHERE id=2 AND special=1;"))[0]);
 // echo "___";
 // echo json_encode(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=2 AND special=1;"))[0]);
@@ -63,14 +68,6 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
   $ret .= "INSERT INTO Preferences (name_id) SELECT id FROM Names WHERE Names.registered = 1;";
   // printf($ret);
   return $ret;
-}
-
-function add_job_to_preferences_sql($id){
-  $jtid = unpack_singleton_fetch(perform("SELECT jt_primary FROM Jobs WHERE id=$id;"))[0];
-  if (unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=$jtid AND special=1;"))[0] === "1"){
-    return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 5";
-  }
-  return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";
 }
 
 function get_names_sql(){
@@ -141,23 +138,29 @@ function get_prios_sql($name_id){
 function insert_prios_sql($prioinps){
   $sql1 = "UPDATE Preferences SET ";
   $sql2 = " WHERE name_id = ";
+  $breaksql = "UPDATE Users SET break = ";
   $endsql = ";";
 
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
+  echo json_encode($prioinps);
   foreach ($prioinps as $key=>$val){
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";
+      $name_id = $val;
     }
-    else{
+    else if (str_starts_with("prioinp", $key)){
       $jobid = substr($key, 7);
       $sql1 .= " job$jobid = $val,";
-      // printf(" $prioinps[$key] -> $val ql");
+    }
+    else if (str_starts_with("breakinp", $key)){
+      $breaksql .= $val;
     }
   }
+  $breaksql .= " WHERE fullname_id = $name_id;";
   $sql1 = substr($sql1, 0, -1);
-  $sql = $sql1 . $sql2 .  $endsql;
+  $sql = $breaksql . $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
 }

@@ -80,7 +80,7 @@ if (!empty($_POST)){
       <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
       <?php
       $break = $_SESSION["user"]["break"];
-      echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' onchange='on_input($id)' placeholder='$break' min='0' max='8'></input></div>";
+      echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
       ?>
 
       <table id="priotab" border="5" cellspacing="0" align="center">
@@ -119,6 +119,8 @@ if (!empty($_POST)){
             foreach ($_SESSION["jts"] as $jt){
               $jt_id = $jt["id"];
               $rowidstr = "id='row$jt_id'";
+              $row_class = $jt['name'];
+              $style = $odd_style;
               $title = "title='".$jt["competences"]. "'";
               echo "<tr $rowidstr $row_class $style>";
               $n = $jt["name"];

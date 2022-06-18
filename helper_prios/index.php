@@ -10,7 +10,7 @@ if (!empty($_GET)){
   if (isset($_GET["log"])){
     if ($_GET["log"] === "out"){
       unset($_SESSION['helper']);
-      // printf(json_encode($_SESSION["helper"]));
+
       unset($_SESSION["prios"]);
       header('Location: login.php?src=../helper_prios/index.php');
       exit;
@@ -57,6 +57,9 @@ if (!empty($_POST)){
   if (isset($_POST["workload"])){
     $_SESSION["helper"]["workload"] = $_POST["workload"];
   }
+  if (isset($_POST["breakinp"])){
+    $_SESSION["helper"]["break"] = $_POST["breakinp"];
+  }
 }
 ?>
 
@@ -75,11 +78,16 @@ if (!empty($_POST)){
       <div id="workload_div">
         <?php
         $wl = $_SESSION["helper"]["workload"];
-        // echo "$wl\r\n";
-        echo "<label for='workload'>Wie viele Schichten von jeweils 4 Stunden bist du bereit zu übernehmen?</label>";
-        echo "<input id='workload' name='workload' type='number' placeholder='$wl'>";
+        $break = $_SESSION["helper"]["break"];
+        // echo "$break\r\n";
+        echo "<label for='workload'>Wie viele Stunden möchtest du maximal arbeiten?</label>";
+        echo "<input id='workload' name='workload' type='number' placeholder='$wl' min='4' title='Eine Schicht dauert mindestens 4 Stunden'>";
         ?>
       </div>
+      <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
+      <?php
+      echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
+      ?>
       <div id="prios" class="prios">
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->

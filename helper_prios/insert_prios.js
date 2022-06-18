@@ -11,6 +11,10 @@ function placeholder_to_value() {
   if (wl.value.length === 0) {
     wl.value = wl.placeholder;
   }
+  let br = document.getElementById('breakinp');
+  if (br.value.length === 0) {
+    br.value = br.placeholder;
+  }
   let elem;
   for (let i = 0; i < prio_ids.length; i++){
     elem = document.getElementById('prioinp'+prio_ids[i].toString());

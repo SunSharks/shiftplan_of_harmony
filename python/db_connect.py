@@ -123,16 +123,32 @@ def fetch_preferences(name_id):
         sql += jn[0] + ", "
     sql = sql.rstrip()[:-1]
     sql += " FROM Preferences WHERE name_id = {}".format(name_id)
-    print(sql)
+    # print(sql)
     return fetch_one(sql)
 
+def fetch_job_ids_by_group(helper):
+    sql = """ SELECT id
+    FROM Jobs WHERE jt_primary IN(
+    SELECT id from Jobtypes WHERE helper = {}
+    )""".format(int(helper))
+    return fetch_all(sql)
+
+
 def fetch_preferences_by_group(group):
-    jobnames = fetch_column_names("Preferences", addon="")
-    sql = "SELECT * FROM Preferences WHERE name_id IN"
     if group == "user":
-        sql += "(SELECT id FROM Names WHERE Names.helper=1);"
+        group_job_ids = fetch_job_ids_by_group(False)
     elif group == "helper":
+        group_job_ids = fetch_job_ids_by_group(True)
+    colnamesstr = ""
+    for d in group_job_ids:
+        colnamesstr += "job{},".format(d["id"])
+    colnamesstr = colnamesstr[:-1]
+    jobnames = fetch_column_names("Preferences", addon="")
+    sql = "SELECT name_id, {colnames} FROM Preferences WHERE name_id IN ".format(colnames=colnamesstr)
+    if group == "user":
         sql += "(SELECT id FROM Names WHERE Names.helper=0);"
+    elif group == "helper":
+        sql += "(SELECT id FROM Names WHERE Names.helper=1);"
     # print(sql)
     return fetch_all(sql)
 
@@ -153,7 +169,7 @@ def fetch_column_names(tablename, addon=""):
     sql = """SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME= '{}' {}""".format(tablename, addon)
     ret = fetch_all(sql, "lst")
-    print([i[0] for i in ret])
+    # print([i[0] for i in ret])
     return [i[0] for i in ret]
 
 if __name__ == "__main__":

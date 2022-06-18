@@ -53,12 +53,6 @@ class Model:
         self.feed_fairness()
 
         self.feed_objective()
-        self.model.writeProblem()
-        self.model.optimize()
-        self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
-
-        np.save("SOLUTION", self.solution)
-        self.show_solution()
 
     def feed_boolean_constraint(self):
         """Solution matrix should contain boolean values"""
@@ -235,3 +229,8 @@ class Model:
 
         print(sum([sum(i) for i in self.solution]))
         return string
+
+    def optimize(self):
+        self.model.writeProblem()
+        self.model.optimize()
+        self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)

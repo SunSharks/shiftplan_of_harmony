@@ -1,3 +1,6 @@
 p5/
 fl*
 _*
+*.npy
+*.pyc
+*.cip

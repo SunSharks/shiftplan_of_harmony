@@ -21,7 +21,6 @@ class User_Model(Model):
         self.prt_biased_workloads()
 
         self.optimize()
-        np.save("SOLUTION", self.solution)
         self.show_solution()
 
 

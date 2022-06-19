@@ -143,18 +143,19 @@ function insert_prios_sql($prioinps){
 
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
-  echo json_encode($prioinps);
+  // echo json_encode($prioinps);
   foreach ($prioinps as $key=>$val){
+    // echo "$key -> $val <br>";
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";
       $name_id = $val;
     }
-    else if (str_starts_with("prioinp", $key)){
+    else if (str_starts_with($key, "prioinp")){
       $jobid = substr($key, 7);
       $sql1 .= " job$jobid = $val,";
     }
-    else if (str_starts_with("breakinp", $key)){
+    else if (str_starts_with($key, "breakinp")){
       $breaksql .= $val;
     }
   }

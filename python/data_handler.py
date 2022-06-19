@@ -1,7 +1,4 @@
 import db_connect as db
-from day import Day
-from jobtype import Jobtype
-
 
 
 from datetime import datetime
@@ -43,36 +40,15 @@ class Data_Handler:
             self.names = pd.DataFrame(db.fetch_names(helper=True))
             self.preferences = pd.DataFrame(db.fetch_preferences_by_group("helper"))
 
+
         self.days.set_index("id", inplace=True)
         self.jts.set_index("id", inplace=True)
-        # self.jobs.set_index("id", inplace=True)
-        # self.users.set_index("id", inplace=True)
         self.names.set_index("id", inplace=True)
         self.preferences.set_index("name_id", inplace=True)
-        # print(self.all_preferences.index)
         logging.info("Data Handler initialized.")
 
         # print(self.preferences)
 
-
-    def find_conflicts(self, br):
-        """Finds conflicting jobs for each job.
-        Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
-        @param br: individual minimum break between two shifts."""
-        conflicts = {}
-        # print(self.jobs)
-        for id, s, e in self.jobs[["abs_start", "abs_end"]].itertuples(index=True):
-            # print(id)
-            tmp = self.jobs.loc[((self.jobs["abs_start"] >= s-br) & (self.jobs["abs_start"] < e+br)) | ((self.jobs["abs_end"] >= s-br) & (self.jobs["abs_end"] <= e+br))]
-            conflicts[id] = tmp
-            # conflicts.update(id=tmp)
-            # print(self.jobs.loc[((self.jobs["abs_start"] >= s) & (self.jobs["abs_start"] < e)) | ((self.jobs["abs_end"] >= s) & (self.jobs["abs_end"] <= e))]["id"])
-        # print(conflicts)
-        # conflicts = pd.DataFrame(conflicts.items(), columns=["jobid", "conflicting_job_ids"])
-        # print(conflicts.tail())
-        # conflicts.set_index("jobid")
-        # assert 1==0
-        return conflicts
 
     def is_neighbor(j1_end, j2_start):
         return j1_end == j2_start

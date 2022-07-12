@@ -265,9 +265,9 @@ if (!empty($_GET)){
         <input id="insertbtn" name="INSERT INTO DB" type="submit" onclick="return confirm('Deine Eingaben werden nun gespeichert.Bist du sicher, dass alle Eingaben korrekt sind?')" value="INSERT INTO DB">
       </form>
     </div>
-    <div id="delete_link_div">
+    <!-- <div id="delete_link_div">
       <a href="./delete_jobtype.php" id="delete_link">Delete a Jobtype</a>
-    </div>
+    </div> -->
 </div>
 
 

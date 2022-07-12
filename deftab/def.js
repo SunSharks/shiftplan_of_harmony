@@ -216,6 +216,13 @@ class Basic_Jobbox{
     let special_label = this.create_jobbox_elem("label", "jobbox", prefix+"special_label"+id.toString(), "sensibel", prefix+"special_label"+id.toString(), "", prefix+"special"+id.toString());
     special_label_div.appendChild(special_label);
     outer_div.appendChild(special_label_div);
+
+    // let info_div = this.create_jobbox_elem("div", "jobbox");
+    // let s = "<button>Infotext</button>"
+    // let infoelem = this.create_jobbox_elem("a", "jobbox", prefix+"info"+id.toString(), s);
+    // infoelem.setAttribute("href", "infotxt.php?idx="+id.toString())
+    // info_div.appendChild(infoelem);
+    // outer_div.appendChild(info_div);
   }
 
   create_jobbox_elem(elem_type, cls="", id="", inner_html="", name="", value="", forstr=""){

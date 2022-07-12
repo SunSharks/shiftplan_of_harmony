@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "../deftab/index.php";
+$_SESSION["src"] = "../deftab/edit_existing_jobs.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/login.php?src=../deftab/index.php');
+  header('Location: ../users/login.php?src=../deftab/edit_existing_jobs.php');
   exit;
 }
 if (!empty($_GET)){
@@ -24,7 +24,7 @@ if (!empty($_GET)){
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="tabstyle.css">
 
-  <title>schedule definition</title>
+  <title>delete jobtype</title>
   <style>
     body {
       padding: 0;

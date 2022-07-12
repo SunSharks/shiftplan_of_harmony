@@ -3,14 +3,14 @@
 session_start();
 $_SESSION["src"] = "../deftab/index.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/login.php?src=../deftab/index.php');
+  header('Location: ../users/logout.php?src=../deftab/index.php');
   exit;
 }
 if (!empty($_GET)){
   if ($_GET["log"] === "out"){
     unset($_SESSION['user']);
     // printf(json_encode($_SESSION["user"]));
-    header('Location: ../users/login.php?src=../deftab/index.php');
+    header('Location: ../users/logout.php?src=../deftab/index.php&log=out');
     exit;
   }
 }
@@ -48,8 +48,8 @@ if (!empty($_GET)){
     <a href="index.php?log=out">
       <button class="logbtn">logout</button>
     </a>
-    <a href="infos.php">
-      <button class="logbtn">Insert info texts</button>
+    <a href="edit_existing_jobs.php">
+      <button class="logbtn">Bearbeiten bereits in der Datenbank befindlicher Schichten.</button>
     </a>
   </div>
   <h1>Definitionen</h1>
@@ -94,7 +94,9 @@ if (!empty($_GET)){
           </div>
           <div id="add_job">
             <!-- LANG! -->
-            <button id="add_job_btn" type="button" onclick="create_jobbox();">Neue Tätigkeit hinzufügen</button>
+            <p>Klicke auf den Button "Neue Tätigkeit", um ein Eingabefeld für die neue Tätigkeit erscheinen zu lassen.
+                In das Textfeld gib bitte den Namen der Schicht ein. Setze einen Haken in die entsprechende Checkbox, falls die neue Schicht für Helfende bzw. sensibel ist. </p>
+            <button id="add_job_btn" type="button" onclick="create_jobbox();">Neue Tätigkeit</button>
             <!-- <br> -->
             <!-- <div id="new_j"></div> -->
           </div>
@@ -102,7 +104,7 @@ if (!empty($_GET)){
         <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
-            <input id="submitdivbtn" type="submit" value="Zur Schichttabelle.">
+            <input id="submitdivbtn" type="submit" value="Bestätigen und zur Schichttabelle.">
           </p>
         </div>
       </div>

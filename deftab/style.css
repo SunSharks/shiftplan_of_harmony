@@ -11,6 +11,26 @@ p {
   text-align: left;
   margin: 10px;
 }
+
+button {
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #c7e3ab;
+  border: none;
+  border-radius: 5px;
+  }
+
+button:hover {background-color: #3e8e41}
+
+button:active {
+  background-color: #82ceb4;
+  transform: translateY(4px);
+}
+
+
 .day {
   /* margin-left: 250pt; */
   float: right;
@@ -116,22 +136,7 @@ p {
 [id^="jobdelbtn"] {
   padding: 0px 20px;
   font-size: 15px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #fff;
-  background-color: #c7e3ab;
-  border: none;
-  border-radius: 5px;
   }
-
-[id^="jobdelbtn"]:hover {background-color: #3e8e41}
-
-[id^="jobdelbtn"]:active {
-  background-color: #82ceb4;
-  transform: translateY(4px);
-}
 
 #del_day {
   display: inline;
@@ -148,13 +153,6 @@ p {
 #add_day_btn {
   padding: 15px 25px;
   font-size: 24px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #fff;
-  background-color: #c7e3ab;
-  border: none;
   border-radius: 15px;
 }
 
@@ -276,6 +274,7 @@ p {
   background-color: #c7e3ab;
   border: none;
   border-radius: 15px;
+  overflow: scroll;
 }
 
 .jt_txt {
@@ -304,4 +303,15 @@ p {
   float: left;
   background: rgb(170, 200, 100);
   display: block;
+}
+
+#links{
+  padding: 20px;
+  margin: 50px;
+
+}
+
+.linkbtn{
+  font-size: 24px;
+  margin: 10px;
 }

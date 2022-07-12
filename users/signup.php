@@ -70,7 +70,7 @@ if (isset($_POST["fullname"])){
 <style>
 Body {
   font-family: Calibri, Helvetica, sans-serif;
-  background-color: pink;
+  background-color: rgba(140, 133, 130, 0.79);
 }
 button {
        background-color: #4CAF50;

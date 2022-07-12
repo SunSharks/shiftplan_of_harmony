@@ -3,7 +3,7 @@
 session_start();
 $_SESSION["src"] = "../crew_prios/index.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/login.php?src=../crew_prios/index.php');
+  header('Location: ../users/logout.php?src=../crew_prios/index.php');
   exit;
 }
 if (!empty($_GET)){
@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['user']);
       // printf(json_encode($_SESSION["user"]));
       unset($_SESSION["prios"]);
-      header('Location: ../users/login.php?src=../crew_prios/index.php');
+      header('Location: ../users/logout.php?src=../crew_prios/index.php');
       exit;
     }
   }
@@ -31,7 +31,7 @@ if (!empty($_GET)){
 
 <?php
 include("../users/db.php");
-// perform(create_preferences_table_sql());
+perform(create_preferences_table_sql());
 regain_integrity();
 // printf("test1");
 regain_preference_integrity();

@@ -51,6 +51,7 @@ let griditems = [];
 let num_griditems = 0;
 let curr_color = 'blue';
 let curr_group = 0;
+let colors;
 let default_colors;
 let default_helper_colors;
 
@@ -298,6 +299,7 @@ function insert_job_indb(job_json){
 }
 
 function setup() {
+  colors = [color(130, 206, 180), color(240, 100, 180), color(130, 106, 255), color(130, 206, 30), color(200, 40, 180), color(240, 100, 40)];
   if (request_mode === "get"){
     console.log("get");
     get_params = get_params();
@@ -310,7 +312,7 @@ function setup() {
   let canv;
   if (row_height > 100){
     row_height = 100;
-    canv = createCanvas(windowWidth-5, row_height*num_jobs+100);
+    canv = createCanvas(windowWidth-5, row_height*num_jobs+200);
   }
   else{
     canv = createCanvas(windowWidth-5, windowHeight-20);
@@ -333,7 +335,8 @@ function setup() {
   default_helper_colors = [[color(211, 227, 196), color(237, 249, 225)],[color(199, 227, 171), color(223, 248, 195)]];
 
   grid = new Grid();
-  btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["select", "deselect"]);
+  // LANG!
+  btn = new Button(0, 0, rowheaderwidth, headerheight, "deselect", false, ["Löschen", "Nicht mehr löschen"]);
   btn.draw();
   // savebtn = new Button(rowheaderwidth, gridendy, ww, 50, "save", false, ["save", "save"]);
   // savebtn.draw();
@@ -355,21 +358,17 @@ function setup() {
   daybtn_div.style.setProperty('left', w);
   // let dayselection = document.getElementById("dayselection");
   // dayselection.style.setProperty('left', w);
-  console.log("ffe");
-
   let wholeviewbtn = document.getElementById("wholeviewbtn");
   wholeviewbtn.style.setProperty('left', w);
   w = (windowWidth-5-rowheaderwidth).toString() + "px";
   wholeviewbtn.style.setProperty('width', w);
-  console.log("ffe");
-
   let daywidth = default_col_width * 24;
   for (let i=0; i<num_days; i++){
     let w = daywidth.toString() + "px";
     let daybtn = document.getElementById("daybtn"+i.toString());
     daybtn.style.setProperty('width', w);
   }
-  console.log("setup done");
+  // console.log("setup done");
 }
 
 
@@ -514,7 +513,7 @@ function mousePressed(){
 
 
 function mouseReleased() {
-    curr_color = grid.generate_random_color();
+    curr_color = colors[curr_group%colors.length];
     curr_group += 1;
     row = -1;
     if (edit_mode === true){
@@ -606,11 +605,11 @@ class Grid {
     this.make_rowheaders();
     this.selected = [];
     this.select = true;
-    // console.log("Grid constructed.");
+    console.log("Grid constructed.");
+    console.log(num_jobs)
   }
 
   insert_predefs(){
-    let colors = ['green', 'red', 'blue', 'yellow', 'magenta', 'black', 'cyan'];
     let c = 0;
     let _maxid = -1;
     console.log(jt_id_to_griditems);
@@ -957,7 +956,6 @@ class Griditem {
     this.row = row;
     this.jobtype_id = jobtype_id;
     this.time = time;
-    this.day; // TODO
     this.x = x; // upper left corner
     this.y = y; // upper left corner
     this.w = w;
@@ -1127,11 +1125,11 @@ Button.prototype.draw = function() {
       fill(default_colors[0][0]);
     }
     else{
-      fill(this.color[0], this.color[1], (this.color[2]+20*this.state)%255);
+      fill(255, this.color[1], (this.color[2]+20*this.state)%255);
     }
   }
   else{
-    fill(this.color[0], this.color[1], (this.color[2]+20*this.state)%255);
+    fill(255, this.color[1], (this.color[2]+20*this.state)%255);
   }
 
   rect(this.x, this.y, this.w, this.h);
@@ -1189,6 +1187,8 @@ function generate_random_color(){
 class Countbox{
   constructor(x, y, w, h){
     this.counter = 0;
+    this.start_info = "";
+    this.end_info = "";
     this.x = x;
     this.y = y;
     this.w = w;
@@ -1199,10 +1199,14 @@ class Countbox{
 
   reset_counter(){
     this.counter = 0;
+    this.start_info = "";
+    this.end_info = "";
     this.show_counter = false;
   }
 
-  count(){
+  count(s="", e=""){
+    this.start_info = s;
+    this.end_info = e;
     this.counter++;
     this.show_counter = true;
     this.show();
@@ -1215,7 +1219,12 @@ class Countbox{
       textSize(35);
       fill(0,0,0);
       textStyle(NORMAL);
+      // textAlign(CENTER);
       text(this.counter.toString(), this.x, this.y+this.h/2);
+      // textAlign(RIGHT);
+      // textSize(15);
+      // text(this.start_info, this.x, this.y+this.h/2);
+      // text(this.end_info, this.x, this.y+this.h/2);
     }
   }
 }

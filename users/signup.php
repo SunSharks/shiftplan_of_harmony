@@ -150,9 +150,9 @@ button {
 
       <label for="psw-repeat"><b>Zur Sicherheit nochmal das Passwort</b></label>
       <input type="password" placeholder="Repeat Password" name="psw-repeat" accept-charset="utf-8" required>
-
-      <label for="email"><b>E-Mail</b></label>
-      <input type="text" placeholder="[optional] Deine Mailadresse" name="email">  <!-- LANG! -->
+      <!-- LANG! -->
+      <!-- <label for="email"><b>E-Mail</b></label>
+      <input type="text" placeholder="[optional] Deine Mailadresse" name="email">   -->
 
       <!-- <label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me

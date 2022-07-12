@@ -57,7 +57,7 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
     printf("No Jobs defined.");
     return;
   }
-  $ret = $drop . 'CREATE TABLE'.' Preferences (
+  $ret = $drop . 'CREATE TABLE IF NOT EXISTS'.' Preferences (
     name_id INT NOT NULL PRIMARY KEY';
   for ($i=0; $i<count($job_ids); $i++){
     $ret = $ret . ",

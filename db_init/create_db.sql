@@ -1,3 +1,6 @@
+CREATE DATABASE Testplan CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
 DROP TABLE Days;
 DROP TABLE Jobtypes;
 DROP TABLE Jobs;

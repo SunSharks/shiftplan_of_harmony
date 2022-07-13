@@ -26,12 +26,12 @@ if (!empty($_GET)){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>schedule definition</title>
+  <title>crew preferences</title>
 
 
 <?php
 include("../users/db.php");
-perform(create_preferences_table_sql());
+perform(create_preferences_table_sql(""));
 regain_integrity();
 // printf("test1");
 regain_preference_integrity();
@@ -75,6 +75,13 @@ if (!empty($_POST)){
     </a>
   </div>
   <h1>Prioritäten</h1>
+  <div class="mantxt">
+    <?php
+    if(file_exists('_indexmantxt.txt')){
+        include '_indexmantxt.txt';
+      }
+      ?>
+  </div>
   <div id="prios" class="prios">
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
       <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
@@ -148,8 +155,8 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>+</button></div>";
-                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>-</button></div>";
+                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>select</button></div>";
+                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>unselect</button></div>";
                 $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5'></div>";
                 echo "<div class='priotd'><td $style colspan='$span_hours' align='center' height='50'>$selbut$unselbut$inp</td></div>";
                 echo "<script>add_prio_id($id);</script>";

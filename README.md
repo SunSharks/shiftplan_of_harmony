@@ -17,7 +17,7 @@ tab.php uses deftabsketch.js to create a editable table to define time intervals
 
 ## crew_prios/
 Website to define preferences for each job that is not a helper job.
-For a costum man text rename the file "indexman.php" to "_indexman.php" and edit its containing text.
+For a costum man text rename the file "indexmantxt.txt" to "_indexmantxt.txt" and edit its containing text.
 ### index.php
 
 .

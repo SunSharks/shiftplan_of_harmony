@@ -85,11 +85,12 @@ if (!empty($_POST)){
   </div>
   <div id="prios" class="prios">
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
-      <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
+      <div id='breakdiv' class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label>
       <?php
       $break = $_SESSION["user"]["break"];
       echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
       ?>
+      </div>
 
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->

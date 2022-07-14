@@ -14,6 +14,13 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
   table-layout: fixed;
 } -->
 
+body {
+  background: rgba(230, 220, 220, 0.79);
+  padding: 20px;
+  margin: 0px;
+  block-size: fit-content;
+}
+
 table {
   margin-left: 100px;
   table-layout: fixed;
@@ -71,12 +78,13 @@ div {
         min-width: 50px;
     } -->
 
-.prios {
+#prios {
   <!-- display: grid;
   grid-template-rows: <?=$grid_template_rows?>;
   grid-template-columns: <?=$grid_template_columns?>; -->
   background-color: #2196F3;
   padding: 10px;
+  width: 100%;
   overflow: auto;
 }
 
@@ -86,7 +94,7 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(0,255,0);
+  background-color: rgb(0,200,0);
 }
 
 .unselbtn {
@@ -95,7 +103,7 @@ div {
   height: 90%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
 }
 
 .prioselbut {
@@ -104,7 +112,7 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(0,255,0);
+  background-color: rgb(0,200,0);
 }
 .priounselbut {
   padding: 0;
@@ -112,9 +120,26 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
 }
 
 #submitdivbtn {
   width: fit-content;
+}
+
+#breakinp {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  display: inline-block;
+  border: 2px solid green;
+  box-sizing: border-box;
+}
+
+#breakdiv{
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  border: 2px solid green;
+  box-sizing: border-box;
 }

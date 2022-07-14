@@ -3,14 +3,14 @@
 session_start();
 $_SESSION["src"] = "../deftab/edit_existing_jobs.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/login.php?src=../deftab/edit_existing_jobs.php');
+  header('Location: ../users/logout.php?src=../deftab/index.php');
   exit;
 }
 if (!empty($_GET)){
   if ($_GET["log"] === "out"){
     unset($_SESSION['user']);
     // printf(json_encode($_SESSION["user"]));
-    header('Location: ../users/login.php?src=../deftab/index.php');
+    header('Location: ../users/logout.php?src=../deftab/index.php&log=out');
     exit;
   }
 }

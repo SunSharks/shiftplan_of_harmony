@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['user']);
       // printf(json_encode($_SESSION["user"]));
       unset($_SESSION["prios"]);
-      header('Location: ../users/logout.php?src=../crew_prios/index.php');
+      header('Location: ../users/logout.php?src=../crew_prios/index.php&log=out');
       exit;
     }
   }

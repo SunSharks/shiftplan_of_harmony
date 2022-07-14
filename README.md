@@ -1,17 +1,31 @@
 # shiftplan_of_harmony
 
-index.html uses def.js for definitions of day and job credentials.
+## deftab/
+### index.php
+index.php uses def.js for definitions of day and job credentials.
 **Day input fields** can be added by clicking the plus sign in the top left corner. Deletion by clicking the minus symbol next to the last day box. You can only delete the last day box.
 
 **Job input fields** can be added by clicking the second plus sign. Deletion by clicking the minus symbol of the job box. You can delete each job box on its own.
-**Helper checkbox** is made for jobs that don't follow the usual rules of shift assignment.
+**Helper checkbox** is made for jobs that don't follow the usual rules of shift assignment and build a seperate data set for an own model.
 In def.js, the `name_special` variable can be changed to change the label for this checkbox. It can be used to mark all kinds of exceptions.
+**Sensibel checkbox** makes the default preference value equals 5 for all jobs of that jobtype.
 
+### tab.php
+tab.php uses deftabsketch.js to create a editable table to define time intervals of jobs.
+
+### delete_jobtype.php
+
+## crew_prios/
+Website to define preferences for each job that is not a helper job.
+For a costum man text rename the file "indexman.php" to "_indexman.php" and edit its containing text.
+### index.php
+
+.
 ## TODO
 
 * Barrierefreie Farben!
 * Layout von allem.
-* Mehr utf8s in die encoding Funktionen. 
+* Mehr utf8s in die encoding Funktionen.
 
 ### deftab
 #### Appearence
@@ -35,9 +49,10 @@ In def.js, the `name_special` variable can be changed to change the label for th
 
 * Create view to edit only new jobs.
 * Competences --> Create file upload (*.txt)
-* Show competences text as info text on hover
+* [DONE] Show competences text as info text on hover
 * Button to view competences text as whole Document (optional)
 * Download button for competences text.
+* Number input in jobbox for twins (dublicate jobs).
 
 ### prios
 #### index

@@ -53,9 +53,8 @@ if (!empty($_GET)){
     </a>
   </div>
   <h1>Gespeicherte Schichten bearbeiten</h1>
-  <div id="mantxt">
+  <div class="mantxt">
       Auf dieser Seite können nur Daten bearbeitet werden, die bereits in der Datenbank gespeichert sind.
-
   </div>
   <div id="links">
       <div class="link">

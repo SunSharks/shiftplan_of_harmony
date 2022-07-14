@@ -10,7 +10,7 @@ The best strategy for a result that is as satisfactory as possible for everyone 
  <br>
 </p>
 <p>
-<strong>Usage</strong><br>
+<h2>Usage</h2>
 In the input fields for each layer, put an integer from 1 to 5 representing the preference for that layer. <br>
 <ul>
   <li><strong>1</strong> means that you would love to take this shift.</li>

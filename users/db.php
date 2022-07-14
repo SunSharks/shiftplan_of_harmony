@@ -60,8 +60,15 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
   $ret = $drop . 'CREATE TABLE IF NOT EXISTS'.' Preferences (
     name_id INT NOT NULL PRIMARY KEY';
   for ($i=0; $i<count($job_ids); $i++){
+    // TODO!
+    if(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=$job_ids[$i] AND special=1;"))[0] === "1"){
+      $def = 5;
+    }
+    else{
+      $def = 3;
+    }
     $ret = $ret . ",
-    job$job_ids[$i] INT NOT NULL DEFAULT 3 check( job$job_ids[$i] > 0 and job$job_ids[$i] < 6)
+    job$job_ids[$i] INT NOT NULL DEFAULT $def check( job$job_ids[$i] > 0 and job$job_ids[$i] < 6)
     ";
   }
   $ret .= ");";

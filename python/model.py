@@ -1,8 +1,10 @@
-
 from pyscipopt import *
 import numpy as np
 import pandas as pd
 import itertools as it
+import matplotlib.pyplot as plt
+import logging
+logging.getLogger('matplotlib.font_manager').disabled = True
 
 
 class Model:
@@ -266,40 +268,17 @@ class Model:
         self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
         np.save('solution', self.solution)
 
-    def show_solution(self):
-        string = ""
-        cnt = 0
-        for p in range(self.num_persons):
-            selfjobs = []
-            # print(self.dh.preferences)
-            print("{} ist in folgende Schichten eingeteilt worden: ".format(
-                self.persons.loc[p]["nickname"]))
-            string += "{} ist in folgende Schichten eingeteilt worden: ".format(
-                self.persons.loc[p]["nickname"])
-            print(10*'-=- ')
-            string += 10*'-=- '
-            print('Pausenoption: {}'.format(self.persons.loc[p]["break"]))
-            string += 'Pausenoption: {}'.format(self.persons.loc[p]["break"])
-            for j in enumerate(self.solution[p]):
-                # print(j[1])
-                if j[1] > 0:
-                    if j[1] >= 0.9:
-                        cnt += 1
-                        print("*** {} Beginn: {} {} Uhr Ende: {} {} Uhr. Gewählt mit Note: {}".format(
-                            self.dh.jts.loc[self.jobs.loc[j[0]]["jt_primary"]]["name"], self.jobs.loc[j[0]]["start_day_id"], self.jobs.loc[j[0]]["dt_start"], self.jobs.loc[j[0]]["end_day_id"], self.jobs.loc[j[0]]["dt_end"], self.dh.preferences.loc[self.persons.loc[p]["fullname_id"]]["job{}".format(self.jobs.loc[j[0]]["id"])]))
-                        string += "*** {} Beginn: {} {} Uhr Ende: {} {} Uhr. Gewählt mit Note: {}".format(
-                            self.dh.jts.loc[self.jobs.loc[j[0]]["jt_primary"]]["name"], self.jobs.loc[j[0]]["start_day_id"], self.jobs.loc[j[0]]["dt_start"], self.jobs.loc[j[0]]["end_day_id"], self.jobs.loc[j[0]]["dt_end"], "TODO")
-                    else:
-                        print(100*'_')
-                        print("***NICHT: {} Beginn: {} {} Uhr Ende: {} {} Uhr. Gewählt mit Note: {}".format(
-                            self.dh.jts.loc[self.jobs.loc[j[0]]["jt_primary"]]["name"], self.jobs.loc[j[0]]["start_day_id"], self.jobs.loc[j[0]]["dt_start"], self.jobs.loc[j[0]]["end_day_id"], self.jobs.loc[j[0]]["dt_end"], "TODO"))
-                        print(100*"_")
-            # print(lPersons[p].prios)
-            # print(10*'-+- ')
-            # print(sum(np.array([j.during for j in selfjobs])) + lPersons[p].bias)
-            '''
-            print(lPersons[p].prios_flat)
-            '''
-        # print(sum([sum(i) for i in aVal]))
-        # print(cnt)
-        return string
+    def panda_solution(self):
+        sol_df = pd.DataFrame(self.solution)
+        print(self.jobs)
+        print(self.num_jobs)
+        # sol_df.columns = [self.dh.jts.loc[self.jobs.loc[i]["jt_primary"]]["name"]
+        #                   for i in range(self.num_jobs)]
+        sol_df.columns = self.jobs.index
+        sol_df.index = [self.persons.loc[p]["nickname"] for p in range(self.num_persons)]
+        print(self.dh.days)
+        for d in self.dh.days:
+            for p_id, p in self.persons[["nickname"]].itertuples(index=True):
+                plt.plot(np.arange(self.num_jobs), self.solution[p_id, :], 'o', label=p)
+                plt.legend()
+                plt.show()

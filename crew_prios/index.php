@@ -46,6 +46,7 @@ $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
 // printf(json_encode($_SESSION["user"]));
 $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 // printf(json_encode($_SESSION["prios"]));
+include("stats.php");
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
 <?php

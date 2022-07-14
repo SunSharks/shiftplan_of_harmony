@@ -125,8 +125,9 @@ button {
   <h1>Login</h1>
     <form action="login.php" method="post" style="border:1px solid #ccc">
      <div class="container">
+       <!-- LANG! -->
          <label>Username : </label>
-         <input type="text" placeholder="Enter Username" name="username" required>
+         <input type="text" placeholder="Enter Username" name="username" title="Falls du einen Spitznamen angegeben hast, ist es der, falls nicht, ist es einfach dein Vor- und Nachname (unter Beachtung von Groß-/Kleinschreibung und mit Leerzeichen getrennt)." required>
          <label>Password : </label>
          <input type="password" placeholder="Enter Password" name="password" required>
          <button type="submit">Login</button>

@@ -1,8 +1,8 @@
+import matplotlib.pyplot as plt
 from pyscipopt import *
 import numpy as np
 import pandas as pd
 import itertools as it
-import matplotlib.pyplot as plt
 import logging
 logging.getLogger('matplotlib.font_manager').disabled = True
 
@@ -19,22 +19,21 @@ class Model:
 
         self.slack_coef_diversity = 1
         self.slack_coef_fairness = 2
-        self.eps = 3     # Toleranzstundenanzahl.
+        self.eps = 8     # Toleranzstundenanzahl.
         self.jobs_until_forced_break = 2
 
-        self.jobs = jobs
         self.persons = persons
 
         self.workload_per_person = None
 
         self.model = scip.Model()
-        self.vars = np.empty((len(self.persons.index), len(self.jobs.index)), dtype=object)
+        self.vars = np.empty((len(self.persons.index), len(self.dh.jobs.index)), dtype=object)
         self.num_persons, self.num_jobs = self.vars.shape
         # print(self.num_persons, self.num_jobs)
         #
         # print(len(self.dh.user_preferences.values), self.num_persons)
         # print(42 in self.dh.user_preferences.values)
-        self.durings = self.jobs["during"].to_numpy()
+        self.durings = self.dh.jobs["during"].to_numpy()
         self.total_workhours = np.sum(self.durings)
         # print("Insgesamt sind {wh} Stunden zu arbeiten für alle {gn}.".format(wh=self.total_workhours, gn=self.groupname))
         # self.break_after_two_shifts()
@@ -131,9 +130,9 @@ class Model:
         """Enforces break after self.jobs_until_forced_break shifts as hard constraint.
         """
         self.neighbors_per_job = {}
-        for id, end in self.jobs[["abs_end"]].itertuples(index=True):
-            # print(self.jobs.loc[end == self.jobs['abs_start']])
-            neighbors = self.jobs.loc[end == self.jobs['abs_start']]
+        for id, end in self.dh.jobs[["abs_end"]].itertuples(index=True):
+            # print(self.dh.jobs.loc[end == self.dh.jobs['abs_start']])
+            neighbors = self.dh.jobs.loc[end == self.dh.jobs['abs_start']]
             self.neighbors_per_job[id] = list(neighbors.index)
         n_series_ids = []
         for id in self.neighbors_per_job:
@@ -147,7 +146,7 @@ class Model:
                 self.model.addCons(quicksum(self.vars[p][i]
                                             for i in ser) <= self.jobs_until_forced_break)
 
-        # print(self.jobs.loc[self.jobs["abs_end"] == self.jobs["abs_start"]])
+        # print(self.dh.jobs.loc[self.dh.jobs["abs_end"] == self.dh.jobs["abs_start"]])
 
         # Keiner muss 3 Schichten direkt hintereinander machen.
         # for p in range(self.num_persons):
@@ -158,7 +157,7 @@ class Model:
 
         # print(10*'='+"\nNow entering long permutations loop.\n"+10*'=')
         # for p in range(_p):
-        #     for j1, j2, j3 in it.permutations(self.jobs, 3):
+        #     for j1, j2, j3 in it.permutations(self.dh.jobs, 3):
         #     #    print(j1.name, j2.name, j3.name)
         #         if j1.end == j2.begin and j2.end == j3.begin:
         #             model.addCons(vars[p][j1.id]*lJobs[j1.id].during + vars[p][j2.id]*lJobs[j2.id].during + vars[p][j3.id]*lJobs[j3.id].during <= 10)
@@ -169,14 +168,14 @@ class Model:
         Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
         @param br: individual minimum break between two shifts."""
         conflicts = {}
-        # print(self.jobs)
-        for id, s, e in self.jobs[["abs_start", "abs_end"]].itertuples(index=True):
+        # print(self.dh.jobs)
+        for id, s, e in self.dh.jobs[["abs_start", "abs_end"]].itertuples(index=True):
             # print(id)
-            tmp = self.jobs.loc[((self.jobs["abs_start"] >= s-br) & (self.jobs["abs_start"] < e+br))
-                                | ((self.jobs["abs_end"] >= s-br) & (self.jobs["abs_end"] <= e+br))]
+            tmp = self.dh.jobs.loc[((self.dh.jobs["abs_start"] >= s-br) & (self.dh.jobs["abs_start"] < e+br))
+                                   | ((self.dh.jobs["abs_end"] >= s-br) & (self.dh.jobs["abs_end"] <= e+br))]
             conflicts[id] = tmp
             # conflicts.update(id=tmp)
-            # print(self.jobs.loc[((self.jobs["abs_start"] >= s) & (self.jobs["abs_start"] < e)) | ((self.jobs["abs_end"] >= s) & (self.jobs["abs_end"] <= e))]["id"])
+            # print(self.dh.jobs.loc[((self.dh.jobs["abs_start"] >= s) & (self.dh.jobs["abs_start"] < e)) | ((self.dh.jobs["abs_end"] >= s) & (self.dh.jobs["abs_end"] <= e))]["id"])
         # print(conflicts)
         # conflicts = pd.DataFrame(conflicts.items(), columns=["jobid", "conflicting_job_ids"])
         # print(conflicts.tail())
@@ -230,17 +229,17 @@ class Model:
         # print(self.dh.jts)
         # jobmap = np.empty(self.vars.size)
         vars_slack = []
-        vals = [self.dh.jts.loc[j]["category"] for j in self.jobs["jt_primary"]]
-        self.jobs["category"] = vals
+        vals = [self.dh.jts.loc[j]["category"] for j in self.dh.jobs["jt_primary"]]
+        self.dh.jobs["category"] = vals
         # print(self.dh.jts)
         # categories = list(dJob_categories_ind.values())
         # print(pd.merge(self.dh.jobs, self.dh.jts, on=["jt_primary", id]))
         # print(self.dh.jobs.loc[self.dh.jobs["jt_primary"] == self.dh.jts.index])
         for p in range(self.num_persons):
-            for id, cat in self.jobs[["category"]].itertuples(index=True):
+            for id, cat in self.dh.jobs[["category"]].itertuples(index=True):
                 vars_slack.append(self.model.addVar("slack_p{}cat{}".format(p, cat), vtype='I'))
                 self.model.addCons(quicksum((self.vars[p][i] for i in range(
-                    self.num_jobs) if self.jobs.loc[i]["category"] == cat))-vars_slack[-1] <= 1)
+                    self.num_jobs) if self.dh.jobs.loc[i]["category"] == cat))-vars_slack[-1] <= 1)
                 self.model.addCons(vars_slack[-1] >= 0)
                 self.slack_objective = - self.slack_coef_diversity * \
                     vars_slack[-1] + self.slack_objective
@@ -266,19 +265,10 @@ class Model:
         self.model.writeProblem()
         self.model.optimize()
         self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
+        self.dh.solution = self.solution
         np.save('solution', self.solution)
 
-    def panda_solution(self):
-        sol_df = pd.DataFrame(self.solution)
-        print(self.jobs)
-        print(self.num_jobs)
-        # sol_df.columns = [self.dh.jts.loc[self.jobs.loc[i]["jt_primary"]]["name"]
-        #                   for i in range(self.num_jobs)]
-        sol_df.columns = self.jobs.index
-        sol_df.index = [self.persons.loc[p]["nickname"] for p in range(self.num_persons)]
-        print(self.dh.days)
-        for d in self.dh.days:
-            for p_id, p in self.persons[["nickname"]].itertuples(index=True):
-                plt.plot(np.arange(self.num_jobs), self.solution[p_id, :], 'o', label=p)
-                plt.legend()
-                plt.show()
+
+class Visualizer:
+    def __init__(self, solution):
+        self.solution = solution

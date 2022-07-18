@@ -1,13 +1,155 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+import seaborn as sns
 
 
 class Solution:
     def __init__(self, dh):
         self.dh = dh
+        self.preferences_np = self.dh.preferences.to_numpy()
+        self.style = ""
         self.get_jobmask()
-        self.run()
+        # self.run_plt()
+        self.get_most_popular_jobs()
+        self.get_last_popular_jobs()
+        self.get_avg_rate()
+        self.get_avg_rate_per_job()
+
+        self.get_color_palette()
+
+        self.get_stats_style()
+        self.get_htmls()
+
+    def get_color_palette(self):
+        palette = sns.color_palette("coolwarm", np.unique(self.avg_rates).shape[0]).as_hex()[::-1]
+        unique_vals = {val: i for i, val in enumerate(np.unique(self.avg_rates))}
+        for j, av in zip(self.dh.jobs.index, self.avg_rates):
+            self.style += "#job{j} !border: 5px solid {c};?".format(j=j, c=palette[unique_vals[av]])
+
+    def get_color_map(self):
+        html = "<div id=colormap></div>"
+
+    def get_most_popular_jobs(self):
+        self.avg_most_pop = np.min(self.preferences_np.sum(axis=0))/self.preferences_np.shape[0]
+        self.most_pop_idx = np.where(self.preferences_np.sum(axis=0) ==
+                                     np.min(self.preferences_np.sum(axis=0)))[0]
+
+    def get_last_popular_jobs(self):
+        self.avg_last_pop = np.max(self.preferences_np.sum(axis=0))/self.preferences_np.shape[0]
+        self.last_pop_idx = np.where(self.preferences_np.sum(axis=0) ==
+                                     np.max(self.preferences_np.sum(axis=0)))[0]
+        print(self.last_pop_idx)
+
+    def get_avg_rate(self):
+        self.avg_rate = self.preferences_np.sum() / self.preferences_np.size
+
+    def get_avg_rate_per_job(self):
+        self.avg_rates = self.preferences_np.sum(axis=0)/self.preferences_np.shape[0]
+
+    def get_stats_style(self):
+        for i in self.most_pop_idx:
+            self.style += "#job{mp} !background-color: green;?".format(mp=i)
+        for i in self.last_pop_idx:
+            self.style += "#job{lp} !background-color: red;?".format(lp=i)
+        self.style = self.style.replace("!", "{")
+        self.style = self.style.replace("?", "}")
+        print(self.style)
+
+    def get_htmls(self):
+        with open("html_skel.html", "r") as f:
+            self.html_skel = f.read()
+        time_nickname_html = self.get_html(self.insert_time_nickname)
+        self.time_nickname_html = self.html_skel.format(
+            STYLE=self.style, MODE=" mit Zeiten", TABLE=time_nickname_html)
+        with open("time_nickname_tab.html", "w") as f:
+            f.write(self.time_nickname_html)
+
+        nickname_pref_html = self.get_html(self.insert_nickname_pref)
+        self.nickname_pref_html = self.html_skel.format(
+            STYLE=self.style, MODE=" mit Präferenzen", TABLE=nickname_pref_html)
+        with open("nickname_pref_tab.html", "w") as f:
+            f.write(self.nickname_pref_html)
+
+        nickname_html = self.get_html(self.insert_nickname)
+        self.nickname_html = self.html_skel.format(STYLE=self.style, MODE="", TABLE=nickname_html)
+        with open("nickname_tab.html", "w") as f:
+            f.write(self.nickname_html)
+
+    def insert_nickname_pref(self, id, **kwargs):
+        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+        name_id = self.dh.users.loc[assigned_user]["fullname_id"]
+        pref = self.dh.preferences.loc[name_id].to_numpy()[id]
+        inp = "<strong>{}</strong><br>{}".format(assigned_nickname, pref)
+        return inp
+
+    def insert_nickname(self, id, **kwargs):
+        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+        inp = "<strong>{}</strong>".format(assigned_nickname)
+        return inp
+
+    def insert_time_nickname(self, id, **kwargs):
+        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+        inp = "{} - {} Uhr<br><strong>{}</strong>".format(
+            kwargs["abs_start"], kwargs["abs_end"], assigned_nickname)
+        return inp
+
+    def get_html(self, insert):
+        html = """<table id="tab" border="5" cellspacing="0" align="center">
+        <!--<caption>{caption}</caption>-->
+        <tr> <!-- DAYNAME ROW -->
+        <td rowspan="2" align="center" height="50">
+            <b>Job/Time</b>
+        </td>
+        """.format(caption="Schichtplan für ")
+        for name, d in self.dh.days[["name", "date"]].itertuples(index=False):
+            html += "<td colspan='24' align='center' height='50'><b>{n}</b></td>".format(n=name)
+        html += "</tr><tr> <!-- DAYTIME ROW -->"
+        for name in self.dh.days[["name"]].itertuples():
+            for i in range(24):
+                b = ""
+                if i < 10:
+                    b = "&nbsp;"
+                b += str(i)
+                html += "<td align='center' height='50'><b>{}</b></td>".format(b)
+        html += "</tr>"
+        html += "<!-- JOBTYPE ROWS -->"
+        odd_style = "style='background-color:#edf9e1'"
+        even_style = "style='background-color:#d3e3c4'"
+        # odd_style = ""
+        # even_style = ""
+        for id, name, comp in self.dh.jts[["name", "competences"]].itertuples(index=True):
+            style = odd_style
+            title = "title='{c}'".format(c=comp)
+            html += "<tr {s}>".format(s=style)
+            html += "<th {t} class='rowhead' align='left' height='50'><b>{n}</b></th>".format(
+                t=title, n=name)
+            idx = 0
+            for id, dur, abs_start, abs_end in self.dh.jobs.loc[self.dh.jobs["jt_primary"] == id][["during", "abs_start", "abs_end"]].itertuples(index=True):
+                inp = insert(id, dur=dur, abs_start=abs_start, abs_end=abs_end)
+                while idx < abs_start:
+                    if idx % 2 == 0:
+                        style = even_style
+                    else:
+                        style = odd_style
+                    html += "<td {s} align='center' width='20px' height='50'></td>".format(s=style)
+                    idx += 1
+                html += "<div><td id=job{id} {s} colspan='{d}' align='center' height='50'>{inp}</td></div>".format(
+                    id=id, s=style, d=dur, inp=inp)
+                idx = abs_end
+            while idx <= len(self.dh.days.index)*24:
+                if idx % 2 == 0:
+                    style = even_style
+                else:
+                    style = odd_style
+                html += "<td $style align='center'  height='50'></td>"
+                idx += 1
+            html += "</tr>"
+        html += "</table>"
+        return html
 
     def get_jobmask(self):
         """Returns a (<number of jobypes> x <number of days>*24) sized numpy array
@@ -22,13 +164,12 @@ class Solution:
                 self.jobmask[i, abs_start:abs_end] = 1
                 self.id_jobmask[i, abs_start:abs_end] = index
                 self.sol_idx_to_mask_idx[index] = (i, abs_start, abs_end)
-        print(self.jobmask)
+        # print(self.jobmask)
 
-    def run(self):
+    def run_plt(self):
         self.build_ticklabels()
         for i, row in enumerate(self.dh.solution):
             personal_solution = self.solution_row_to_jobmask(row)
-
             self.draw_one_person(personal_solution, i)
 
         # im1 = plt.imshow(self.jobmask, cmap=plt.cm.gray)
@@ -51,7 +192,8 @@ class Solution:
 
     def draw_one_person(self, personal_solution, i):
         fig, ax = plt.subplots(1, 1)
-        im = plt.imshow(personal_solution, aspect='auto', cmap=plt.cm.gray)
+        im = plt.imshow(personal_solution, aspect='auto', cmap=plt.cm.gray, alpha=.5)
+        im = plt.imshow(self.id_jobmask, aspect='auto', cmap='hot', alpha=.1)
 
         # plt.xlabel('x label')
         # plt.ylabel('y label')
@@ -64,47 +206,16 @@ class Solution:
         for i, j in itertools.product(range(personal_solution.shape[0]), range(personal_solution.shape[1])):
             if personal_solution[i, j] == 2:
                 if curr_job != self.id_jobmask[i, j]:
-                    text = "{} \n-\n{}\n Uhr".format(
+                    # tup = self.sol_idx_to_mask_idx[]
+                    # middle = tup[2] - tup[1] // 2
+                    text = "{}-{}\nUhr".format(
                         self.dh.jobs.loc[self.id_jobmask[i, j]]["dt_start"], self.dh.jobs.loc[self.id_jobmask[i, j]]["dt_end"])
-                    plt.text(j, i, text, ha="center", va="center", color="green")
+                    plt.text(j+self.dh.jobs.loc[self.id_jobmask[i, j]]["during"]//2,
+                             i, text, ha="center", va="center", color="green")
                     curr_job = self.id_jobmask[i, j]
 
         # fig.colorbar(im)
         plt.show()
-
-    def panda_solution(self):
-        print(self.dh.days)
-        print(self.dh.jobs)
-        print(self.dh.jts)
-        print(self.persons)
-        self.visualizer = Visualizer(self.solution)
-        self.get_jobmask()
-        self.solution_row_to_jobmask()
-
-        colors = ("grey", "green", "red")
-        for index, nickname, br, bias in self.persons[["nickname", "break", "bias"]].itertuples(index=True):
-            pers_line = self.solution[index, :]
-            # line_per_jt =
-            for id, name, date in self.dh.days[["name", "date"]].itertuples(index=True):
-                print(id, name, date)
-
-        # print(self.dh.jobs)
-        # print(self.num_jobs)
-        self.img_sol = self.solution * 255
-        # sol_df.columns = [self.dh.jts.loc[self.dh.jobs.loc[i]["jt_primary"]]["name"]
-        #                   for i in range(self.num_jobs)]
-        # sol_df.columns = self.dh.jobs.index
-        # sol_df.index = [self.persons.loc[p]["nickname"] for p in range(self.num_persons)]
-
-        # image = Image.fromarray(self.img_sol)
-        # image.show()
-
-        # print(self.dh.days)
-        # for d in self.dh.days:
-        #     for p_id, p in self.persons[["nickname"]].itertuples(index=True):
-        # plt.plot(np.arange(self.num_jobs), self.solution[p_id, :], 'o', label=p)
-        # plt.legend()
-        # plt.show()
 
     def get_assigned_job_str(self, name, job_id):
         print("*** {jobname} Beginn: {beg_day} {beg_time} Uhr Ende: {end_day} {end_} Uhr, Nacht: {}. Gewählt mit Note: {}".format(lJobs[j[0]].name, translate_linear_time(lJobs[j[0]].begin)[

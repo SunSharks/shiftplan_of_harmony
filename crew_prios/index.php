@@ -71,9 +71,9 @@ if (!empty($_POST)){
     <a href="index.php?log=out">
       <button>logout</button>
     </a>
-    <a href="../deftab/index.php">
+    <!-- <a href="../deftab/index.php">
       <button>shiftplandef</button>
-    </a>
+    </a> -->
   </div>
   <h1>Prioritäten</h1>
   <div class="mantxt">

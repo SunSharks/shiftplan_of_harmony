@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['helper']);
 
       unset($_SESSION["prios"]);
-      header('Location: login.php?src=../helper_prios/index.php');
+      header('Location: login.php?src=../helper_prios/index.php&log=out');
       exit;
     }
   }
@@ -26,7 +26,8 @@ if (!empty($_GET)){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>schedule definition</title>
+  <link rel="icon" type="image/x-icon" href="../images/fl_logo.png">
+  <title>helper preferences</title>
 
 
 <?php

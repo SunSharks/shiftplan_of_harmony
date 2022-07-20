@@ -125,6 +125,16 @@ div {
 
 #submitdivbtn {
   width: fit-content;
+  margin: 20px;
+  align: center;
+  position: absolute;
+}
+
+.unselall {
+  margin: 10px;
+  width: 50%;
+  align: center;
+  position: absolute;
 }
 
 #breakinp, #workload {

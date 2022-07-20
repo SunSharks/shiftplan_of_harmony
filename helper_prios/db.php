@@ -162,7 +162,7 @@ function insert_prios_sql($prioinps){
     }
   }
   if (!empty($workloadsql)){
-    $workloadsql .= "$nameid;";
+    $workloadsql .= "$name_id;";
   }
   if (!empty($breaksql)){
     $breaksql .= "$name_id;";

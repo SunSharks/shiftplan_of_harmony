@@ -101,7 +101,8 @@ function regain_preference_integrity(){
 
 function add_job_to_preferences_sql($id){
   $jtid = unpack_singleton_fetch(perform("SELECT jt_primary FROM Jobs WHERE id=$id;"))[0];
-  if (unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=$jtid AND special=1;"))[0] === "1"){
+  // printf(json_encode(fetch_it("SELECT COUNT(id) FROM Jobtypes WHERE id=$jtid AND special=1;")[0]["COUNT(id)"]));
+  if (fetch_it("SELECT COUNT(id) FROM Jobtypes WHERE id=$jtid AND special=1;")[0]["COUNT(id)"] === 1){
     return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 5";
   }
   return "ALTER TABLE Preferences ADD job$id INT NOT NULL DEFAULT 3";

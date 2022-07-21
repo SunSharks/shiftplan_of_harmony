@@ -97,6 +97,7 @@ function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="icon" type="image/x-icon" href="../images/fl_logo.png"> -->
   <title>schedule definition</title>
   <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -150,8 +151,8 @@ function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
             }
           ?>
           <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
-          <div id="add_day"><button id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>
-          <div id="del_day"><button id="del_day_btn" type="button" onclick="delete_daybox();">-</button><br></div>
+          <div id="add_day"><button class="funcbtn" id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>
+          <div id="del_day"><button class="funcbtn" id="del_day_btn" type="button" onclick="delete_daybox();">-</button><br></div>
         </span>
 
         <div id="job">
@@ -177,7 +178,7 @@ function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
             <!-- LANG! -->
             <p>Klicke auf den Button "<?php echo "$add_job_btn_txt";?>", um ein Eingabefeld für die neue Tätigkeit erscheinen zu lassen.
                 In das Textfeld gib bitte den Namen der Schicht ein. Setze einen Haken in die entsprechende Checkbox, falls die neue Schicht für Helfende bzw. sensibel ist. </p>
-            <button id="add_job_btn" type="button" onclick="create_jobbox();"><?php echo "$add_job_btn_txt";?></button>
+            <button class="funcbtn" id="add_job_btn" type="button" onclick="create_jobbox();"><?php echo "$add_job_btn_txt";?></button>
           </div>
         </div>
         <div id="submitdiv">

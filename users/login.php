@@ -51,7 +51,7 @@ if (isset($_POST["username"])){
       $_SESSION["user"] = $user;
       $suc_txt = "<div id='suc_text'>
         <p>
-        Hallo $nickname.
+        Hallo $user.
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";

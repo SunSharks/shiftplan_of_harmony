@@ -43,7 +43,7 @@ if (isset($_POST["fullname"])){
     else{
       $nickname = $_POST["nickname"];
     }
-    $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname, $_POST["email"]);
+    $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname);
     if ($sql != "INDB"){
       $pdo = connect();
       perform_query($pdo, $sql);

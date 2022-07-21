@@ -62,39 +62,48 @@ class Solution:
         time_nickname_html = self.get_html(self.insert_time_nickname)
         self.time_nickname_html = self.html_skel.format(
             STYLE=self.style, MODE=" mit Zeiten", TABLE=time_nickname_html)
-        with open("time_nickname_tab.html", "w") as f:
+        with open("{}_sol/time_nickname_tab.html".format(self.dh.group), "w") as f:
             f.write(self.time_nickname_html)
 
         nickname_pref_html = self.get_html(self.insert_nickname_pref)
         self.nickname_pref_html = self.html_skel.format(
             STYLE=self.style, MODE=" mit Präferenzen", TABLE=nickname_pref_html)
-        with open("nickname_pref_tab.html", "w") as f:
+        with open("{}_sol/nickname_pref_tab.html".format(self.dh.group), "w") as f:
             f.write(self.nickname_pref_html)
 
         nickname_html = self.get_html(self.insert_nickname)
         self.nickname_html = self.html_skel.format(STYLE=self.style, MODE="", TABLE=nickname_html)
-        with open("nickname_tab.html", "w") as f:
+        with open("{}_sol/nickname_tab.html".format(self.dh.group), "w") as f:
             f.write(self.nickname_html)
 
     def insert_nickname_pref(self, id, **kwargs):
-        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
-        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
-        name_id = self.dh.users.loc[assigned_user]["fullname_id"]
-        pref = self.dh.preferences.loc[name_id].to_numpy()[id]
-        inp = "<strong>{}</strong><br>{}".format(assigned_nickname, pref)
+        try:
+            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+            name_id = self.dh.users.loc[assigned_user]["fullname_id"]
+            pref = self.dh.preferences.loc[name_id].to_numpy()[id]
+            inp = "<strong>{}</strong><br>{}".format(assigned_nickname, pref)
+        except IndexError:
+            inp = ""
         return inp
 
     def insert_nickname(self, id, **kwargs):
-        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
-        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
-        inp = "<strong>{}</strong>".format(assigned_nickname)
+        try:
+            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+            inp = "<strong>{}</strong>".format(assigned_nickname)
+        except IndexError:
+            inp = ""
         return inp
 
     def insert_time_nickname(self, id, **kwargs):
-        assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
-        assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
-        inp = "{} - {} Uhr<br><strong>{}</strong>".format(
-            kwargs["abs_start"], kwargs["abs_end"], assigned_nickname)
+        try:
+            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
+            inp = "{} - {} Uhr<br><strong>{}</strong>".format(
+                kwargs["abs_start"], kwargs["abs_end"], assigned_nickname)
+        except IndexError:
+            inp = ""
         return inp
 
     def get_html(self, insert):

@@ -13,13 +13,11 @@ class Model:
 
         self.five = -10
         self.three = 0
-        self.one = 5
+        self.one = 6
         self.four = (self.five + self.three) / 2
         self.two = (self.three + self.one) / 2
 
         self.slack_coef_diversity = 1
-        self.slack_coef_fairness = 2
-        self.eps = 8     # Toleranzstundenanzahl.
         self.jobs_until_forced_break = 2
 
         self.persons = persons
@@ -29,14 +27,10 @@ class Model:
         self.model = scip.Model()
         self.vars = np.empty((len(self.persons.index), len(self.dh.jobs.index)), dtype=object)
         self.num_persons, self.num_jobs = self.vars.shape
-        # print(self.num_persons, self.num_jobs)
-        #
-        # print(len(self.dh.user_preferences.values), self.num_persons)
-        # print(42 in self.dh.user_preferences.values)
+
         self.durings = self.dh.jobs["during"].to_numpy()
         self.total_workhours = np.sum(self.durings)
-        # print("Insgesamt sind {wh} Stunden zu arbeiten für alle {gn}.".format(wh=self.total_workhours, gn=self.groupname))
-        # self.break_after_two_shifts()
+        self.slack_objective = 0
 
     def translate_weights(self):
         self.weights[self.weights == 1] = self.one
@@ -47,23 +41,11 @@ class Model:
         self.center_weights()
 
     def center_weights(self):
-        print(self.weights)
+        # print(self.weights)
         means = self.weights.mean(axis=1)
         means = means.reshape(means.size, 1)
         self.weights = self.weights - means
-        print(self.weights)
-
-    def build_model(self):
-        self.feed_boolean_constraint()
-        self.assign_every_job()
-        self.assign_every_job_once()
-        self.get_workload_per_person()
-        self.feed_workload_hard_constraint()
-        self.feed_forced_break()
-        self.feed_conflicts_per_person()
-        self.feed_fairness()
-        self.feed_diversity()
-        self.feed_objective()
+        # print(self.weights)
 
     def feed_boolean_constraint(self):
         """Solution matrix should contain boolean values"""
@@ -74,32 +56,15 @@ class Model:
                 self.model.addCons(self.vars[i, j] >= 0)
                 self.model.addCons(self.vars[i, j] <= 1)
 
-    def assign_every_job(self):
-        """Sum of assigned jobs has to equal number of jobs."""
-        # Summe der belegten Schichten muss gleich der Anzahl der Schichten sein.
-        self.model.addCons(quicksum([quicksum(i) for i in self.vars]) >= self.num_jobs)
-
     def assign_every_job_once(self):
         """Adds hard constraint:
         Assign every job only once (every job gets assigned to exactly one person).
         """
         for i in range(self.num_jobs):
-            self.model.addCons(quicksum(self.vars.T[i]) == 1)
+            self.model.addCons(quicksum(self.vars.T[i]) <= 1)
 
     def get_workload_per_person(self):
         raise NotImplementedError()
-
-    def feed_workload_hard_constraint(self):
-        """Adds hard constraint:
-        Constraint working hours to
-        less than or equal the intended workload per person plus self.eps and
-        more than or equal the intended workload per person minus self.eps.
-        """
-        for i in range(self.num_persons):
-            upper = self.workload_per_person[i] + self.eps
-            lower = self.workload_per_person[i] - self.eps
-            self.model.addCons(quicksum(self.vars[i]*self.durings) <= upper)
-            self.model.addCons(quicksum(self.vars[i]*self.durings) >= lower)
 
     def get_n_series(self, depth, id, nb_lst_idx=0, series=[]):
         """Calculates all depth-series of jobs.
@@ -146,23 +111,6 @@ class Model:
                 self.model.addCons(quicksum(self.vars[p][i]
                                             for i in ser) <= self.jobs_until_forced_break)
 
-        # print(self.dh.jobs.loc[self.dh.jobs["abs_end"] == self.dh.jobs["abs_start"]])
-
-        # Keiner muss 3 Schichten direkt hintereinander machen.
-        # for p in range(self.num_persons):
-        #     for j in range(self.num_jobs):
-        #         for i in range(j+1, self.num_jobs):
-        #             if (translate_linear_time(lJobs[j].begin)[0] == 0 and (translate_linear_time(lJobs[i].begin)[0] == 6 or translate_linear_time(lJobs[i].begin)[0] == 8) and (translate_linear_time(lJobs[j].begin)[1] == translate_linear_time(lJobs[i].begin)[1])) or ((translate_linear_time(lJobs[j].end)[0] == 0 and translate_linear_time(lJobs[i].begin)[0] == 4) and translate_linear_time(lJobs[j].end)[1] == translate_linear_time(lJobs[i].begin)[1]) :
-        #                 model.addCons(vars[p][j] + vars[p][i] <= 1)
-
-        # print(10*'='+"\nNow entering long permutations loop.\n"+10*'=')
-        # for p in range(_p):
-        #     for j1, j2, j3 in it.permutations(self.dh.jobs, 3):
-        #     #    print(j1.name, j2.name, j3.name)
-        #         if j1.end == j2.begin and j2.end == j3.begin:
-        #             model.addCons(vars[p][j1.id]*lJobs[j1.id].during + vars[p][j2.id]*lJobs[j2.id].during + vars[p][j3.id]*lJobs[j3.id].during <= 10)
-        # print('finally.')
-
     def find_conflicts(self, br):
         """Finds conflicting jobs for each job.
         Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
@@ -174,55 +122,18 @@ class Model:
             tmp = self.dh.jobs.loc[((self.dh.jobs["abs_start"] >= s-br) & (self.dh.jobs["abs_start"] < e+br))
                                    | ((self.dh.jobs["abs_end"] >= s-br) & (self.dh.jobs["abs_end"] <= e+br))]
             conflicts[id] = tmp
-            # conflicts.update(id=tmp)
-            # print(self.dh.jobs.loc[((self.dh.jobs["abs_start"] >= s) & (self.dh.jobs["abs_start"] < e)) | ((self.dh.jobs["abs_end"] >= s) & (self.dh.jobs["abs_end"] <= e))]["id"])
-        # print(conflicts)
-        # conflicts = pd.DataFrame(conflicts.items(), columns=["jobid", "conflicting_job_ids"])
-        # print(conflicts.tail())
-        # conflicts.set_index("jobid")
-        # assert 1==0
         return conflicts
 
     def feed_conflicts_per_person(self):
         for p_id, br in self.persons[["break"]].itertuples(index=True):
             # print(50*"_")
             conf = self.find_conflicts(br)
-            print(br)
             for key in conf:
                 self.model.addCons(quicksum(self.vars[p_id][i] for i in conf[key].index) <= 1)
-
-    def feed_fairness(self):
-        """ TODO!
-        Adds vars to model:
-        - slack_upper_fairness
-        - slack lower fairness
-
-        """
-
-        self.vars_slack_fairness = []
-        self.slack_objective = 0
-
-        for p in range(self.num_persons):
-            self.vars_slack_fairness.append(self.model.addVar(
-                "slack_upper_fairness_p{}".format(p), vtype='I'))
-            self.model.addCons(
-                quicksum(self.vars[p]*self.durings)-self.vars_slack_fairness[-1] <= self.workload_per_person[p])
-            self.model.addCons(self.vars_slack_fairness[-1] >= 0)
-            self.slack_objective = -self.slack_coef_fairness * \
-                self.vars_slack_fairness[-1] + self.slack_objective
-
-            self.vars_slack_fairness.append(self.model.addVar(
-                "slack_lower_fairness_p{}".format(p), vtype='I'))
-            self.model.addCons(quicksum(self.vars[p] * self.durings) +
-                               self.vars_slack_fairness[-1] >= self.workload_per_person[p])
-            self.model.addCons(self.vars_slack_fairness[-1] >= 0)
-            self.slack_objective = - self.slack_coef_fairness * \
-                self.vars_slack_fairness[-1] + self.slack_objective
 
     def feed_diversity(self):
         # TODO
         jt_categories = self.dh.jts.groupby("name")
-        print()
         unique_names = {name: i for i, name in enumerate(self.dh.jts.name.unique())}
         vals = [unique_names[n] for n in self.dh.jts.name]
         self.dh.jts["category"] = vals

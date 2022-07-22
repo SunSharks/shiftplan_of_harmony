@@ -48,7 +48,7 @@ if (isset($_POST["username"])){
     if (password_verify($_POST["password"], $user['pw'])){
       /* The password is correct. */
       $login = true;
-      $_SESSION["user"] = $user;
+      $_SESSION["user"] = $_POST["username"];
       $suc_txt = "<div id='suc_text'>
         <p>
         Hallo $user.

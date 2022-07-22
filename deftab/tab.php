@@ -19,6 +19,11 @@ if (!function_exists('str_starts_with')) {
     return (@substr_compare($str, $start, 0, strlen($start))==0);
   }
 }
+if (!function_exists('str_ends_with')) {
+  function str_ends_with($str, $end) {
+    return (@substr_compare($str, $end, -strlen($end))==0);
+  }
+}
 ?>
 
 <!DOCTYPE html>

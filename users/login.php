@@ -56,7 +56,8 @@ if (isset($_POST["username"])){
       </p>
     </div>";
       printf($suc_txt);
-      header('Location: login.php');
+      $src = $_SESSION["src"];
+      header("Location: $src");
       exit;
     }
     else{

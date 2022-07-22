@@ -104,7 +104,7 @@ function get_users_sql(){
   return "SELECT * FROM Users";
 }
 
-function insert_user_sql($name, $pw, $nickname, $email){
+function insert_user_sql($name, $pw, $nickname){
   $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   $registered_ids = fetch_it(get_registered_name_ids_sql());
   for ($i=0; $i<count($registered_ids); $i++){
@@ -114,12 +114,7 @@ function insert_user_sql($name, $pw, $nickname, $email){
   }
   $hash = password_hash($pw, PASSWORD_DEFAULT);
   $ret = "";
-  if (empty($email)){
-    $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname) VALUES ($name_id, '$hash', '$nickname')";
-  }
-  else{
-    $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname, email) VALUES ($name_id, '$hash', '$nickname', '$email')";
-  }
+  $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname) VALUES ($name_id, '$hash', '$nickname')";
   $ret = $ret . ";" . set_name_registered_sql($name_id);
   $ret = $ret . ";" . initial_prio_insert_sql($name_id);
   return $ret;

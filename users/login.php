@@ -6,7 +6,7 @@ if (!empty($_GET)){
 }
 if(isset($_SESSION['user'])){
   $src = $_SESSION["src"];
-  header("Location: https://schichtplan.funkloch-festival.de/$src");
+  header("Location: https://schichtplan.funkloch-festival.de/$src/index.php");
   exit;
 }
 ?>
@@ -55,7 +55,7 @@ if (isset($_POST["username"])){
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";
-      printf($suc_txt);
+      // printf($suc_txt);
       // $src = $_SESSION["src"];
       // header("Location: https://schichtplan.funkloch-festival.de/$src");
       // exit;

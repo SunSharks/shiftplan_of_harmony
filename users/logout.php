@@ -11,7 +11,7 @@ if (!empty($_GET)){
 }
 if(isset($_SESSION['user'])){
   $src = $_SESSION["src"];
-  header("Location: $src");
+  header("Location: https://schichtplan.funkloch-festival.de/$src/index.php");
   exit;
 }
 ?>

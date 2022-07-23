@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "crew_prios/index.php";
+$_SESSION["src"] = "crew_prios";
 if(!isset($_SESSION['user'])){
-  header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=crew_prios/index.php');
+  header('Location: https://schichtplan.funkloch-festival.de/users/logout.php');
   exit;
 }
 if (!empty($_GET)){
@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['user']);
       // printf(json_encode($_SESSION["user"]));
       unset($_SESSION["prios"]);
-      header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=crew_prios/index.php&log=out');
+      header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?log=out');
       exit;
     }
   }
@@ -39,10 +39,10 @@ regain_preference_integrity();
 // printf("test2");
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql("false"));
-if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
-  header('Location: ../deftab/index.php');
-  exit;
-}
+// if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
+//   header('Location: ../deftab/index.php');
+//   exit;
+// }
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
 printf(json_encode($_SESSION["user"]));
 $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);

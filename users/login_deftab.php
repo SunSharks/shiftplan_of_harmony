@@ -5,13 +5,9 @@ if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
 }
 if(isset($_SESSION['user'])){
-  echo "Du bist bereits eingeloggt. ";
-  echo "<a href=../crew_prios/index.php>
-    <button>Zur Präferenzeneingabe</button>
-  </a>";
-  // $src = $_SESSION["src"];
-  // header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
-  // exit;
+  $src = $_SESSION["src"];
+  header("Location: https://schichtplan.funkloch-festival.de/$src");
+  exit;
 }
 ?>
 
@@ -60,12 +56,9 @@ if (isset($_POST["username"])){
       </p>
     </div>";
       printf($suc_txt);
-      echo "<a href=../crew_prios/index.php>
-        <button>Zur Präferenzeneingabe</button>
-      </a>";
-      // $src = $_SESSION["src"];
-      // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
-      // exit;
+      $src = $_SESSION["src"];
+      header("Location: $src");
+      exit;
     }
     else{
       $fail_txt = "<div id='suc_text'>

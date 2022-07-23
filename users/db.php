@@ -117,7 +117,7 @@ function insert_user_sql($name, $pw, $nickname){
   $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname) VALUES ($name_id, '$hash', '$nickname')";
   $ret = $ret . ";" . set_name_registered_sql($name_id);
   $ret = $ret . ";" . initial_prio_insert_sql($name_id);
-  printf($ret);
+  // printf($ret);
   return $ret;
 }
 // INSERT INTO Users (fullname_id, pw, nickname, email) SELECT id, "bla", "downlord", "la@bla.py" FROM Names WHERE Names.surname="Lysanne";
@@ -141,8 +141,6 @@ function initial_prio_insert_sql($name_id){
     $sql .= ", job$id";
     $valsql .= ", 3";
   }
-  // $sql = substr($sql, 0, -1);
-  // $valsql = substr($valsql, 0, -1);
   $sql .= ") ";
   $valsql .= ");";
   return $sql . $valsql;

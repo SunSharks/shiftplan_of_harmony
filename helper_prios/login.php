@@ -6,7 +6,7 @@ if (!empty($_GET)){
 }
 if(isset($_SESSION['helper'])){
   echo "Du bist bereits eingeloggt. ";
-  echo "<a href=../crew_prios/index.php>
+  echo "<a href=../helper_prios/index.php>
     <button>Zur Präferenzeneingabe</button>
   </a>";
 }
@@ -53,7 +53,7 @@ if (isset($_POST["username"])){
       </p>
     </div>";
     printf($suc_txt);
-    echo "<a href=../crew_prios/index.php>
+    echo "<a href=../helper_prios/index.php>
       <button>Zur Präferenzeneingabe</button>
     </a>";
     }

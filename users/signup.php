@@ -2,17 +2,8 @@
 // Start the session
 session_start();
 ?>
-
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>signup</title>
-
 <?php
+$REDIRECT = false;
 include("db.php");
 regain_integrity();
 $names_db = fetch_it(get_names_sql());
@@ -27,7 +18,6 @@ for ($i=0; $i<count($nicknames_db); $i++){
   array_push($nicknames, $nicknames_db[$i]["nickname"]);
 }
 // printf(json_encode($nicknames));
-
  ?>
 <?php
 if (isset($_POST["fullname"])){
@@ -54,7 +44,7 @@ if (isset($_POST["fullname"])){
           Du wurdest erfolgreich registriert.
       </p>
     </div>";
-      printf($suc_txt);
+      // printf($suc_txt);
       header('Location: login.php');
       exit;
     }
@@ -64,6 +54,17 @@ if (isset($_POST["fullname"])){
       header('Location: index.php');
     }
   }
+}
+if ($REDIRECT === false){
+  echo "
+  <!DOCTYPE html>
+  <html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+";
 }
 ?>
 

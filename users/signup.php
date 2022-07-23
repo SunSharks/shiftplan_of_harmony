@@ -41,12 +41,9 @@ if (isset($_POST["fullname"])){
       $suc_txt = "<div id='suc_text'>
         <p>
         Hallo $nickname.
-          Du wurdest erfolgreich registriert.
+          Du wurdest erfolgreich registriert.<br>Klick auf Login, um dich einzuloggen.
       </p>
     </div>";
-      // printf($suc_txt);
-      header('Location: login.php');
-      exit;
     }
     else{
       $alert = "Du bist bereits registriert.";

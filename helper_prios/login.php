@@ -5,9 +5,10 @@ if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
 }
 if(isset($_SESSION['helper'])){
-  $src = $_SESSION["src"];
-  header("Location: $src");
-  exit;
+  echo "Du bist bereits eingeloggt. ";
+  echo "<a href=../crew_prios/index.php>
+    <button>Zur Präferenzeneingabe</button>
+  </a>";
 }
 ?>
 
@@ -51,9 +52,10 @@ if (isset($_POST["username"])){
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";
-      printf($suc_txt);
-      header('Location: login.php');
-      exit;
+    printf($suc_txt);
+    echo "<a href=../crew_prios/index.php>
+      <button>Zur Präferenzeneingabe</button>
+    </a>";
     }
     else{
       $fail_txt = "<div id='suc_text'>

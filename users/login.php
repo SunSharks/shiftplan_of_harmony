@@ -47,18 +47,18 @@ if (isset($_POST["username"])){
     $user = $usernames[$_POST["username"]];
     if (password_verify($_POST["password"], $user['pw'])){
       /* The password is correct. */
-    //   $login = true;
-    //   $_SESSION["user"] = $user;
-    //   $suc_txt = "<div id='suc_text'>
-    //     <p>
-    //     Hallo.
-    //       Du wurdest erfolgreich eingeloggt.
-    //   </p>
-    // </div>";
+      $login = true;
+      $_SESSION["user"] = $user;
+      $suc_txt = "<div id='suc_text'>
+        <p>
+        Hallo.
+          Du wurdest erfolgreich eingeloggt.
+      </p>
+    </div>";
       // printf($suc_txt);
       // $src = $_SESSION["src"];
-      header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
-      exit;
+      // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
+      // exit;
     }
     else{
       $fail_txt = "<div id='suc_text'>

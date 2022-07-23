@@ -50,8 +50,9 @@ if (isset($_POST["fullname"])){
     }
     else{
       $alert = "Du bist bereits registriert.";
-      echo "<script>alert('$alert');</script>";
-      header('Location: index.php');
+      $alerthtml = "<script>alert('$alert');</script>";
+      header('Location: login.php');
+      exit;
     }
   }
 }

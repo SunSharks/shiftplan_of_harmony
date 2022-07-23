@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "crew_prios/index.php";
+$_SESSION["src"] = "https://schichtplan.funkloch-festival.de/crew_prios/index.php";
 if(!isset($_SESSION['user'])){
-  header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=https://schichtplan.funkloch-festival.de/crew_prios/index.php');
+  header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=crew_prios/index.php');
   exit;
 }
 if (!empty($_GET)){
@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['user']);
       // printf(json_encode($_SESSION["user"]));
       unset($_SESSION["prios"]);
-      header('Location: ../users/logout.php?src=../crew_prios/index.php&log=out');
+      header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=crew_prios/index.php&log=out');
       exit;
     }
   }

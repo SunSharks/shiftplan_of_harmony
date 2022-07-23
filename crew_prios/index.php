@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "../crew_prios/index.php";
+$_SESSION["src"] = "crew_prios/index.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/logout.php?src=../crew_prios/index.php');
+  header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=https://schichtplan.funkloch-festival.de/crew_prios/index.php');
   exit;
 }
 if (!empty($_GET)){
@@ -44,7 +44,7 @@ if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
   exit;
 }
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
-// printf(json_encode($_SESSION["user"]));
+printf(json_encode($_SESSION["user"]));
 $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 // printf(json_encode($_SESSION["prios"]));
 include("stats.php");

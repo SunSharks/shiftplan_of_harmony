@@ -6,7 +6,7 @@ if (!empty($_GET)){
 }
 if(isset($_SESSION['user'])){
   $src = $_SESSION["src"];
-  header("Location: https://schichtplan.funkloch-festival.de/$src/index.php");
+  header("Location: https://schichtplan.funkloch-festival.de/crew_prios/index.php");
   exit;
 }
 ?>

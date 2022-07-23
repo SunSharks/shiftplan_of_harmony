@@ -1,7 +1,7 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "https://schichtplan.funkloch-festival.de/crew_prios/index.php";
+$_SESSION["src"] = "crew_prios/index.php";
 if(!isset($_SESSION['user'])){
   header('Location: https://schichtplan.funkloch-festival.de/users/logout.php?src=crew_prios/index.php');
   exit;

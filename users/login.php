@@ -4,11 +4,11 @@ session_start();
 if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
 }
-if(isset($_SESSION['user'])){
-  $src = $_SESSION["src"];
-  header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
-  exit;
-}
+// if(isset($_SESSION['user'])){
+//   $src = $_SESSION["src"];
+//   header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
+//   exit;
+// }
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +55,8 @@ if (isset($_POST["username"])){
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";
+    header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
+    exit;
       // printf($suc_txt);
       // $src = $_SESSION["src"];
       // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");

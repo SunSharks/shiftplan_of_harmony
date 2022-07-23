@@ -140,7 +140,7 @@ function initial_prio_insert_sql($name_id){
     $sql .= "job$id, "
     $valsql .= "3";
   }
-  $valsql .= ");"
+  $valsql .= ");";
   return $sql . $valsql;
 }
 

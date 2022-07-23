@@ -7,7 +7,7 @@ if (!empty($_GET)){
 if(isset($_SESSION['user'])){
   echo "<a href=../crew_prios/index.php>
     <button>Login</button>
-  </a>"
+  </a>";
   // $src = $_SESSION["src"];
   // header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
   // exit;

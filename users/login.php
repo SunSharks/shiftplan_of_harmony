@@ -56,9 +56,9 @@ if (isset($_POST["username"])){
       </p>
     </div>";
       printf($suc_txt);
-      // $src = $_SESSION["src"];
-      // header("Location: $src");
-      // exit;
+      $src = $_SESSION["src"];
+      header("Location: https://schichtplan.funkloch-festival.de/$src");
+      exit;
     }
     else{
       $fail_txt = "<div id='suc_text'>

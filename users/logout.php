@@ -1,6 +1,7 @@
 <?php
 // Start the session
 session_start();
+$src="";
 $logouttxt = "<div id='logouttxt'><p>Du wurdest erfolgreich ausgeloggt.</p></div>";
 if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];

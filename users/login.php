@@ -2,7 +2,7 @@
 // Start the session
 session_start();
 if (!empty($_GET)){
-  $_SESSION["src"] = "https://schichtplan.funkloch-festival.de/".$_GET["src"];
+  $_SESSION["src"] = $_GET["src"];
 }
 if(isset($_SESSION['user'])){
   $src = $_SESSION["src"];

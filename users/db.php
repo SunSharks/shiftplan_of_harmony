@@ -127,7 +127,7 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
-  $sql = "INSERT INTO Preferences name_id";
+  $sql = "INSERT INTO Preferences (name_id";
   $valsql = " VALUES ($name_id";
   $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=0 AND special=1)");
   $unspecial_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=0 AND special=0)");
@@ -143,6 +143,7 @@ function initial_prio_insert_sql($name_id){
   }
   // $sql = substr($sql, 0, -1);
   // $valsql = substr($valsql, 0, -1);
+  $sql .= ") ";
   $valsql .= ");";
   return $sql . $valsql;
 }

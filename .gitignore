@@ -4,3 +4,5 @@ _*
 *.npy
 *.pyc
 *.cip
+helper_sol/
+crew_sol/

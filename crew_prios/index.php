@@ -82,6 +82,9 @@ if (!empty($_POST)){
     if(file_exists('_indexmantxt.txt')){
         include '_indexmantxt.txt';
       }
+    else if(file_exists('indexmantxt.txt')){
+      include 'indexmantxt.txt';
+    }
       ?>
   </div>
   <div id="prios" class="prios">
@@ -127,6 +130,17 @@ if (!empty($_POST)){
             $odd_style = "style='background-color:#edf9e1'";
             $even_style = "style='background-color:#d3e3c4'";
             foreach ($_SESSION["jts"] as $jt){
+              $res = $jt["restricted_access"];
+              $readonly = "";
+              $disabled = "";
+              if ($res == 1){
+                $readonly = " readonly ";
+                $disabled = " disabled ";
+              }
+              if ($res == 1 && in_array($jt["name"], $_SESSION["access_jobs"])){
+                $readonly = "";
+                $disabled = "";
+              }
               $jt_id = $jt["id"];
               $rowidstr = "id='row$jt_id'";
               $row_class = $jt['name'];
@@ -158,9 +172,9 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>select</button></div>";
-                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>unselect</button></div>";
-                $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5'></div>";
+                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)' $disabled>select</button></div>";
+                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)' $disabled>unselect</button></div>";
+                $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5' $readonly></div>";
                 echo "<div class='priotd'><td $style colspan='$span_hours' align='center' height='50'>$selbut$unselbut$inp</td></div>";
                 echo "<script>add_prio_id($id);</script>";
                 $idx = $j["abs_end"];

@@ -53,6 +53,7 @@ if (isset($_POST["username"])){
       /* The password is correct. */
       $login = true;
       $_SESSION["user"] = $user;
+      $_SESSION["access_jobs"] = get_persons_exclusive_access($_SESSION["user"]["fullname_id"]);
       $suc_txt = "<div id='suc_text'>
         <p>
         Hallo.

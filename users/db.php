@@ -32,13 +32,13 @@ function get_days_sql(){
 
 function get_jobtypes_sql($helper='all'){
   if ($helper === 'all'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes";
+    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes";
   }
   else if ($helper === 'true'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1";
+    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes WHERE helper=1";
   }
   else if ($helper === 'false'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0";
+    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes WHERE helper=0";
   }
 }
 
@@ -188,6 +188,11 @@ function insert_prios_sql($prioinps){
   $sql = $breaksql . $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
+}
+
+function get_persons_exclusive_access($fullname_id){
+  $exclusives = fetch_it("SELECT jt_name FROM Exclusives WHERE fullname_id=$fullname_id;");
+  return $exclusives;
 }
 
 // =============================================================================

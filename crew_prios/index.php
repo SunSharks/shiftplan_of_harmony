@@ -157,7 +157,7 @@ if (!empty($_POST)){
               $res = $jt["restricted_access"];
               $disabled_strs = get_disabled_strings($res, $jt['name']);
               if ($disabled_strs[0] != ""){
-                break;
+                continue;
               }
               $readonly = $disabled_strs[0];
               $disabled = $disabled_strs[2];

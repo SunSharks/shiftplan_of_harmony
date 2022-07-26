@@ -48,6 +48,20 @@ div {
   overflow-x: visible;
   padding: 0;
 }
+
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+input[readonly], input[readonly="readonly"] {
+  border: 1px solid #999999;
+  background-color: #aaaaaa;
+  color: #000000;
+}
+
 .rowhead {
   background-color: rgba(134, 180, 105, 0.57);
   position: absolute;
@@ -125,6 +139,14 @@ div {
 
 #submitdivbtn {
   width: fit-content;
+  position: absolute;
+}
+
+.unselall {
+  margin: 10px;
+  width: 50%;
+  align: center;
+  position: absolute;
 }
 
 #breakinp {

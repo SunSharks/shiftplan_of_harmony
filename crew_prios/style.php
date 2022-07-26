@@ -49,19 +49,6 @@ div {
   padding: 0;
 }
 
-button:disabled,
-button[disabled]{
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
-}
-
-input[readonly], input[readonly="readonly"] {
-  border: 1px solid #999999;
-  background-color: #aaaaaa;
-  color: #000000;
-}
-
 .rowhead {
   background-color: rgba(134, 180, 105, 0.57);
   position: absolute;
@@ -102,6 +89,17 @@ input[readonly], input[readonly="readonly"] {
   overflow: auto;
 }
 
+[id^="prioinp"]{
+  background-color: #ffffff;
+  color: #000000;
+}
+
+[id^="prioinp"]:readonly {
+  border: 1px solid #999999;
+  background-color: #aaaaaa;
+  color: #000000';
+}
+
 .selbtn {
   padding: 0px;
   margin: 0px;
@@ -109,6 +107,12 @@ input[readonly], input[readonly="readonly"] {
   width: 100%;
   display: inline;
   background-color: rgb(0,200,0);
+}
+
+.selbtn:disabled {
+  border: 1px solid #999999;
+  background-color: #aaaaaa;
+  color: #000000';
 }
 
 .unselbtn {

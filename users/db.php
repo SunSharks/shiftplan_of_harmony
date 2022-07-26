@@ -192,7 +192,11 @@ function insert_prios_sql($prioinps){
 
 function get_persons_exclusive_access($fullname_id){
   $exclusives = fetch_it("SELECT jt_name FROM Exclusives WHERE fullname_id=$fullname_id;");
-  return $exclusives;
+  $ex = array();
+  for ($i=0; $i<count($exclusives); i++){
+    array_push($ex, $exclusives[$i]["jt_name"]);
+  }
+  return $ex;
 }
 
 // =============================================================================

@@ -62,7 +62,7 @@ if (isset($_POST["username"])){
     </div>";
       printf($suc_txt);
       echo "<a href=../crew_prios/index.php>
-        <button>Zur Präferenzeneingabe</button>
+        <button style='backgound-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
       </a>";
       // $src = $_SESSION["src"];
       // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");

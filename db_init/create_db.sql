@@ -1,10 +1,10 @@
 CREATE DATABASE Testplan CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-
-DROP TABLE Days;
-DROP TABLE Jobtypes;
-DROP TABLE Jobs;
-DROP TABLE Users;
+--
+-- DROP TABLE Days;
+-- DROP TABLE Jobtypes;
+-- DROP TABLE Jobs;
+-- DROP TABLE Users;
 
 
 CREATE TABLE Days (
@@ -68,4 +68,11 @@ CREATE TABLE Helpers (
   ticketnumber INT                NULL UNIQUE,
   workload     INT                NOT NULL DEFAULT 4,
   break        INT                NOT NULL DEFAULT 4
+);
+
+CREATE TABLE Exlusives (
+  id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  jt_name     VARCHAR(255)       NOT NULL,
+  fullname_id     INT            NOT NULL UNIQUE,
+  user_id       INT              NULL UNIQUE
 );

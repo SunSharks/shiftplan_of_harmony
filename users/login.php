@@ -32,55 +32,6 @@ $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
  ?>
 <!-- <link rel="stylesheet" type="text/css" href="style.php"> -->
-<?php
-if (isset($_POST["username"])){
-  // printf(json_encode($_POST));
-  $users_db = fetch_it(get_users_sql());
-  // printf(json_encode($users_db));
-  $usernames = array();
-  for ($i=0; $i<count($users_db); $i++){
-    $usernames[$users_db[$i]["nickname"]] = $users_db[$i];
-    // if ()
-  }
-  if (!array_key_exists($_POST["username"], $usernames)){
-    $n = $_POST["username"];
-    $alert = "User $n wurde nicht gefunden."; // LANG!
-    echo "<script>alert('$alert');</script>";
-  }
-  else{
-    $user = $usernames[$_POST["username"]];
-    if (password_verify($_POST["password"], $user['pw'])){
-      /* The password is correct. */
-      $login = true;
-      $_SESSION["user"] = $user;
-      $_SESSION["access_jobs"] = get_persons_exclusive_access($_SESSION["user"]["fullname_id"]);
-      $suc_txt = "<div id='suc_text'>
-        <p>
-        Hallo.
-          Du wurdest erfolgreich eingeloggt.
-      </p>
-    </div>";
-      printf($suc_txt);
-      echo "<a href=../crew_prios/index.php>
-        <button style='backgound-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
-      </a>";
-      // $src = $_SESSION["src"];
-      // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
-      // exit;
-    }
-    else{
-      $fail_txt = "<div id='suc_text'>
-        <p>
-        Das hat nicht geklappt.
-      </p>
-    </div>";
-      printf("$fail_txt");
-    }
-  }
-}
-
-?>
-
 <style>
 Body {
   font-family: Calibri, Helvetica, sans-serif;
@@ -121,6 +72,56 @@ button {
         background-color: lightblue;
     }
 </style>
+<?php
+if (isset($_POST["username"])){
+  // printf(json_encode($_POST));
+  $users_db = fetch_it(get_users_sql());
+  // printf(json_encode($users_db));
+  $usernames = array();
+  for ($i=0; $i<count($users_db); $i++){
+    $usernames[$users_db[$i]["nickname"]] = $users_db[$i];
+    // if ()
+  }
+  if (!array_key_exists($_POST["username"], $usernames)){
+    $n = $_POST["username"];
+    $alert = "User $n wurde nicht gefunden."; // LANG!
+    echo "<script>alert('$alert');</script>";
+  }
+  else{
+    $user = $usernames[$_POST["username"]];
+    if (password_verify($_POST["password"], $user['pw'])){
+      /* The password is correct. */
+      $login = true;
+      $_SESSION["user"] = $user;
+      $_SESSION["access_jobs"] = get_persons_exclusive_access($_SESSION["user"]["fullname_id"]);
+      $suc_txt = "<div id='suc_text'>
+        <p>
+        Hallo.
+          Du wurdest erfolgreich eingeloggt.
+      </p>
+    </div>";
+      printf($suc_txt);
+      echo "<a href=../crew_prios/index.php>
+        <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
+      </a>";
+      // $src = $_SESSION["src"];
+      // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
+      // exit;
+    }
+    else{
+      $fail_txt = "<div id='suc_text'>
+        <p>
+        Das hat nicht geklappt.
+      </p>
+    </div>";
+      printf("$fail_txt");
+    }
+  }
+}
+
+?>
+
+
 </head>
 
 

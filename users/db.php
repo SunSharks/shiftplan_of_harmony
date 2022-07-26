@@ -196,6 +196,7 @@ function get_persons_exclusive_access($fullname_id){
   for ($i=0; $i<count($exclusives); $i++){
     array_push($ex, $exclusives[$i]["jt_name"]);
   }
+  printf(json_encode($ex));
   return $ex;
 }
 

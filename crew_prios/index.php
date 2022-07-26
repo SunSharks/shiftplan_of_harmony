@@ -142,7 +142,7 @@ if (!empty($_POST)){
                 $disabled = "";
               }
               $jt_id = $jt["id"];
-              printf(json_encode($_SESSION["access_jobs"]));
+              printf("---".json_encode($_SESSION["access_jobs"]));
               $rowidstr = "id='row$jt_id'";
               $row_class = $jt['name'];
               $style = $odd_style;

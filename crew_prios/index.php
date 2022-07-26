@@ -127,20 +127,42 @@ if (!empty($_POST)){
           </tr>
           <!-- JOBTYPE ROWS -->
           <?php
+          function get_disabled_strings($restricted, $jt_name){
+            /*
+            get_disabled_strings(bool &$restricted, str &$jt_name): array
+            Returns array of strings depending on value of $restricted.
+            Returns ["", "", "", ""] if $restricted == false or user is authorized for this job.
+            Returns ["readonly", "style='<readonly input style>'", "disabled", "style='<disabled button style>'"] if $restricted == true and user is not authorized for this job.
+            */
+            $ar = array("", "", "", "");
+            $disabled_style = "";
+            if ($restricted == 1){
+              $ar[0] = " readonly ";
+              $ar[2] = " disabled ";
+              $ar[1] = "style='border:1px solid #999999;
+              background-color:#aaaaaa;
+              color:#000000'";
+              $ar[3] = "style='border:1px solid #999999;
+              background-color:#aaaaaa;
+              color:#000000'";
+            }
+            if ($restricted == 1 && in_array($jt_name, $_SESSION["access_jobs"])){
+              $ar = array("", "", "", "");
+            }
+            return $ar;
+          }
             $odd_style = "style='background-color:#edf9e1'";
             $even_style = "style='background-color:#d3e3c4'";
             foreach ($_SESSION["jts"] as $jt){
               $res = $jt["restricted_access"];
-              $readonly = "";
-              $disabled = "";
-              if ($res == 1){
-                $readonly = " readonly ";
-                $disabled = " disabled ";
+              $disabled_strs = get_disabled_strings($res, $jt['name']);
+              if ($disabled_strs[0] != ""){
+                break;
               }
-              if ($res == 1 && in_array($jt["name"], $_SESSION["access_jobs"])){
-                $readonly = "";
-                $disabled = "";
-              }
+              $readonly = $disabled_strs[0];
+              $disabled = $disabled_strs[2];
+              $inp_style = $disabled_strs[1];
+              $btn_style = $disabled_strs[3];
               $jt_id = $jt["id"];
               // printf("---".json_encode($_SESSION["access_jobs"]));
               $rowidstr = "id='row$jt_id'";

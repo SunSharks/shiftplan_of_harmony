@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import itertools
 import seaborn as sns
 
@@ -39,7 +39,7 @@ class Solution:
         self.avg_last_pop = np.max(self.preferences_np.sum(axis=0))/self.preferences_np.shape[0]
         self.last_pop_idx = np.where(self.preferences_np.sum(axis=0) ==
                                      np.max(self.preferences_np.sum(axis=0)))[0]
-        print(self.last_pop_idx)
+        # print(self.last_pop_idx)
 
     def get_avg_rate(self):
         self.avg_rate = self.preferences_np.sum() / self.preferences_np.size
@@ -54,7 +54,7 @@ class Solution:
             self.style += "#job{lp} !background-color: red;?".format(lp=i)
         self.style = self.style.replace("!", "{")
         self.style = self.style.replace("?", "}")
-        print(self.style)
+        # print(self.style)
 
     def get_htmls(self):
         with open("html_skel.html", "r") as f:
@@ -78,7 +78,7 @@ class Solution:
 
     def insert_nickname_pref(self, id, **kwargs):
         try:
-            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_user = np.where(self.dh.solution[:, id] >= .9)[0][0]
             assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
             name_id = self.dh.users.loc[assigned_user]["fullname_id"]
             pref = self.dh.preferences.loc[name_id].to_numpy()[id]
@@ -89,7 +89,7 @@ class Solution:
 
     def insert_nickname(self, id, **kwargs):
         try:
-            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_user = np.where(self.dh.solution[:, id] >= .9)[0][0]
             assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
             inp = "<strong>{}</strong>".format(assigned_nickname)
         except IndexError:
@@ -98,7 +98,7 @@ class Solution:
 
     def insert_time_nickname(self, id, **kwargs):
         try:
-            assigned_user = np.where(self.dh.solution[:, id] == 1)[0][0]
+            assigned_user = np.where(self.dh.solution[:, id] >= .9)[0][0]
             assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
             inp = "{} - {} Uhr<br><strong>{}</strong>".format(
                 kwargs["abs_start"], kwargs["abs_end"], assigned_nickname)
@@ -189,7 +189,7 @@ class Solution:
         # print(self.sol_idx_to_mask_idx[i])
         # print(self.jobmask[self.sol_idx_to_mask_idx[i][0],
         #                    self.sol_idx_to_mask_idx[i][1]:self.sol_idx_to_mask_idx[i][2]])
-        assigned_jobs = self.dh.jobs.loc[np.where(row == 1)]
+        assigned_jobs = self.dh.jobs.loc[np.where(row >= .9)]
         for aj in assigned_jobs.index:
             tup = self.sol_idx_to_mask_idx[aj]
             personal_solution[tup[0], tup[1]:tup[2]] += 1

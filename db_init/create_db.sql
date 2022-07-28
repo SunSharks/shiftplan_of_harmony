@@ -18,7 +18,8 @@ CREATE TABLE Jobtypes (
   competences   TEXT NULL,
   special       BOOLEAN NOT NULL DEFAULT 0,
   helper        BOOLEAN NOT NULL DEFAULT 0,
-  user_id       INT NOT NULL
+  user_id       INT NOT NULL,
+  restricted_access BOOLEAN NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Twins (
@@ -59,6 +60,7 @@ CREATE TABLE Names (
   helper     BOOLEAN          NOT NULL DEFAULT 0
 );
 
+
 CREATE TABLE Helpers (
   id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   fullname_id  INT                NOT NULL UNIQUE,
@@ -70,7 +72,7 @@ CREATE TABLE Helpers (
   break        INT                NOT NULL DEFAULT 4
 );
 
-CREATE TABLE Exlusives (
+CREATE TABLE Exclusives (
   id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   jt_name     VARCHAR(255)       NOT NULL,
   fullname_id     INT            NOT NULL UNIQUE,

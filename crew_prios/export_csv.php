@@ -34,6 +34,7 @@ if (!empty($_GET)){
   foreach ($tablenames as $tn){
     $sql .= $sql_skel . ";";
   }
+  $pdo = connect();
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   while ($row = $stmt->fetch()) {
@@ -43,6 +44,7 @@ if (!empty($_GET)){
   fclose($handle);
   echo "DONE!";
   }
+  export_csv();
 ?>
 
 <!DOCTYPE html>
@@ -54,42 +56,6 @@ if (!empty($_GET)){
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- <link rel="icon" type="image/x-icon" href="../images/fl_logo.png"> -->
   <title>crew preferences</title>
-
-
-<?php
-include("../users/db.php");
-perform(create_preferences_table_sql(""));
-regain_integrity();
-// printf("test1");
-regain_preference_integrity();
-// printf("test2");
-$_SESSION["days"] = fetch_it(get_days_sql());
-$_SESSION["jts"] = fetch_it(get_jobtypes_sql("false"));
-// if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
-//   header('Location: ../deftab/index.php');
-//   exit;
-// }
-$_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
-// printf(json_encode($_SESSION["user"]));
-$_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
-// printf(json_encode($_SESSION["prios"]));
-include("stats.php");
- ?>
-<link rel="stylesheet" type="text/css" href="style.php">
-<?php
-// $tst = substr("Hund", 0, -1);
-if (!empty($_POST)){
-  // printf(json_encode($_POST));
-  // perform(insert_prios_sql());
-  if (isset($_POST["breakinp"])){
-    $_SESSION["user"]["break"] = $_POST["breakinp"];
-  }
-  perform(insert_prios_sql($_POST));
-  $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
-}
-?>
-
-<script src=insert_prios.js></script>
 </head>
 
 

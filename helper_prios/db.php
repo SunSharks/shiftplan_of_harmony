@@ -80,6 +80,10 @@ function get_name_id_sql($name){
   return "SELECT id from Names WHERE Names.surname = '$surname' AND Names.famname = '$famname'";
 }
 
+function get_registered_name_ids_sql(){
+  return "SELECT id FROM Names WHERE registered = true";
+}
+
 function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
   $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   $registered_ids = fetch_it(get_registered_name_ids_sql());

@@ -125,7 +125,7 @@ button {
         Dieser muss einzigartig sein.
       </p>
       <hr>
-      <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
+      <label for="fullname"><b>Dein Name (dein uns bekannter Vor- und Familienname.)</b></label>   <!-- LANG! -->
     <?php
       $regex_fn = join("|", $full_names);
       $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' title='Bitte gib denselben Namen an, die du für die Anmeldung benutzt hast.' name='fullname' accept-charset='utf-8' required>";

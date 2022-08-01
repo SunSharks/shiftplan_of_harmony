@@ -21,7 +21,7 @@ for ($i=0; $i<count($nicknames_db); $i++){
  ?>
 <?php
 if (isset($_POST["fullname"])){
-  printf(recover_umlauts(json_encode($_POST), "\\"));
+  // printf(recover_umlauts(json_encode($_POST), "\\"));
   if ($_POST["psw"] != $_POST["psw-repeat"]){
     $alert = "Die beiden eingegebenen Passwörter sind nicht identisch.\\r\\nGib bitte zweimal dasselbe Passwort ein.";
     echo "<script>alert('$alert');</script>";
@@ -127,7 +127,7 @@ button {
       </p>
       <hr>
 
-      <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
+      <label for="fullname"><b>Dein Name (dein uns bekannter Vor- und Familienname.)</b></label>   <!-- LANG! -->
     <?php
       $regex_fn = join("|", $full_names);
       $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' name='fullname' accept-charset='utf-8' required>";

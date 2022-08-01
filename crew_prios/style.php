@@ -147,7 +147,7 @@ div {
 }
 
 .unselall {
-  margin: 10px;
+  margin: 20px;
   width: 50%;
   align: center;
   position: absolute;

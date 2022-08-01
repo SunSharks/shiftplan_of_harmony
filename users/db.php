@@ -32,13 +32,13 @@ function get_days_sql(){
 
 function get_jobtypes_sql($helper='all'){
   if ($helper === 'all'){
-    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes";
   }
   else if ($helper === 'true'){
-    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes WHERE helper=1";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes WHERE helper=1";
   }
   else if ($helper === 'false'){
-    return "SELECT id, name, helper, special, competences, restricted_access FROM Jobtypes WHERE helper=0";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes WHERE helper=0";
   }
 }
 

@@ -7,7 +7,7 @@ if (!empty($_GET)){
 if(isset($_SESSION['user'])){
   echo "Du bist bereits eingeloggt. ";
   echo "<a href=../crew_prios/index.php>
-    <button>Zur Präferenzeneingabe</button>
+    <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
   </a>";
   // $src = $_SESSION["src"];
   // header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
@@ -94,9 +94,10 @@ if (isset($_POST["username"])){
       $login = true;
       $_SESSION["user"] = $user;
       $_SESSION["access_jobs"] = get_persons_exclusive_access($_SESSION["user"]["fullname_id"]);
+      $name = $user["nickname"];
       $suc_txt = "<div id='suc_text'>
         <p>
-        Hallo.
+        Hallo $name.
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";

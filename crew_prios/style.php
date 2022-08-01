@@ -144,6 +144,7 @@ div {
 #submitdiv {
   width: fit-content;
   position: absolute;
+  align: center;
   margin: 20px;
   padding:10px;
 }

@@ -79,8 +79,8 @@ function get_names_sql(){
 }
 
 function get_name_id_sql($name){
-  $surname = explode(" ", $name, 2)[0];
-  $famname = explode(" ", $name, 2)[1];
+  $surname = join(" ", array_slice(explode(" ", $name), 0, -1));
+  $famname = end(explode(" ", $name));
   return "SELECT id from Names WHERE Names.surname = '$surname' AND Names.famname = '$famname'";
 }
 

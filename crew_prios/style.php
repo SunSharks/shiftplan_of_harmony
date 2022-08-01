@@ -148,11 +148,12 @@ div {
   padding:10px;
 }
 
-.unselall {
+#unselall {
   margin: 20px;
   width: 50%;
   align: center;
   position: absolute;
+  padding:10px;
 }
 
 #breakinp {

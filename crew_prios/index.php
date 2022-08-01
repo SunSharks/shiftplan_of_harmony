@@ -171,7 +171,7 @@ if (!empty($_POST)){
               $title = "title='".$jt["competences"]. "'";
               echo "<tr $rowidstr $row_class $style>";
               printf(json_encode($jt));
-              $n = $jt["name"].$jt["name_appendix "];
+              $n = $jt["name"].$jt["name_appendix"];
               echo "<th $title class='rowhead' align='left' height='50'><b>$n</b></th>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
               $idx = 0;

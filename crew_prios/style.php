@@ -144,6 +144,8 @@ div {
 #submitdivbtn {
   width: fit-content;
   position: absolute;
+  margin: 20px;
+  padding:10px;
 }
 
 .unselall {

@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "../helper_prios/index.php";
+$_SESSION["src"] = "helper_prios/index.php";
 if(!isset($_SESSION['helper'])){
-  header('Location: login.php?src=../helper_prios/index.php');
+  header('Location: login.php?src=helper_prios/index.php');
   exit;
 }
 if (!empty($_GET)){

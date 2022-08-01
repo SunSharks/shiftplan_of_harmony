@@ -117,17 +117,13 @@ button {
       <p>Herzlich Willkommen. <br>
         Vielen Dank für deine Bereitschaft, uns zu unterstützen.
         Damit niemand anderes deine Präferenzen einsehen oder verändern kann, teile bitte dem Programm mit, wer du bist und setze ein Passwort.
-        Optional kannst du ebenfalls eine E-Mail setzen, damit du unkompliziert und schnell dein Passwort zurücksetzen kannst, falls du es vergessen hast.
-        Optional kannst du dir auch einen Spitznamen geben, mit dem du dich künftig einloggen kannst und der dann auch dem Rest der Crew angezeigt wird.
+        Optional kannst du dir auch einen Spitznamen geben, mit dem du dich künftig einloggen kannst und der dann auch überall angezeigt wird.
         Dieser muss einzigartig sein.
       </p>
       <hr>
-      <label for="email"><b>E-Mail</b></label>
-      <input type="text" title="Bitte gib dieselbe E-Mailadresse an, die du für die Anmeldung benutzt hast." placeholder="Deine Mailadresse" name="email" required>  <!-- LANG! -->
-
       <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
     <?php
-      $s = "<input type='text' placeholder='Dein Name' name='fullname' accept-charset='utf-8' required>";
+      $s = "<input type='text' placeholder='Dein Name' title='Bitte gib denselben Namen an, die du für die Anmeldung benutzt hast.' name='fullname' accept-charset='utf-8' required>";
       printf($s);
       ?>
       <label for="nickname"><b>Spitzname</b></label>  <!-- LANG! -->
@@ -138,6 +134,8 @@ button {
         $s = "<input type='text' pattern='$regex_nn' placeholder='[optional] Spitzname' name='nickname' accept-charset='utf-8'>"; //<!-- LANG! -->
         printf($s);
         ?>
+      <label for="email"><b>E-Mail</b></label>
+      <input type="text" placeholder="Deine Mailadresse" name="email">  <!-- LANG! -->
 
       <label for="psw"><b>Passwort</b></label>  <!-- LANG! -->
       <!-- $name, $pw, $nickname, $email -->

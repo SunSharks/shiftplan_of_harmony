@@ -81,25 +81,16 @@ function get_name_id_sql($name){
 }
 
 function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
-//   CREATE TABLE Names (
-//   id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//   surname    VARCHAR(255)     NOT NULL,
-//   famname    VARCHAR(255)     NOT NULL,
-//   registered BOOLEAN          NULL DEFAULT 0,
-//   helper     BOOLEAN          NOT NULL DEFAULT 0
-// );
-// CREATE TABLE Helpers (
-//   id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//   fullname_id  INT                NOT NULL,
-//   pw           VARCHAR(255)       NOT NULL,
-//   nickname     VARCHAR(255)       NOT NULL UNIQUE,
-//   email        VARCHAR(255)       NULL,
-//   ticketnumber INT                NULL,
-//   workload     INT                NOT NULL DEFAULT 4
-// );
-  $explode_name = explode(" ", $name, 2);
-  $namesql = "INSERT INTO Names (surname, famname, helper) VALUES ('$explode_name[0]', '$explode_name[1]', true);";
-  perform($namesql);
+  $name_id = fetch_it(get_email_id_sql($name))[0]["id"];
+  $registered_ids = fetch_it(get_registered_name_ids_sql());
+  for ($i=0; $i<count($registered_ids); $i++){
+    if ($registered_ids[$i]["id"] === $name_id){
+      return "INDB";
+    }
+  }
+  // $explode_name = explode(" ", $name, 2);
+  // $namesql = "INSERT INTO Names (surname, famname, helper) VALUES ('$explode_name[0]', '$explode_name[1]', true);";
+  // perform($namesql);
   // echo "$namesql";
   $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   // echo "$name_id";
@@ -122,7 +113,23 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
-  return "INSERT INTO Preferences (name_id) VALUES ($name_id)";
+  $sql = "INSERT INTO Preferences (name_id";
+  $valsql = " VALUES ($name_id";
+  $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=1)");
+  $unspecial_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=0)");
+  foreach ($special_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 5";
+  }
+  foreach ($unspecial_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 3";
+  }
+  $sql .= ") ";
+  $valsql .= ");";
+  return $sql . $valsql;
 }
 
 function get_prios_sql($name_id){

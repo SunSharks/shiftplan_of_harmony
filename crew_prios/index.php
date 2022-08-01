@@ -170,7 +170,7 @@ if (!empty($_POST)){
               $style = $odd_style;
               $title = "title='".$jt["competences"]. "'";
               echo "<tr $rowidstr $row_class $style>";
-              $n = $jt["name"];
+              $n = $jt["name"].$jt["name_appendix"];
               echo "<th $title class='rowhead' align='left' height='50'><b>$n</b></th>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
               $idx = 0;

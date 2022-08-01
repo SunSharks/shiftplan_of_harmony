@@ -81,7 +81,7 @@ function get_name_id_sql($name){
 }
 
 function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
-  $name_id = fetch_it(get_email_id_sql($name))[0]["id"];
+  $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   $registered_ids = fetch_it(get_registered_name_ids_sql());
   for ($i=0; $i<count($registered_ids); $i++){
     if ($registered_ids[$i]["id"] === $name_id){

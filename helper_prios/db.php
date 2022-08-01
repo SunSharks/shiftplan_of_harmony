@@ -75,7 +75,7 @@ function get_helpers_sql(){
 }
 
 function get_names_sql(){
-  return "SELECT * from Names";
+  return "SELECT * from Names WHERE helper=1;";
 }
 
 function get_name_id_sql($name){

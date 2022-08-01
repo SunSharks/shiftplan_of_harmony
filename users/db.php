@@ -83,7 +83,7 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
 }
 
 function get_names_sql(){
-  return "SELECT * from Names";
+  return "SELECT * from Names WHERE helper=0;";
 }
 
 function get_name_id_sql($name){
@@ -143,7 +143,7 @@ function initial_prio_insert_sql($name_id){
   }
   $sql .= ") ";
   $valsql .= ");";
-  printf( $sql . $valsql);
+  // printf( $sql . $valsql);
   return $sql . $valsql;
 }
 

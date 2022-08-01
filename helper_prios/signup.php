@@ -122,6 +122,8 @@ button {
         Dieser muss einzigartig sein.
       </p>
       <hr>
+      <label for="email"><b>E-Mail</b></label>
+      <input type="text" title="Bitte gib dieselbe E-Mailadresse an, die du für die Anmeldung benutzt hast." placeholder="Deine Mailadresse" name="email" required>  <!-- LANG! -->
 
       <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
     <?php
@@ -144,8 +146,6 @@ button {
       <label for="psw-repeat"><b>Zur Sicherheit nochmal das Passwort</b></label>
       <input type="password" placeholder="Repeat Password" name="psw-repeat" accept-charset="utf-8" required>
 
-      <label for="email"><b>E-Mail</b></label>
-      <input type="text" placeholder="[optional] Deine Mailadresse" name="email">  <!-- LANG! -->
 
       <!-- <label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me

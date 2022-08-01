@@ -15,7 +15,11 @@ session_start();
 <?php
 include("db.php");
 regain_integrity();
-
+$names_db = fetch_it(get_names_sql());
+$full_names = [];
+for ($i=0; $i<count($names_db); $i++){
+  array_push($full_names, $names_db[$i]["surname"]." ".$names_db[$i]["famname"]);
+}
 $nicknames_db = fetch_it(get_nicknames_sql());
 $nicknames = [];
 for ($i=0; $i<count($nicknames_db); $i++){
@@ -123,7 +127,8 @@ button {
       <hr>
       <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
     <?php
-      $s = "<input type='text' placeholder='Dein Name' title='Bitte gib denselben Namen an, die du für die Anmeldung benutzt hast.' name='fullname' accept-charset='utf-8' required>";
+      $regex_fn = join("|", $full_names);
+      $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' title='Bitte gib denselben Namen an, die du für die Anmeldung benutzt hast.' name='fullname' accept-charset='utf-8' required>";
       printf($s);
       ?>
       <label for="nickname"><b>Spitzname</b></label>  <!-- LANG! -->

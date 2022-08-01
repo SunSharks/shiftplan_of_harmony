@@ -113,6 +113,7 @@ function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
   $ret = $ret . ";" . set_name_registered_sql($name_id);
   $ret = $ret . ";" . initial_prio_insert_sql($name_id);
   echo $ret;
+  echo $name;
   return $ret;
 }
 

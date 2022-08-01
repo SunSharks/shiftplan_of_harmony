@@ -141,6 +141,13 @@ div {
   background-color: rgb(200,0,0);
 }
 
+#submitdiv {
+  width: fit-content;
+  position: absolute;
+  margin: 20px;
+  padding:10px;
+}
+
 #submitdivbtn {
   width: fit-content;
   position: absolute;

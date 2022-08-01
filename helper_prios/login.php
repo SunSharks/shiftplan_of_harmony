@@ -7,7 +7,7 @@ if (!empty($_GET)){
 if(isset($_SESSION['helper'])){
   echo "Du bist bereits eingeloggt. ";
   echo "<a href=../helper_prios/index.php>
-    <button>Zur Präferenzeneingabe</button>
+    <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
   </a>";
 }
 ?>
@@ -54,7 +54,7 @@ if (isset($_POST["username"])){
     </div>";
     printf($suc_txt);
     echo "<a href=../helper_prios/index.php>
-      <button>Zur Präferenzeneingabe</button>
+      <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
     </a>";
     }
     else{

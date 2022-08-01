@@ -74,6 +74,10 @@ function get_helpers_sql(){
   return "SELECT * FROM Helpers";
 }
 
+function get_names_sql(){
+  return "SELECT * from Names";
+}
+
 function get_name_id_sql($name){
   $surname = explode(" ", $name, 2)[0];
   $famname = explode(" ", $name, 2)[1];

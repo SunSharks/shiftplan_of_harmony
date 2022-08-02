@@ -157,6 +157,7 @@ div {
   margin: 20px;
   height: 40px;
   padding:10px;
+  display: inline;
 }
 
 #unselall {
@@ -166,6 +167,7 @@ div {
   position: absolute;
   padding:10px;
   height: 40px;
+  display: inline;
 }
 
 #breakinp {

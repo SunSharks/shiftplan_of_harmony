@@ -147,12 +147,14 @@ div {
   align: center;
   margin: 20px;
   padding:10px;
+  height: 20px;
 }
 
 #submitdivbtn {
   width: fit-content;
   position: absolute;
   margin: 20px;
+  height: 20px;
   padding:10px;
 }
 
@@ -162,6 +164,7 @@ div {
   align: center;
   position: absolute;
   padding:10px;
+  height: 20px;
 }
 
 #breakinp {

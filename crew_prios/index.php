@@ -220,7 +220,7 @@ if (!empty($_POST)){
       </table>
     </div>
     <div id=buttons style='display:inline;'>
-      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()' style='display:inline;'>Unselect All</button></div>
+      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()' style="display:inline;">Unselect All</button></div>
       <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
@@ -228,7 +228,7 @@ if (!empty($_POST)){
             $name_id = $_SESSION["user"]["fullname_id"];
             echo "<input id='name_id' name='name_id' value='$name_id' hidden >";
             ?>
-            <input id="submitdivbtn" type="submit" value="Speichern" style='display:inline;'>
+            <input id="submitdivbtn" type="submit" value="Speichern" style="display:inline;">
           </p>
         </div>
       </div>

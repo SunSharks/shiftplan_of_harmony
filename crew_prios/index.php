@@ -95,7 +95,7 @@ if (!empty($_POST)){
       echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
       ?>
       </div>
-
+      <div>
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->
@@ -218,6 +218,7 @@ if (!empty($_POST)){
             }
           ?>
       </table>
+    </div>
       <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
       <div id="submitdiv">
           <p>

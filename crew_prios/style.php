@@ -155,7 +155,7 @@ div {
   width: fit-content;
   position: absolute;
   margin: 20px;
-  height: 20px;
+  height: 30px;
   padding:10px;
 }
 

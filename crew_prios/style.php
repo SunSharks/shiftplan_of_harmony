@@ -19,6 +19,7 @@ body {
   padding: 20px;
   margin: 0px;
   block-size: fit-content;
+  overflow: scroll;
 }
 
 table {

@@ -219,6 +219,7 @@ if (!empty($_POST)){
           ?>
       </table>
     </div>
+    <br>
       <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
       <div id="submitdiv">
           <p>

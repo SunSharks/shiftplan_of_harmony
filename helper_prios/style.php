@@ -106,14 +106,6 @@ div {
   background-color: rgb(200,0,0);
 }
 
-.prioselbut {
-  padding: 0px;
-  margin: 0px;
-  height: 100%;
-  width: 100%;
-  display: inline;
-  background-color: rgb(0,200,0);
-}
 .priounselbut {
   padding: 0;
   margin: 0;
@@ -123,19 +115,32 @@ div {
   background-color: rgb(200,0,0);
 }
 
-#submitdivbtn {
+#submitdiv {
   width: fit-content;
-  margin: 20px;
-  align: center;
   position: absolute;
+  align: center;
+  margin: 20px;
+  padding:10px;
+  height: 20px;
 }
 
-.unselall {
-  margin: 10px;
+#submitdivbtn {
+  width: fit-content;
+  position: absolute;
+  margin: 20px;
+  height: 20px;
+  padding:10px;
+}
+
+#unselall {
+  margin: 20px;
   width: 50%;
   align: center;
   position: absolute;
+  padding:10px;
+  height: 20px;
 }
+
 
 #breakinp, #workload {
   width: 100%;

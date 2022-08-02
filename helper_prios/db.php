@@ -23,13 +23,13 @@ function get_days_sql(){
 
 function get_jobtypes_sql($helper='all'){
   if ($helper === 'all'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes ORDER BY name;";
   }
   else if ($helper === 'true'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1 ORDER BY name;";
   }
   else if ($helper === 'false'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0 ORDER BY name;";
   }
 }
 

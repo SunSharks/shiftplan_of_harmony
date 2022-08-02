@@ -66,8 +66,6 @@ if (!empty($_POST)){
 
 <script src=insert_prios.js></script>
 </head>
-
-
 <body>
   <div id="head_row" class="head_row">
     <a href="index.php?log=out">
@@ -90,7 +88,7 @@ if (!empty($_POST)){
         $break = $_SESSION["helper"]["break"];
         // echo "$break\r\n";
         echo "<div><label for='workload'>Wie viele Stunden möchtest du maximal arbeiten?</label></div>";
-        echo "<input id='workload' name='workload' type='number' placeholder='$wl' min='4' title='Eine Schicht dauert mindestens 4 Stunden'>";
+        echo "<input id='workload' name='workload' type='number' placeholder='$wl' min='0' title='Eine Schicht dauert mindestens 4 Stunden'>";
         ?>
       </div>
       <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
@@ -184,8 +182,9 @@ if (!empty($_POST)){
             }
           ?>
       </table>
-      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
+
       <div id="submitdiv">
+        <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
             <?php

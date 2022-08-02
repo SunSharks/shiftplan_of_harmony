@@ -115,6 +115,7 @@ div {
   background-color: rgb(200,0,0);
 }
 
+
 #submitdiv {
   width: fit-content;
   position: absolute;
@@ -128,8 +129,9 @@ div {
   width: fit-content;
   position: absolute;
   margin: 20px;
-  height: 20px;
+  height: 40px;
   padding:10px;
+  display: inline;
 }
 
 #unselall {
@@ -138,7 +140,8 @@ div {
   align: center;
   position: absolute;
   padding:10px;
-  height: 20px;
+  height: 40px;
+  display: inline;
 }
 
 

@@ -80,6 +80,11 @@ class Data_Handler:
             self.preferences = pd.concat([self.preferences, df])
         # print(self.preferences.index)
         # print(self.users)
+        no_preferences = self.names.loc[~self.names.index.isin(self.preferences)].index
+        for id in no_preferences:
+            default_row["name_id"] = id
+            df = pd.DataFrame(default_row, index=[id])
+            self.preferences = pd.concat([self.preferences, df])
 
     def is_neighbor(j1_end, j2_start):
         return j1_end == j2_start

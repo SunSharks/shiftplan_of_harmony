@@ -45,9 +45,11 @@ class Data_Handler:
         self.days.set_index("id", inplace=True)
         self.jts.set_index("id", inplace=True)
         self.names.set_index("id", inplace=True)
+        # print(self.preferences)
         self.preferences.set_index("name_id", inplace=True)
         self.names_to_users()
         logging.info("Data Handler initialized.")
+        # print(len(self.preferences.index))
 
         # print(self.preferences)
 
@@ -62,6 +64,7 @@ class Data_Handler:
 
         unregistered_names = self.names.loc[~self.names.index.isin(
             self.users["fullname_id"])]
+        # print(unregistered_names)
         for id, sn, fn in unregistered_names[["surname", "famname"]].itertuples(index=True):
             self.users = self.users.append(
                 {'fullname_id': id, 'nickname': sn+fn, 'break': 4, 'bias': 0}, ignore_index=True)
@@ -73,10 +76,10 @@ class Data_Handler:
                     continue
                 default_row[c] = default_preferences[i]
             df = pd.DataFrame(default_row, index=[id])
-
+            # print(df.shape)
             self.preferences = pd.concat([self.preferences, df])
-        print(self.preferences.index)
-        print(self.users)
+        # print(self.preferences.index)
+        # print(self.users)
 
     def is_neighbor(j1_end, j2_start):
         return j1_end == j2_start

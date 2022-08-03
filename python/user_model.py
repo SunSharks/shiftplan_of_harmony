@@ -11,17 +11,18 @@ import logging
 class User_Model(Model):
     def __init__(self):
         self.slack_coef_fairness = 2
-        self.eps = 8     # Toleranzstundenanzahl.
+        self.eps = 20     # Toleranzstundenanzahl.
 
         self.dh = data_handler.Data_Handler()
         self.dh.users = self.dh.users[self.dh.users["nickname"].str.contains("funkloch") == False]
-        # print(self.dh.users)
         super().__init__(self.dh.jobs, self.dh.users, groupname="Mitglieder der Crew")
-        self.biases = self.persons["bias"].to_numpy()
+        # print(self.persons)
 
+        self.biases = self.persons["bias"].to_numpy()
+        print(self.dh.preferences)
         self.build_model()
 
-        # self.prt_avg_workload_per_person()
+        self.prt_avg_workload_per_person()
         # self.prt_biased_workloads()
 
         self.optimize()
@@ -35,6 +36,7 @@ class User_Model(Model):
         self.feed_forced_break()
         self.feed_conflicts_per_person()
         self.feed_night_constraint()
+        self.feed_restricted_jobs()
         self.feed_fairness()
         self.feed_diversity()
         self.feed_objective()
@@ -72,8 +74,29 @@ class User_Model(Model):
                 self.model.addCons(quicksum(self.vars[p][i] for i in nightjobs) >= 1)
 
         # self.model.addCons(quicksum())
-        print("Folgende Schichten finden in der Nacht statt:\n{}\n".format(nightjobs))
+        # print("Folgende Schichten finden in der Nacht statt:\n{}\n".format(nightjobs))
         return
+
+    def feed_restricted_jobs(self):
+        # TODO
+        """SELECT * FROM Jobs WHERE Jobs.jt_primary IN ( SELECT id FROM Jobtypes WHERE Jobtypes.name IN ( SELECT jt_name FROM Exclusives));"""
+        uniques = self.dh.exclusives.jt_name.unique()
+        allowed_rows = []
+        unallowed_rows = []
+        jobs = []
+        for name in uniques:
+            self.dh.jts['fullname'] = self.dh.jts.name.str.cat(self.dh.jts.name_appendix)
+            jt_prims = self.dh.jts.loc[self.dh.jts['fullname'] == name].index
+            pers = self.dh.exclusives.loc[self.dh.exclusives["jt_name"] == name]["fullname_id"]
+            allowed_rows.append(self.dh.users.loc[self.dh.users["fullname_id"].isin(pers)].index)
+            unallowed_rows.append(self.dh.users.loc[~self.dh.users["fullname_id"].isin(pers)].index)
+            jobs.append(self.dh.jobs.loc[self.dh.jobs["jt_primary"].isin(jt_prims)].index)
+            print(name)
+            print(self.dh.jts['fullname'])
+        for i, job in enumerate(jobs):
+            for j in job:
+                self.model.addCons(quicksum(self.vars[u][j] for u in allowed_rows[i]) == 1)
+                self.model.addCons(quicksum(self.vars[u][j] for u in unallowed_rows[i]) == 0)
 
     def feed_fairness(self):
         """ TODO!

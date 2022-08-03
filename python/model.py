@@ -159,6 +159,9 @@ class Model:
         # print(self.dh.preferences)
         self.weights = np.empty((self.num_persons, self.num_jobs))
         for id, name_id in self.persons[["fullname_id"]].itertuples(index=True):
+            print(self.dh.preferences.loc[name_id])
+            print(name_id)
+            print(10*"*")
             self.weights[id] = self.dh.preferences.loc[name_id].to_numpy()
         # print(weights)
         self.translate_weights()
@@ -177,6 +180,7 @@ class Model:
         self.model.optimize()
         self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
         self.dh.solution = self.solution
+        print(self.solution)
         np.save('solution', self.solution)
 
 

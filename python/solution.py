@@ -287,28 +287,3 @@ class Solution:
             # print(sum([sum(i) for i in aVal]))
             # print(cnt)
             return string
-
-    def panda_solution(self):
-        sol_df = pd.DataFrame(self.solution)
-        sol_df.columns = []
-
-        # string = ""
-        # print(self.persons)
-        # for p, name, br in self.persons[["fullname_id", "break"]].itertuples(index=True):
-        #     selfjobs = []
-        #     print("{} ist in folgende Schichten eingeteilt worden: ".format(name))
-        #     string += "{} ist in folgende Schichten eingeteilt worden: ".format(name)
-        #     print(10*'-=- ')
-        #     string += 10*'-=- '
-        #     print('Pausenoption: {}'.format(br))
-        #     string += 'Pausenoption: {}'.format(br)
-        #     for i, j in enumerate(self.solution[p]):
-        #         #print(j[1])
-        #         if j > 0:
-        #             if j >= 0.9:
-        #                 print("Assigned to job: \n {}".format(self.jobs.iloc[[i]]))
-        #
-        #     print(10*'-+- ')
-
-        print(sum([sum(i) for i in self.solution]))
-        # return string

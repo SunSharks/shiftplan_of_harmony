@@ -1,12 +1,15 @@
 import mysql.connector
 
-config = {
-  'user': 'root',
-  'password': '',
-  'host': 'localhost',
-  'database': 'Testplan',
-  'raise_on_warnings': True
-}
+try:
+    from _config import config
+except:
+    config = {
+        'user': 'root',
+        'password': '',
+        'host': 'localhost',
+        'database': 'Testplan',
+        'raise_on_warnings': True
+    }
 
 
 def fetch_all(sql, result_struct="dict"):
@@ -21,6 +24,7 @@ def fetch_all(sql, result_struct="dict"):
     row = cur.fetchall()
     cnx.close()
     return row
+
 
 def fetch_one(sql, result_struct="dict"):
     cnx = mysql.connector.connect(**config)
@@ -42,12 +46,14 @@ def fetch_days():
     FROM Days"""
     return fetch_all(sql)
 
+
 def fetch_jobtypes(group="all"):
     sql = """ SELECT id,
     name,
     competences,
     special,
-    helper
+    helper,
+    name_appendix
     FROM Jobtypes"""
     if group == "helper":
         sql += " WHERE helper = 1"
@@ -69,6 +75,7 @@ def fetch_jobs():
     FROM Jobs"""
     return fetch_all(sql)
 
+
 def fetch_jobs_by_group(helper):
     sql = """ SELECT id,
     abs_start,
@@ -83,6 +90,7 @@ def fetch_jobs_by_group(helper):
     SELECT id from Jobtypes WHERE helper = {}
     )""".format(int(helper))
     return fetch_all(sql)
+
 
 def fetch_names(helper=False):
     sql = """ SELECT id,
@@ -105,6 +113,7 @@ def fetch_users():
     FROM Users"""
     return fetch_all(sql)
 
+
 def fetch_helpers():
     sql = """ SELECT id,
     fullname_id,
@@ -114,6 +123,7 @@ def fetch_helpers():
     workload
     FROM Helpers"""
     return fetch_all(sql)
+
 
 def fetch_preferences(name_id):
     jobnames = fetch_column_names("Preferences", addon=" AND  COLUMN_NAME LIKE 'job%'")
@@ -125,6 +135,7 @@ def fetch_preferences(name_id):
     sql += " FROM Preferences WHERE name_id = {}".format(name_id)
     # print(sql)
     return fetch_one(sql)
+
 
 def fetch_job_ids_by_group(helper):
     sql = """ SELECT id
@@ -144,7 +155,8 @@ def fetch_preferences_by_group(group):
         colnamesstr += "job{},".format(d["id"])
     colnamesstr = colnamesstr[:-1]
     jobnames = fetch_column_names("Preferences", addon="")
-    sql = "SELECT name_id, {colnames} FROM Preferences WHERE name_id IN ".format(colnames=colnamesstr)
+    sql = "SELECT name_id, {colnames} FROM Preferences WHERE name_id IN ".format(
+        colnames=colnamesstr)
     if group == "user":
         sql += "(SELECT id FROM Names WHERE Names.helper=0);"
     elif group == "helper":
@@ -165,12 +177,19 @@ def fetch_all_preferences():
     return fetch_all(sql)
 
 
+def fetch_exclusives():
+    sql = "SELECT jt_name, fullname_id FROM Exclusives;"
+    # print(sql)
+    return fetch_all(sql)
+
+
 def fetch_column_names(tablename, addon=""):
     sql = """SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME= '{}' {}""".format(tablename, addon)
     ret = fetch_all(sql, "lst")
     # print([i[0] for i in ret])
     return [i[0] for i in ret]
+
 
 if __name__ == "__main__":
     # print(fetch_all("SELECT * FROM Jobtypes"))

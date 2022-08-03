@@ -59,6 +59,7 @@ def fetch_jobtypes(group="all"):
         sql += " WHERE helper = 1"
     elif group == "crew":
         sql += " WHERE helper = 0"
+    sql += "ORDER BY name"
     return fetch_all(sql)
 
 

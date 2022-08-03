@@ -81,8 +81,10 @@ class Data_Handler:
         # print(self.preferences.index)
         # print(self.users)
         no_preferences = self.names.loc[~self.names.index.isin(self.preferences)].index
+        print(no_preferences)
+        default_row.pop("name_id")
         for id in no_preferences:
-            default_row["name_id"] = id
+            # default_row["name_id"] = id
             df = pd.DataFrame(default_row, index=[id])
             self.preferences = pd.concat([self.preferences, df])
 

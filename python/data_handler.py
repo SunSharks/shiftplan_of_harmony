@@ -64,7 +64,7 @@ class Data_Handler:
 
         unregistered_names = self.names.loc[~self.names.index.isin(
             self.users["fullname_id"])]
-        # print(unregistered_names)
+        print(unregistered_names)
         for id, sn, fn in unregistered_names[["surname", "famname"]].itertuples(index=True):
             self.users = self.users.append(
                 {'fullname_id': id, 'nickname': sn+fn, 'break': 4, 'bias': 0}, ignore_index=True)
@@ -78,11 +78,8 @@ class Data_Handler:
             df = pd.DataFrame(default_row, index=[id])
             # print(df.shape)
             self.preferences = pd.concat([self.preferences, df])
-        # print(self.preferences.index)
-        # print(self.users)
-        no_preferences = self.names.loc[~self.names.index.isin(self.preferences)].index
-        print(no_preferences)
-        # default_row.pop("name_id")
+        print(self.preferences.index)
+        no_preferences = self.names.loc[~self.names.index.isin(self.preferences.index)].index
         for id in no_preferences:
             # default_row["name_id"] = id
             df = pd.DataFrame(default_row, index=[id])

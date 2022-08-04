@@ -155,7 +155,7 @@ if (!empty($_POST)){
             $even_style = "style='background-color:#d3e3c4'";
             foreach ($_SESSION["jts"] as $jt){
               $res = $jt["restricted_access"];
-              $disabled_strs = get_disabled_strings($res, $jt['name']);
+              $disabled_strs = get_disabled_strings($res, $jt['name'].$jt['name_appendix']);
               if ($disabled_strs[0] != ""){
                 continue;
               }

@@ -163,7 +163,7 @@ function insert_prios_sql($prioinps){
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
-    // echo "$key => $val <br>";
+    echo "$key => $val <br>";
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";

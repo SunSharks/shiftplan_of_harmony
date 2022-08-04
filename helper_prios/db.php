@@ -181,7 +181,7 @@ function insert_prios_sql($prioinps){
   $name_id = $_SESSION["helper"]["fullname_id"];
   printf(json_encode($_SESSION["helper"]));
   $sql1 = "UPDATE Preferences SET ";
-  $sql2 = " WHERE name_id = ";
+  $sql2 = " WHERE name_id = $name_id";
   $endsql = ";";
   $workloadsql = "";
   $breaksql = "";
@@ -189,12 +189,12 @@ function insert_prios_sql($prioinps){
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
     // echo "$key => $val <br>";
-    if ($key === "name_id"){
-      // $sql1 .= " name_id = $val,";
-      $sql2 .= "$val";
-      $name_id = $val;
-    }
-    else if ($key === "workload" && !empty($val)){
+    // if ($key === "name_id"){
+    //   // $sql1 .= " name_id = $val,";
+    //   $sql2 .= "$val";
+    //   $name_id = $val;
+    // }
+   if ($key === "workload" && !empty($val)){
       $workloadsql = "UPDATE Helpers SET workload = $val WHERE fullname_id = ";
     }
     else if (str_starts_with($key, "prioinp")){

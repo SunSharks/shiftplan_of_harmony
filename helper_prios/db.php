@@ -1,3 +1,25 @@
+<?php
+// Start the session
+session_start();
+$_SESSION["src"] = "helper_prios/index.php";
+if(!isset($_SESSION['helper'])){
+  header('Location: login.php?src=helper_prios/index.php');
+  exit;
+}
+if (!empty($_GET)){
+  if (isset($_GET["log"])){
+    if ($_GET["log"] === "out"){
+      unset($_SESSION['helper']);
+
+      unset($_SESSION["prios"]);
+      header('Location: login.php?src=../helper_prios/index.php&log=out');
+      exit;
+    }
+  }
+}
+$name_id = $_SESSION["helper"]["fullname_id"];
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -122,6 +144,7 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
+  $name_id = $_SESSION["helper"]["fullname_id"];
   $sql = "INSERT INTO Preferences (name_id";
   $valsql = " VALUES ($name_id";
   $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=1)");
@@ -155,6 +178,7 @@ function get_prios_sql($name_id){
 // ;
 
 function insert_prios_sql($prioinps){
+  $name_id = $_SESSION["helper"]["fullname_id"];
   $sql1 = "UPDATE Preferences SET ";
   $sql2 = " WHERE name_id = ";
   $endsql = ";";

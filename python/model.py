@@ -14,8 +14,8 @@ class Model:
         self.five = -10
         self.three = 0
         self.one = 6
-        self.four = (self.five + self.three) / 2
-        self.two = (self.three + self.one) / 2
+        self.four = -6  # (self.five + self.three) / 2
+        self.two = 4  # (self.three + self.one) / 2
 
         self.slack_coef_diversity = 1
         self.jobs_until_forced_break = 2

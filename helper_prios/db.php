@@ -179,7 +179,7 @@ function get_prios_sql($name_id){
 
 function insert_prios_sql($prioinps){
   $name_id = $_SESSION["helper"]["fullname_id"];
-  printf(json_encode($_SESSION["helper"]));
+  // printf(json_encode($_SESSION["helper"]));
   $sql1 = "UPDATE Preferences SET ";
   $sql2 = " WHERE name_id = $name_id";
   $endsql = ";";
@@ -220,7 +220,7 @@ function insert_prios_sql($prioinps){
 
   $sql1 = substr($sql1, 0, -1);
   $sql = $breaksql . $workloadsql . $sql1 . $sql2 .  $endsql;
-  printf($sql);
+  // printf($sql);
   return $sql;
 }
 

@@ -179,6 +179,7 @@ function get_prios_sql($name_id){
 
 function insert_prios_sql($prioinps){
   $name_id = $_SESSION["helper"]["fullname_id"];
+  printf(json_encode($_SESSION["helper"]));
   $sql1 = "UPDATE Preferences SET ";
   $sql2 = " WHERE name_id = ";
   $endsql = ";";
@@ -187,7 +188,7 @@ function insert_prios_sql($prioinps){
   // $userid = unpack_singleton_fetch(get_name_id())[0];
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
-    echo "$key => $val <br>";
+    // echo "$key => $val <br>";
     if ($key === "name_id"){
       // $sql1 .= " name_id = $val,";
       $sql2 .= "$val";

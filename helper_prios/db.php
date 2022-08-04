@@ -195,7 +195,7 @@ function insert_prios_sql($prioinps){
 
   $sql1 = substr($sql1, 0, -1);
   $sql = $breaksql . $workloadsql . $sql1 . $sql2 .  $endsql;
-  // printf($sql);
+  printf($sql);
   return $sql;
 }
 

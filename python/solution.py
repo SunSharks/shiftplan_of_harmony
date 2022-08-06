@@ -82,7 +82,7 @@ class Solution:
             assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
             name_id = self.dh.users.loc[assigned_user]["fullname_id"]
             pref = self.dh.preferences.loc[name_id].to_numpy()[id]
-            inp = "<strong>{}</strong><br>{}".format(assigned_nickname, pref)
+            inp = "<strong>{}</strong><br>{}".format(assigned_nickname, int(pref))
         except IndexError:
             inp = ""
         return inp
@@ -101,7 +101,7 @@ class Solution:
             assigned_user = np.where(self.dh.solution[:, id] >= .9)[0][0]
             assigned_nickname = self.dh.users.loc[assigned_user]["nickname"]
             inp = "{} - {} Uhr<br><strong>{}</strong>".format(
-                kwargs["abs_start"], kwargs["abs_end"], assigned_nickname)
+                kwargs["dt_start"], kwargs["dt_end"], assigned_nickname)
         except IndexError:
             inp = ""
         return inp

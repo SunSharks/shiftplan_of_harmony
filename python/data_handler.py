@@ -64,10 +64,10 @@ class Data_Handler:
 
         unregistered_names = self.names.loc[~self.names.index.isin(
             self.users["fullname_id"])]
-        print(unregistered_names)
+        # print(unregistered_names)
         for id, sn, fn in unregistered_names[["surname", "famname"]].itertuples(index=True):
             self.users = self.users.append(
-                {'fullname_id': id, 'nickname': sn+fn, 'break': 4, 'bias': 0}, ignore_index=True)
+                {'fullname_id': id, 'nickname': sn+fn, 'break': 4, 'bias': 0, 'workload': 4}, ignore_index=True)
             # prefs = []
             default_row = {}
             for i, c in enumerate(self.preferences):
@@ -78,7 +78,7 @@ class Data_Handler:
             df = pd.DataFrame(default_row, index=[id])
             # print(df.shape)
             self.preferences = pd.concat([self.preferences, df])
-        print(self.preferences.index)
+        # print(self.preferences.index)
         no_preferences = self.names.loc[~self.names.index.isin(self.preferences.index)].index
         for id in no_preferences:
             # default_row["name_id"] = id
@@ -102,9 +102,9 @@ class Data_Handler:
                 if not c in self.jobs.values:
                     # print(c)
                     approved = False
-
-        print(50*"-")
-        print(approved)
+        #
+        # print(50*"-")
+        # print(approved)
 
         #
 

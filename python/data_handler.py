@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import logging
 import numpy as np
+import pickle
 
 try:
     from colorama import init
@@ -48,6 +49,8 @@ class Data_Handler:
         # print(self.preferences)
         self.preferences.set_index("name_id", inplace=True)
         self.names_to_users()
+        with open("dh.pkl".format(i), 'wb') as f:
+            pickle.dump(self, f)
         logging.info("Data Handler initialized.")
         # print(len(self.preferences.index))
 

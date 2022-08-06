@@ -186,5 +186,5 @@ class Model:
         sols = self.model.getSols()
         for i, s in enumerate(sols):
             aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
-            with open("solutions{}.pkl".format(i), 'w') as f:
+            with open("solutions{}.pkl".format(i), 'wb') as f:
                 pickle.dump(aval, f)

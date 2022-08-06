@@ -184,10 +184,7 @@ class Model:
         print(self.solution)
         np.save('solution', self.solution)
         sols = self.model.getSols()
-        with open("solutions.pkl", 'w') as f:
-            pickle.dump(sols, f)
-
-
-class Visualizer:
-    def __init__(self, solution):
-        self.solution = solution
+        for i, s in enumerate(sols):
+            aval = numpy.vectorize(lambda x: model.getSolVal(s, x))(vars)
+            with open("solutions{}.pkl".format(i), 'w') as f:
+                pickle.dump(aval, f)

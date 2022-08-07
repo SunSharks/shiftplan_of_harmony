@@ -49,8 +49,20 @@ class Data_Handler:
         # print(self.preferences)
         self.preferences.set_index("name_id", inplace=True)
         self.names_to_users()
-        # with open("dh.pkl".format(i), 'wb') as f:
-        #     pickle.dump(self, f)
+        with open("days.pkl", 'wb') as f:
+            pickle.dump(self.days, f)
+        with open("jts.pkl", 'wb') as f:
+            pickle.dump(self.jts, f)
+        with open("jobs.pkl", 'wb') as f:
+            pickle.dump(self.jobs, f)
+        with open("users.pkl", 'wb') as f:
+            pickle.dump(self.users, f)
+        with open("names.pkl", 'wb') as f:
+            pickle.dump(self.names, f)
+        with open("preferences.pkl", 'wb') as f:
+            pickle.dump(self.preferences, f)
+        with open("exclusives.pkl", 'wb') as f:
+            pickle.dump(self.exclusives, f)
         logging.info("Data Handler initialized.")
         # print(len(self.preferences.index))
 

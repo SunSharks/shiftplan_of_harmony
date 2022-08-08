@@ -144,7 +144,7 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
-  $name_id = $_SESSION["helper"]["fullname_id"];
+  // $name_id = $_SESSION["helper"]["fullname_id"];
   $sql = "INSERT INTO Preferences (name_id";
   $valsql = " VALUES ($name_id";
   $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=1)");

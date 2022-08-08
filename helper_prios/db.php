@@ -2,21 +2,21 @@
 // Start the session
 session_start();
 $_SESSION["src"] = "helper_prios/index.php";
-if(!isset($_SESSION['helper'])){
-  header('Location: login.php?src=helper_prios/index.php');
-  exit;
-}
-if (!empty($_GET)){
-  if (isset($_GET["log"])){
-    if ($_GET["log"] === "out"){
-      unset($_SESSION['helper']);
-
-      unset($_SESSION["prios"]);
-      header('Location: login.php?src=../helper_prios/index.php&log=out');
-      exit;
-    }
-  }
-}
+// if(!isset($_SESSION['helper'])){
+//   header('Location: login.php?src=helper_prios/index.php');
+//   exit;
+// }
+// if (!empty($_GET)){
+//   if (isset($_GET["log"])){
+//     if ($_GET["log"] === "out"){
+//       unset($_SESSION['helper']);
+//
+//       unset($_SESSION["prios"]);
+//       header('Location: login.php?src=../helper_prios/index.php&log=out');
+//       exit;
+//     }
+//   }
+// }
 $name_id = $_SESSION["helper"]["fullname_id"];
 ?>
 

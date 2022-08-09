@@ -26,7 +26,7 @@ for fi in filenames:
     with open(folder + fi, 'rb') as f:
         dhs.append(pickle.load(f))
 
-for i in range(sys.argv[2]):
+for i in range(str(sys.argv[2])):
     with open(folder + "solutions{}.pkl".format(i), 'rb') as f:
         solutions.append(pickle.load(f))
 

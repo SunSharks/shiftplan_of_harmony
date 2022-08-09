@@ -5,8 +5,9 @@ import seaborn as sns
 
 
 class Solution:
-    def __init__(self, dh):
+    def __init__(self, dh, id=""):
         self.dh = dh
+        self.id = id
         self.preferences_np = self.dh.preferences.to_numpy()
         self.style = ""
         self.get_jobmask()
@@ -57,23 +58,23 @@ class Solution:
         # print(self.style)
 
     def get_htmls(self):
-        # with open("html_skel.html", "r") as f:
-        #     self.html_skel = f.read()
+        with open("html_skel.html", "r") as f:
+            self.html_skel = f.read()
         # time_nickname_html = self.get_html(self.insert_time_nickname)
         # self.time_nickname_html = self.html_skel.format(
         #     STYLE=self.style, MODE=" mit Zeiten", TABLE=time_nickname_html)
-        # with open("{}_sol/time_nickname_tab.html".format(self.dh.group), "w") as f:
+        # with open("{}_sol/time_nickname_tab{}.html".format(self.dh.group, self.id), "w") as f:
         #     f.write(self.time_nickname_html)
-        self.html_skel = ""
+        # self.html_skel = ""
         nickname_pref_html = self.get_html(self.insert_nickname_pref)
         self.nickname_pref_html = self.html_skel.format(
             STYLE=self.style, MODE=" mit Präferenzen", TABLE=nickname_pref_html)
-        with open("{}_sol/nickname_pref_tab.html".format(self.dh.group), "w") as f:
+        with open("{}_sol/nickname_pref_tab{}.html".format(self.dh.group, self.id), "w") as f:
             f.write(self.nickname_pref_html)
 
         nickname_html = self.get_html(self.insert_nickname)
         self.nickname_html = self.html_skel.format(STYLE=self.style, MODE="", TABLE=nickname_html)
-        with open("{}_sol/nickname_tab.html".format(self.dh.group), "w") as f:
+        with open("{}_sol/nickname_tab{}.html".format(self.dh.group, self.id), "w") as f:
             f.write(self.nickname_html)
 
     def insert_nickname_pref(self, id, **kwargs):

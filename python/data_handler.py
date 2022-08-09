@@ -42,6 +42,7 @@ class Data_Handler:
             self.users = pd.DataFrame(db.fetch_helpers())
             self.names = pd.DataFrame(db.fetch_names(helper=True))
             self.preferences = pd.DataFrame(db.fetch_preferences_by_group("helper"))
+            self.exclusives = pd.DataFrame(db.fetch_exclusives())
 
         self.days.set_index("id", inplace=True)
         self.jts.set_index("id", inplace=True)
@@ -49,21 +50,23 @@ class Data_Handler:
         # print(self.preferences)
         self.preferences.set_index("name_id", inplace=True)
         self.names_to_users()
-        with open("days.pkl", 'wb') as f:
+        with open("{}_sol/days.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.days, f)
-        with open("jts.pkl", 'wb') as f:
+        with open("{}_sol/jts.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.jts, f)
-        with open("jobs.pkl", 'wb') as f:
+        with open("{}_sol/jobs.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.jobs, f)
-        with open("users.pkl", 'wb') as f:
+        with open("{}_sol/users.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.users, f)
-        with open("names.pkl", 'wb') as f:
+        with open("{}_sol/names.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.names, f)
-        with open("preferences.pkl", 'wb') as f:
+        with open("{}_sol/preferences.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.preferences, f)
-        with open("exclusives.pkl", 'wb') as f:
+        with open("{}_sol/exclusives.pkl".format(self.group), 'wb') as f:
             pickle.dump(self.exclusives, f)
         logging.info("Data Handler initialized.")
+        self.print_job_five()
+
         # print(len(self.preferences.index))
 
         # print(self.preferences)

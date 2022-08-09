@@ -37,6 +37,8 @@ class User_Model(Model):
         self.feed_conflicts_per_person()
         self.feed_night_constraint()
         self.feed_restricted_jobs()
+        self.no_fives_at_sensibel()
+        self.no_fives()
         self.feed_fairness()
         self.feed_diversity()
         self.feed_objective()

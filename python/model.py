@@ -14,11 +14,11 @@ class Model:
 
         self.five = -10
         self.three = 0
-        self.one = 6
+        self.one = 10
         self.four = -6  # (self.five + self.three) / 2
-        self.two = 4  # (self.three + self.one) / 2
+        self.two = 5  # (self.three + self.one) / 2
 
-        self.slack_coef_diversity = 1
+        self.slack_coef_diversity = .5
         self.jobs_until_forced_break = 2
 
         self.persons = persons
@@ -156,6 +156,12 @@ class Model:
                 self.slack_objective = - self.slack_coef_diversity * \
                     vars_slack[-1] + self.slack_objective
 
+    def feed_no_break_softly(self):
+        no_break_users = self.dh.users.loc[self.dh.users["break"] == 0].index
+        vars_slack = []
+        for i in no_break_users:
+            vars_slack.append(self.model.addVar("slack_p{}cat{}".format(p, cat), vtype='I'))
+
     def feed_objective(self):
         # print(self.dh.preferences)
         self.weights = np.empty((self.num_persons, self.num_jobs))
@@ -176,18 +182,32 @@ class Model:
         print("Insgesamt sind {wh} Stunden zu arbeiten für alle {gn}.".format(
             wh=self.total_workhours, gn=self.groupname))
 
+    def no_fives_at_sensibel(self):
+        sensible_jts = self.dh.jts.loc[self.dh.jts["special"] == 1].index
+        sensible_jobs = self.dh.jobs.loc[self.dh.jobs["jt_primary"].isin(sensible_jts)]
+        for i, job_id in sensible_jobs[["id"]].itertuples(index=True):
+            for id, name_id in self.dh.users[["fullname_id"]].itertuples(index=True):
+                if self.dh.preferences.loc[name_id]["job{}".format(job_id)] == 5:
+                    self.model.addCons(self.vars[id][i] == 0)
+
+    def no_fives(self):
+        for i, job_id in self.dh.jobs[["id"]].itertuples(index=True):
+            for id, name_id in self.dh.users[["fullname_id"]].itertuples(index=True):
+                if self.dh.preferences.loc[name_id]["job{}".format(job_id)] == 5:
+                    self.model.addCons(self.vars[id][i] == 0)
+
     def optimize(self):
         self.model.writeProblem()
         self.model.optimize()
         self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
         self.dh.solution = self.solution
         print(self.solution)
-        np.save('solution', self.solution)
+        # np.save('solution', self.solution)
         sols = self.model.getSols()
         self.dh.sols = sols
         # with open("data_handler.pkl", 'wb') as f:
         #     pickle.dump(self.dh, f)
         for i, s in enumerate(sols):
             aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
-            with open("solutions{}.pkl".format(i), 'wb') as f:
+            with open("{}_sol/solutions{}.pkl".format(self.dh.group, i), 'wb') as f:
                 pickle.dump(aval, f)

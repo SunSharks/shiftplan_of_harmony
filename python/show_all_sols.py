@@ -32,5 +32,5 @@ for i in range(int(sys.argv[2])):
 
 
 for i, s in enumerate(solutions):
-    dh = Data_Handler(*dhs, s, "helper")
+    dh = Data_Handler(*dhs, s, group="helper")
     s = Solution(dh, id=i)

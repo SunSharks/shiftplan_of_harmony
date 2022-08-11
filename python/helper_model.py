@@ -22,7 +22,7 @@ class Helper_Model(Model):
         self.assign_every_job_once()
         self.feed_workload_hard_constraint()
         self.feed_forced_break()
-        # self.no_fives()
+        self.no_fives()
         self.feed_conflicts_per_person()
         self.feed_diversity()
         self.assign_every_job_softly()

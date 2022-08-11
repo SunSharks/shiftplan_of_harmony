@@ -6,7 +6,7 @@ folder = sys.argv[1]
 
 
 class Data_Handler:
-    def __init__(self, days, jts, jobs, users, names, preferences, exclusives, solution, group="crew"):
+    def __init__(self, days, jts, jobs, users, names, preferences, exclusives, solution, group):
         self.days = days
         self.jts = jts
         self.jobs = jobs

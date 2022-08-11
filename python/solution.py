@@ -73,6 +73,7 @@ class Solution:
             f.write(self.nickname_pref_html)
 
         nickname_html = self.get_html(self.insert_nickname)
+        print(self.dh.group)
         self.nickname_html = self.html_skel.format(STYLE=self.style, MODE="", TABLE=nickname_html)
         with open("{}_sol/nickname_tab{}.html".format(self.dh.group, self.id), "w") as f:
             f.write(self.nickname_html)

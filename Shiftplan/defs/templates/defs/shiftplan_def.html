@@ -1,0 +1,14 @@
+<h1>Basic information about shiftplan {{ sp.name }}</h1>
+<form action="{% url 'defs:shiftplan_def' sp.id %}" method="post">
+{% csrf_token %}
+<fieldset>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <input type="text" name="shiftplan_name" id="shiftplan_name" value="{{ sp.name }}">
+    <label for="shiftplan_name">New shiftplan name</label><br>
+</fieldset>
+<input type="submit" value="submit">
+</form>
+
+<li><a href="{% url 'defs:time-def' sp.id %}">Time defs</a></li>
+<li><a href="{% url 'defs:jobtype_def' sp.id %}">Jobtype defs</a></li>
+<li><a href="{% url 'defs:job_def' sp.id %}">Job defs</a></li>

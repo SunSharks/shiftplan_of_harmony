@@ -1,0 +1,12 @@
+<form action="{% url 'defs:jobtype_def' sp.id %}" method="post">
+{% csrf_token %}
+<fieldset>
+    <legend><h1>Jobtypes</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    {% for jt in sp.jobtype_set.all %}
+        <input type="text" name="jt_name" id="jt_name{{ forloop.counter }}" value="{{ jt.name }}">
+        <label for="jt_name{{ forloop.counter }}">{{ jt.name }}</label><br>
+    {% endfor %}
+</fieldset>
+<input type="submit" value="Vote">
+</form>

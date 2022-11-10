@@ -4,3 +4,4 @@ _*
 *.npy
 *.pyc
 *.cip
+.env

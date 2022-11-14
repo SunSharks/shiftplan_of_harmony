@@ -8,6 +8,21 @@ class Shiftplan(models.Model):
     def __str__(self):
         return self.name
 
+
+class TimeInterval(models.Model):
+    shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+
+    def __str__(self):
+        return self.shiftplan.time_format
+# class Grades(models.Model):
+#     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
+#     grade_range = models.PositiveIntegerField(default=5)
+#     name = models.CharField('grade_name', max_length=200, unique=True, blank=False, default="")
+#
+#     def __str__(self):
+#         return self.name
 # class Subgroup(models.Model):
 #     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
 #     name = models.CharField('subgroup name', max_length=200)
@@ -30,6 +45,8 @@ class Jobtype(models.Model):
     name = models.CharField('jobtype name', max_length=200)
     # subgroup = models.ForeignKey(Subgroup, on_delete=models.CASCADE)
     description = models.TextField('description', default='')  # former "competences"
+    # restricted = models.BooleanField() # True if jt is restricted to certain group of users
+    # user_group = models.ManyToManyField(User)
 
     def __str__(self):
         return self.name

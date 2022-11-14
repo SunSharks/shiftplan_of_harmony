@@ -1,0 +1,20 @@
+<div hx-target="this" hx-swap="outerHTML">
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        {% if jobtype %}
+            <button type="submit" hx-post="{% url 'defs:update-jobtype' jobtype.id %}">
+                Submit
+            </button>
+            <button hx-get="{% url 'defs:detail-jobtype' jobtype.id %}">
+                Cancel
+            </button>
+        {% else %}
+            <button hx-post=".">
+                Submit
+            </button>
+        {% endif %}
+    </form>
+
+</div>

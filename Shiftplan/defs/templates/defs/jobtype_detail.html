@@ -1,0 +1,13 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<div hx-target="this" hx-swap="outerHTML">
+  <h3> Name: {{ jobtype.name }}</h3>
+  <p>Description: {{ jobtype.description }}</p>
+  <button hx-get="{% url 'defs:update-jobtype' jobtype.id %}">Update</button>
+  <button hx-post="{% url 'defs:delete-jobtype' jobtype.id %}">Delete</button>
+</div>
+
+<li><a href="{% url 'defs:jobtype_def' jobtype.shiftplan.id %}">Back to Jobtypes Overview</a></li>
+{% endblock %}

@@ -6,8 +6,8 @@ from django.http import Http404
 
 from .models import Shiftplan, TimeInterval, Jobtype, Job
 
-from .forms import JobtypeForm
-from .forms import TimeFormSet, JobtypeFormSet
+from .forms import JobtypeForm, JobForm
+# from .forms import TimeFormSet, JobtypeFormSet
 from django.views import generic
 from django.views.generic.edit import CreateView, FormView
 
@@ -21,14 +21,6 @@ class IndexView(generic.ListView):
         return Shiftplan.objects.all()
 
 
-# def index(request):
-#     shiftplan_list = Shiftplan.objects.all()
-#     context = {
-#         'shiftplan_list': shiftplan_list,
-#     }
-#     return render(request, 'defs/index.html', context)
-
-#
 class ShiftplanDefView(FormView):
     model = Shiftplan
     template_name = 'defs/shiftplan_def.html'
@@ -41,9 +33,9 @@ class TimeIntervalCreateView(CreateView):
     fields = ['start_date', 'end_date']
 
 
-def shiftplan_def(request, shiftplan_id):
+def shiftplan_def(request, pk):
     links = ["time_def", "jobtype_def"]
-    shiftplan = get_object_or_404(Shiftplan, pk=shiftplan_id)
+    shiftplan = get_object_or_404(Shiftplan, pk=pk)
     if request.method == "POST":
         try:
             sp_name = request.POST['shiftplan_name']
@@ -63,9 +55,11 @@ def shiftplan_def(request, shiftplan_id):
 
     return render(request, 'defs/shiftplan_def.html', {'sp': shiftplan})
 
+# === TIME INTERVALS ===
 
-def add_time_interval(request, shiftplan_id):
-    shiftplan = get_object_or_404(Shiftplan, pk=shiftplan_id)
+
+def create_time_interval(request, pk):
+    shiftplan = get_object_or_404(Shiftplan, pk=pk)
     time_intervals = TimeInterval.objects.filter(shiftplan=shiftplan)
     formset = TimeFormSet(request.POST or None)
 
@@ -73,7 +67,7 @@ def add_time_interval(request, shiftplan_id):
         if formset.is_valid():
             formset.instance = shiftplan
             formset.save()
-            return redirect("defs:ti_def", shiftplan_id=shiftplan.id)
+            return redirect("defs:ti_def", pk=shiftplan.id)
 
     context = {
         "formset": formset,
@@ -84,8 +78,8 @@ def add_time_interval(request, shiftplan_id):
     return render(request, "defs/add_time_interval.html", context)
 
 
-def time_def(request, shiftplan_id):
-    shiftplan = get_object_or_404(Shiftplan, pk=shiftplan_id)
+def time_def(request, pk):
+    shiftplan = get_object_or_404(Shiftplan, pk=pk)
     tf_text = {"hourly": None, "block": None, "individual": None}
     tf_text[shiftplan.time_format] = True
     context = {'sp': shiftplan}
@@ -177,5 +171,75 @@ def delete_jobtype(request, pk):
     )
 
 
-def job_def(request, shiftplan_id):
-    return HttpResponse("Job Definition")
+def job_def(request, pk):
+    jobtype = get_object_or_404(Jobtype, pk=pk)
+    return render(request, 'defs/job_def.html', {'jobtype': jobtype})
+
+
+def create_job(request, pk):
+    jobtype = get_object_or_404(Jobtype, pk=pk)
+    jobs = Job.objects.filter(jobtype=jobtype)
+    form = JobForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            job = form.save(commit=False)
+            job.jobtype = jobtype
+            job.save()
+            return HttpResponse("success")
+            # return redirect("defs:detail-job", pk=jobtype.id)
+        else:
+            # return render(request, "defs/jobtype_form.html", context={
+            #     "form": form
+            # })
+            return HttpResponse("fail")
+
+    context = {
+        "form": form,
+        "jobtype": jobtype
+    }
+
+    return render(request, "defs/create_job.html", context)
+
+
+def create_job_form(request):
+    form = JobForm()
+    context = {
+        "form": form
+    }
+    return render(request, "defs/job_form.html", context)
+
+
+def update_job(request, pk):
+    job = Job.objects.get(id=pk)
+    form = JobForm(request.POST or None, instance=job)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("defs:detail-job", pk=job.id)
+    context = {
+        "form": form,
+        "job": job
+    }
+
+    return render(request, "defs/job_form.html", context)
+
+
+def detail_job(request, pk):
+    job = get_object_or_404(Job, id=pk)
+    context = {
+        "job": job
+    }
+    return render(request, "defs/job_detail.html", context)
+
+
+def delete_job(request, pk):
+    job = get_object_or_404(Job, id=pk)
+    if request.method == "POST":
+        job.delete()
+        return HttpResponse("")
+
+    return HttpResponseNotAllowed(
+        [
+            "POST",
+        ]
+    )

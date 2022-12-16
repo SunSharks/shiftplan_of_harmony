@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.template import loader
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 
 from .models import Shiftplan, TimeInterval, Jobtype, Job
 
@@ -33,6 +34,7 @@ class TimeIntervalCreateView(CreateView):
     fields = ['start_date', 'end_date']
 
 
+@login_required
 def shiftplan_def(request, pk):
     links = ["time_def", "jobtype_def"]
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
@@ -98,11 +100,13 @@ def time_def(request, pk):
     return render(request, 'defs/time_def.html', context)
 
 
+@login_required
 def jobtype_def(request, pk):
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
     return render(request, 'defs/jobtype_def.html', {'sp': shiftplan})
 
 
+@login_required
 def create_jobtype(request, pk):
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
     jobtypes = Jobtype.objects.filter(shiftplan=shiftplan)
@@ -127,6 +131,7 @@ def create_jobtype(request, pk):
     return render(request, "defs/create_jobtype.html", context)
 
 
+@login_required
 def create_jobtype_form(request):
     form = JobtypeForm()
     context = {
@@ -135,6 +140,7 @@ def create_jobtype_form(request):
     return render(request, "defs/jobtype_form.html", context)
 
 
+@login_required
 def update_jobtype(request, pk):
     jobtype = Jobtype.objects.get(id=pk)
     form = JobtypeForm(request.POST or None, instance=jobtype)
@@ -150,6 +156,7 @@ def update_jobtype(request, pk):
     return render(request, "defs/jobtype_form.html", context)
 
 
+@login_required
 def detail_jobtype(request, pk):
     jobtype = get_object_or_404(Jobtype, id=pk)
     context = {
@@ -158,6 +165,7 @@ def detail_jobtype(request, pk):
     return render(request, "defs/jobtype_detail.html", context)
 
 
+@login_required
 def delete_jobtype(request, pk):
     jobtype = get_object_or_404(Jobtype, id=pk)
     if request.method == "POST":
@@ -171,11 +179,13 @@ def delete_jobtype(request, pk):
     )
 
 
+@login_required
 def job_def(request, pk):
     jobtype = get_object_or_404(Jobtype, pk=pk)
     return render(request, 'defs/job_def.html', {'jobtype': jobtype})
 
 
+@login_required
 def create_job(request, pk):
     jobtype = get_object_or_404(Jobtype, pk=pk)
     jobs = Job.objects.filter(jobtype=jobtype)
@@ -201,6 +211,7 @@ def create_job(request, pk):
     return render(request, "defs/create_job.html", context)
 
 
+@login_required
 def create_job_form(request):
     form = JobForm()
     context = {
@@ -209,6 +220,7 @@ def create_job_form(request):
     return render(request, "defs/job_form.html", context)
 
 
+@login_required
 def update_job(request, pk):
     job = Job.objects.get(id=pk)
     form = JobForm(request.POST or None, instance=job)
@@ -224,6 +236,7 @@ def update_job(request, pk):
     return render(request, "defs/job_form.html", context)
 
 
+@login_required
 def detail_job(request, pk):
     job = get_object_or_404(Job, id=pk)
     context = {
@@ -232,6 +245,7 @@ def detail_job(request, pk):
     return render(request, "defs/job_detail.html", context)
 
 
+@login_required
 def delete_job(request, pk):
     job = get_object_or_404(Job, id=pk)
     if request.method == "POST":

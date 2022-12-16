@@ -8,6 +8,8 @@ class Shiftplan(models.Model):
     def __str__(self):
         return self.name
 
+    
+
 
 class TimeInterval(models.Model):
     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
@@ -47,20 +49,38 @@ class Jobtype(models.Model):
     description = models.TextField('description', default='')  # former "competences"
     # restricted = models.BooleanField() # True if jt is restricted to certain group of users
     # user_group = models.ManyToManyField(User)
+    default_rating = models.IntegerField(default=3)
 
     def __str__(self):
         return self.name
+
+    def as_dict(self):
+        return {'name': self.name, 'description': self.description}
+
 
 
 class Job(models.Model):
     jobtype = models.ForeignKey(Jobtype, on_delete=models.CASCADE)
     begin = models.DateTimeField('job begin')
     end = models.DateTimeField('job end')
+    rating = models.IntegerField('rating', default=3)
     # during
+    '''Default time formats: ['%Y-%m-%d %H:%M:%S',    # '2006-10-25 14:30:59'
+ '%Y-%m-%d %H:%M',       # '2006-10-25 14:30'
+ '%Y-%m-%d',             # '2006-10-25'
+ '%m/%d/%Y %H:%M:%S',    # '10/25/2006 14:30:59'
+ '%m/%d/%Y %H:%M',       # '10/25/2006 14:30'
+ '%m/%d/%Y',             # '10/25/2006'
+ '%m/%d/%y %H:%M:%S',    # '10/25/06 14:30:59'
+ '%m/%d/%y %H:%M',       # '10/25/06 14:30'
+ '%m/%d/%y']             # '10/25/06'
+ '''
 
     def __str__(self):
-        return "Job"
+        return "{jt_name} begin: {b} end: {e}".format(jt_name=self.jobtype.name, b=self.begin, e=self.end)
 
+    def as_dict(self):
+        return {'begin': self.begin, 'end': self.end}
 #
 #
 #

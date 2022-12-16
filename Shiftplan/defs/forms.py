@@ -25,6 +25,15 @@ class JobtypeForm(forms.ModelForm):
         )
 
 
+class JobForm(forms.ModelForm):
+    class Meta:
+        model = Job
+        fields = (
+            'begin',
+            'end'
+        )
+
+
 TimeFormSet = inlineformset_factory(
     Shiftplan,
     TimeInterval,

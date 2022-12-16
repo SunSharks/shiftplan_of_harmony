@@ -5,3 +5,4 @@ _*
 *.pyc
 *.cip
 .env
+*playground*

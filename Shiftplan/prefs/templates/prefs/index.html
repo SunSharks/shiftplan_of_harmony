@@ -1,0 +1,12 @@
+<h1>Schichtpläne</h1>
+{% if shiftplan_list %}
+    <ul>
+    {% for sp in shiftplan_list %}
+      <li><a href="{% url 'prefs:chart' sp.id %}">{{ sp.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No shiftplans are available.</p>
+{% endif %}
+
+

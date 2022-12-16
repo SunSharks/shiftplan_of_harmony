@@ -1,0 +1,37 @@
+Jakob: 14
+Sägezahn: 2
+Sinus-Funktion plotten: 2 Du hast math als mt importiert. Dann musst du es auch so im Code aufrufen. plt.show ist eine Funktion, daher musst du, um diese aufzurufen, ein rundes Klammerpaar dahinter schreiben. Du hast den Plot nur gesehen, da du in jupyter-notebook arbeitest.
+Vollkommene Zahlen: 4
+Räuber-Beute: 4 (Hier dasselbe mit plot.show())
+Zellulärer Automat: 6 Sehr schöne Lösung!
+
+Jasper: 13
+* Sägezahnmuster: 2
+ Pascalsches Dreieck: 2 Die Variable zeile_i benutzt du nur innerhalb der Funktion. Außerhalb der Funktion gibt es sie nicht, daher ist das global zeile_i unnötig.
+* Balkendiagramm 1: 2 Schau dir mal die split-Funktion an (eingabe.split()). Diese hätte dir die erste Schleife abgenommen. :)
+* Sinus-Funktion plotten: 2
+* Vollkommene Zahlen: 4 Wenn du das Konzept einer Funktion richtig verstanden hättest, wüsstest du, dass die drei Funktionen alle dasselbe machen und demnach nur eine der Funktionen nötig gewesen wäre. 
+* Quersumme: 2
+* Zufällige Karte geben: 1 Eigentlich solltest du random.random benutzen und die Zufallszahl im Intervall von 0 bis 1 dann mal die obere Grenze rechnen und runden, sodass du so eine Zahl von 0 bis n bekommst. 
+
+Lily
+* Balkendiagramm 1: 2 Hier hättest du die einzelnen Einträge deiner Liste jeweils lieber gleich in einen Integer umwandeln können. Mehr Rechenoperationen dauern länger und sind damit mehr Stromverbrauch. (Auch wenn man hier bestimmt keine besonders riesige Liste eingibt..) Aber grundsätzlich empfiehlt es sich, möglichst wenie Operationen zu machen, gerade wenn sie, wie hier, so vermeidbar sind. :)
+* Balkendiagramm 2: 2 Dasselbe wie oben.
+* Vollkommene Zahlen: 4 
+
+* Anagrame: 2 Eine etwas effizientere Lösung wäre hier, deine beiden Listen (wort1 und wort2) mit wort1.sort() und wort2.sort() zu sortieren und einmal zu vergleichen, ob diese gleich sind. 
+
+* Folge und Reihe: 2 Bei der Reihe fragst du im input-Argument noch nach einem Folgenglied. :) Es ist sinnvoll, die Folge in einer Funktion zu berechnen, die du dann auch für die Reihenberechnung benutzen kannst. Außerdem wäre hier noch eine Möglichkeit, die Laufzeit deines Programmes zu verkürzen, indem du, anstatt jedes mal erneut die komplette Folgensumme zu berechnen, einfach deine zuletzt berechnete Partialsumme nimmst und diese dann nur mit dem neuen Folgenglied addierst. Denn die Summe von 0 bis i-1 hast du ja für jedes i>0 bereits im letzten Schritt berechnet. 
+
+* Sieb: 2 Es ist völlig ok, noch nicht so den Umgang mit numpy gewohnt zu sein. Tatsächlich ist deine Verwendung etwas sinnlos. Du hättest für das, was du tust, numpy nicht gebraucht, da du das mit np.arange(..) erzeugte numpy-array danach sofort in eine Liste umwandelst und mit dieser operierst. Mit list(range(2, 100000)) hättest du jedoch dasselbe erreicht. 
+Dein Code ist sehr kompliziert. Ich verstehe nicht ganz dein Vorgehen. Es scheint korrekte Lösungen auszugeben, aber ich kann den Code nicht gut nachvollziehen. 
+
+
+Mir gefallen die Kommentare gut: nicht zu viel, nicht zu wenig und an sinnvollen Stellen. Das Sieb hätte besser kommentiert werden können und du solltest allgemein bezeichnendere Variablennamen nutzen, das hast du teilwise aber auch schon gemacht. 
+
+Lukas 12
+* Sägezahn: 2
+* Balkendiagramm 1: 2
+* Balkendiagramm 2: 2 Da hier keine weiteren Spezifikationen zu dem geforderten Balkendiagrammplot angegeben wurden, ist die Aufgabe voll und ganz erfüllt. Aber irgendwie ist das Diagramm weird und die Benennung deiner Variablen trägt auch nicht grade zur Beseitung meiner Verwirrung bei. Es ist auf jeden Fall korrekt, aber seltsam.
+* Sinus-Funktion plotten: 2
+* Vollkommene Zahlen: 4

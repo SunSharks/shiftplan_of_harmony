@@ -15,8 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import TemplateView
+
+admin.site.site_header = 'Shiftplan'
+admin.site.site_title = 'Shiftplan'
+admin.site.index_title = 'Shiftplan'
 
 urlpatterns = [
+    path("accounts/", include("django.contrib.auth.urls")),
+    path('djaploda/', include('django_plotly_dash.urls')),
     path('defs/', include('defs.urls')),
+    path('prefs/', include('prefs.urls')),
+    path('charts/', include('charts.urls')),
     path('admin/', admin.site.urls),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]

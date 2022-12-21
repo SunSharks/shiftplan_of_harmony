@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from dash import dcc, html, ctx, MATCH, ALL
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 import plotly.express as px
 from plotly.offline import plot
@@ -88,6 +88,14 @@ def display_click_data(clickData):
                 ],
                 multi=False,
                 value=3
+            ),
+            html.Button(
+                id={
+                    'type': 'pref_inp_btn',
+                    'index': clickData["points"][0]["pointIndex"]
+                },
+                n_clicks=0,
+                children="Submit"
             )
         ])
         # return json.dumps(clickData, indent=2)
@@ -96,13 +104,15 @@ def display_click_data(clickData):
 
 @app.callback(
     Output('df_inp', 'value'),
-    Input({'type': 'pref_inp', 'index': ALL}, 'value'))
-def alter_data(pref_inp, *args, **kwargs):
-    try:
-        print(kwargs['callback_context'].triggered)
-        print("juuuu")
-    except LookupError:
-        print("ERROR")
+    Input({'type': 'pref_inp_btn', 'index': ALL}, 'n_clicks'),
+    State({'type': 'pref_inp', 'index': ALL}, 'value'),
+    State('df_inp', 'value'))
+def alter_data(n_clicks, pref_inp, df_inp, *args, **kwargs):
+    # try:
+    #     print(kwargs['callback_context'].triggered)
+    #     print("juuuu")
+    # except LookupError:
+    #     print("ERROR")
     # print(help(ctx))
     # ctx_msg = json.dumps({
     #     'states': ctx.states,
@@ -114,29 +124,47 @@ def alter_data(pref_inp, *args, **kwargs):
     # button_id = ctx.triggered_id if not None else 'No clicks yet'
     print(10*'_'+'\n')
     # print(ctx.triggered_id)
-    # print(button_id)
-    if pref_inp and kwargs['callback_context'].triggered != []:
+    # print(kwargs)
+    if pref_inp != None and kwargs['callback_context'].triggered != []:
         context_trigger = kwargs['callback_context'].triggered[0]
-        print(context_trigger['prop_id'])
-        print(json.loads(context_trigger['prop_id'].split('.')[0]))
+        # print(context_trigger['prop_id'])
+        # print(json.loads(context_trigger['prop_id'].split('.')[0]))
         trigg_id = json.loads(context_trigger['prop_id'].split('.')[0])['index']
-        print(trigg_id)
-        pref = context_trigger['value']
-        print(pref)
-        print(type(pref))
-        job_selected = trigg_id
+        # print(trigg_id)
+        # pref = context_trigger['value']
+        pref = pref_inp[0]
+        # print(pref)
+        # print(pref_inp)
+        
+        # print(type(pref))
         # print(job_selected)
         # print(kwargs)
         django_dash = kwargs["request"].session.get("django_dash")
-        print(django_dash)
-        df = pd.read_json(django_dash.get('df'))
-        print(df.iloc[2]["rating"])
+        # print(django_dash)
+        if df_inp == None:
+            print(10*'NONE DF_INP')
+            df = pd.read_json(django_dash.get('df'))
+        else:
+            df = pd.read_json(df_inp)
+            print(10*'DF_INP')
+        # print(df.iloc[2]["rating"])
         df.loc[df.index == trigg_id, 'rating'] = pref
-        print(df["rating"].iloc[2])
+        # print(df["rating"].iloc[2])
         # kwargs["request"].session.get("django_dash").get("df").set(df.to_json())
         # df_json = django_dash.get('df')
         # print(df_json)
         df_json = df.to_json()
+        # if pref <= 0 or pref > 5:
+        #     pref = pref_inp[0]
+        current_user = kwargs['user']
+        # user_job_rating = UserJobRating.objects.filter(user=current_user).values()
+        # print(user_job_rating)
+        ujr = UserJobRating.objects.get(job=trigg_id, user=current_user)
+        # Question.objects.get(pub_date__year=current_year)
+        print(ujr)
+        setattr(ujr, "rating", pref)
+        # ujr["rating"] = pref
+        ujr.save()
         return df_json
     
 

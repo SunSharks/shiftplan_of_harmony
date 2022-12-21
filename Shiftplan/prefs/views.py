@@ -21,7 +21,7 @@ class IndexView(generic.ListView):
 @login_required
 def chart_view(request, pk, **kwargs):
     current_user = request.user
-    print(current_user.id)
+    # print(current_user.id)
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
     jobtypes = Jobtype.objects.filter(shiftplan_id=pk)#.values_list('id', flat=True)
     # print(jobtypes)
@@ -38,19 +38,26 @@ def chart_view(request, pk, **kwargs):
     # print(df)
     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
-    df['during'] = df.end - df.begin
+    # df['during'] = df.end - df.begin
+    
     df['user_id'] = current_user.id
     try:
         print(df['rating'])
     except:
         df['rating'] = 3
-
+    user_job_rating = UserJobRating.objects.filter(user=current_user)
+    if len(user_job_rating) == 0:
+        for jt in jt_jobs:
+            for j in jt:
+                ujr = UserJobRating(user=current_user, job=j, rating=j.rating)
+                ujr.save()
+    
     # df = pd.DataFrame([
     #     dict(Task="Job A", Start='2009-01-01', Finish='2009-02-28', Resource="Alex"),
     #     dict(Task="Job B", Start='2009-03-05', Finish='2009-04-15', Resource="Alex"),
     #     dict(Task="Job C", Start='2009-02-20', Finish='2009-05-30', Resource="Max")
     #     ])
-    print(df)
+    # print(df)
     # set_df(df)
     context = {}
     dash_context = request.session.get("django_dash")

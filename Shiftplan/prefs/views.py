@@ -60,10 +60,10 @@ def chart_view(request, pk, **kwargs):
     # print(df)
     # set_df(df)
     context = {}
-    dash_context = request.session.get("django_dash")
+    # dash_context = request.session.get("django_dash")
     # print(dash_context)
-    dash_context['df'] = df.to_json()
-    request.session['django_dash'] = dash_context
+    # dash_context['df'] = df.to_json()
+    # request.session['django_dash'] = dash_context
     return render(request, 'prefs/chart.html', context)
 
 # class Tst:

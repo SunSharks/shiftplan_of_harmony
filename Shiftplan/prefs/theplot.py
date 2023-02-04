@@ -50,7 +50,7 @@ app.layout = html.Div([
 def generate_graph(df_inp, *args, **kwargs):
     # print(args)
     print(15*"-"+"generae_graph")
-    # print(kwargs)
+    print(kwargs)
     # print(kwargs["request"].session.get("django_dash"))
     if df_inp is None:
         django_dash = kwargs["request"].session.get("django_dash")
@@ -84,7 +84,7 @@ def display_click_data(clickData):
                     'index': clickData["points"][0]["pointIndex"]
                 },
                 options=[
-                    {'label': i, 'value': i}for i in RATES
+                    {'label': i, 'value': i} for i in RATES
                 ],
                 multi=False,
                 value=3

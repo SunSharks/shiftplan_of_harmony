@@ -24,7 +24,7 @@ styles = {
         'overflowY': 'show'
         }
     }
-app = DjangoDash('thechart')
+app = DjangoDash('thechart', add_bootstrap_links=True)
 app.layout = html.Div([
     dcc.Input(id='df_inp'),
     html.H1("Preferences", style={"text-align": "center"}),
@@ -43,14 +43,35 @@ app.layout = html.Div([
     dcc.Graph(id="chart_plot")
 ], style=styles['app'])
 
-
+# @dis.callback(
+#     dash.dependencies.Output("danger-alert", 'children'),
+#     [dash.dependencies.Input('update-button', 'n_clicks'),]
+#     )
+# def session_demo_danger_callback(n_clicks, session_state=None, **kwargs):
+#     if session_state is None:
+#         raise NotImplementedError("Cannot handle a missing session state")
+#     csf = session_state.get('bootstrap_demo_state', None)
+#     if not csf:
+#         csf = dict(clicks=0)
+#         session_state['bootstrap_demo_state'] = csf
+#     else:
+#         csf['clicks'] = n_clicks
+#     return "Button has been clicked %s times since the page was rendered" %n_clicks
 @app.callback(
     Output('chart_plot', 'figure'),
     [Input('df_inp', 'value')])
-def generate_graph(df_inp, *args, **kwargs):
+def generate_graph(df_inp, session_state=None, *args, **kwargs):
     # print(args)
     print(15*"-"+"generae_graph")
-    print(kwargs)
+    {print(k, kwargs[k]) for k in kwargs}
+    if session_state is None:
+        raise NotImplementedError("Cannot handle a missing session state")
+    csf = session_state.get('bootstrap_demo_state', None)
+    if not csf:
+        csf = dict(clicks=0)
+        session_state['bootstrap_demo_state'] = csf
+    else:
+        csf['df'] = df_inp
     # print(kwargs["request"].session.get("django_dash"))
     if df_inp is None:
         django_dash = kwargs["request"].session.get("django_dash")

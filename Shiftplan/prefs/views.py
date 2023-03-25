@@ -59,11 +59,19 @@ def chart_view(request, pk, **kwargs):
     #     ])
     # print(df)
     # set_df(df)
+    df = df.to_json()
+    session = request.session
+
+    djaploda = session.get('django_dash', {})
+
+    ndf = djaploda.get('df', df)
+    ndf = df
+    djaploda['df'] = ndf
+    session['django_dash'] = djaploda
+
+    # Use some of the information during template rendering
     context = {}
-    # dash_context = request.session.get("django_dash")
-    # print(dash_context)
-    # dash_context['df'] = df.to_json()
-    # request.session['django_dash'] = dash_context
+    print(5*'---\n')
     return render(request, 'prefs/chart.html', context)
 
 # class Tst:
@@ -80,7 +88,7 @@ def chart_view(request, pk, **kwargs):
 # tst = [Tst()]
 # df = pd.DataFrame([x.as_dict() for x in tst])
 
-    return render(request, 'prefs/chart.html', context)
+    # return render(request, 'prefs/chart.html', context)
     # answers = Answer.objects.filter(question_id=1).select_related() 
     # qs = Chart.objects.all()
     # projects_data = [

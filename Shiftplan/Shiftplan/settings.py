@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'defs',
     'charts',
     'prefs',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [

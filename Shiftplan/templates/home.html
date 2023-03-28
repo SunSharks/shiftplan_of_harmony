@@ -9,6 +9,7 @@
   Hi {{ user.username }}!
   <p><a href="{% url 'logout' %}">Log Out</a></p>
   <p><a href="{% url 'defs:index' %}">Shiftplan Definitions</a></p>
+  <p><a href="{% url 'prefs:index' %}">Preferences</a></p>
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a>

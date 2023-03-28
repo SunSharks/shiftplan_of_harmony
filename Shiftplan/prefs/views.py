@@ -2,7 +2,7 @@ import json
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 import pandas as pd
 
 from defs.models import Shiftplan, Jobtype, Job
@@ -20,7 +20,9 @@ class IndexView(generic.ListView):
 
 @login_required
 def chart_view(request, pk, **kwargs):
-    current_user = request.user
+    # request.session.flush()
+
+    current_user = request.user if type(request.user) is not AnonymousUser else None
     # print(current_user.id)
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
     jobtypes = Jobtype.objects.filter(shiftplan_id=pk)#.values_list('id', flat=True)
@@ -31,11 +33,16 @@ def chart_view(request, pk, **kwargs):
     for jt, j_qs in zip(jobtypes, jt_jobs):
         for j in j_qs:
             d = jt.as_dict()
-            d.update(j.as_dict())
+            j_dict = j.as_dict()
+            j_dict["db_idx"] = j.id
+            d.update(j_dict)
             l.append(d)
     df = pd.DataFrame(l)
-    # print(l)
-    # print(df)
+    print(l)
+    print(50*'+')
+    # df.index = [j.id for j in Job.objects.all()]
+    # df.reset_index()
+    print(df)
     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
     # df['during'] = df.end - df.begin
@@ -45,7 +52,11 @@ def chart_view(request, pk, **kwargs):
         print(df['rating'])
     except:
         df['rating'] = 3
-    user_job_rating = UserJobRating.objects.filter(user=current_user)
+    try:
+        user_job_rating = UserJobRating.objects.filter(user=current_user)
+        print("user_job_rating ", user_job_rating)
+    except UserJobRating.DoesNotExist:
+        user_job_rating = []
     if len(user_job_rating) == 0:
         for jt in jt_jobs:
             for j in jt:

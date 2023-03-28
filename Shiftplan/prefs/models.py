@@ -9,7 +9,19 @@ from defs.models import Shiftplan, Jobtype, Job
 class UserJobRating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=3)
+    rating = models.IntegerField(default=3, blank=True, null=True)
+
+    def __str__(self):
+        s = "user: {} job: {} rating: {}".format(self.user, self.job, self.rating)
+        return s
+
+    def as_dict(self):
+        return {'user': self.user, 'job': self.job, 'rating': self.rating}
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "job"]),
+        ]
 # class Chart(models.Model):
 #     name = models.CharField(max_length=200) 
 #     start_date = models.DateField()

@@ -36,7 +36,7 @@ def regain_integrity(shiftplan_id, user):
     jobs = Job.objects.all()
     for j in jobs:
         ujr = UserJobRating.objects.filter(user=user, job=j)
-        print(ujr)
+        # print(ujr)
         if len(ujr) == 0:
             n_ujr = UserJobRating(user=user, job=j, rating=j.rating)
             n_ujr.save()
@@ -75,8 +75,14 @@ def chart_view(request, pk, **kwargs):
     print(df)
     # df.index = [j.id for j in Job.objects.all()]
     # df.reset_index()
-    df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
-    df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    # df_transactions['date'] = pd.to_datetime(df_transactions['date'])
+    # df_transactions['date'] = pd.to_datetime(df_transactions['date'].dt.strftime(format='%d-%m-%Y'))
+    # df['begin_date'] = pd.to_datetime(df['begin_date'], format="%Y-%m-%d")
+    # df['end_date'] = pd.to_datetime(df['end'], format="%Y-%m-%d")
+    # df['begin_time'] = pd.to_datetime(df['begin_date'], format=" %H:%M:%S")
+    # df['end_time'] = pd.to_datetime(df['end_date'], format=" %H:%M:%S")
+    df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
+    df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
     # df['during'] = df.end - df.begin
     
     # df['user_id'] = current_user.id
@@ -102,7 +108,12 @@ def chart_view(request, pk, **kwargs):
     #     ])
     # print(df)
     # set_df(df)
+    print("CONVERT TO JSON")
+    df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    print(df)
     df = df.to_json()
+    print(df)
     session = request.session
     djaploda = session.get('django_dash', {})
     ndf = djaploda.get('df', df)

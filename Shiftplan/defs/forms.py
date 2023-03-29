@@ -2,10 +2,13 @@ from django import forms
 from django.forms.models import inlineformset_factory
 
 from .models import Shiftplan, Jobtype, Job, TimeInterval
-
+from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
 
 # class RenewShiftplanForm(forms.Form):
 #     new_name = forms.CharField(help_text="Enter a new name.")
+
+
+
 
 class TimeIntervalForm(forms.ModelForm):
     class Meta:
@@ -29,9 +32,17 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = (
-            'begin',
-            'end'
+            'begin_date',
+            'end_date',
+            'begin_time',
+            'end_time'
         )
+        widgets = {
+            'begin_date': DatePickerInput(),
+            'end_date': DatePickerInput(),
+            'begin_time': TimePickerInput(),
+            'end_time': TimePickerInput(),
+        }
 
 
 TimeFormSet = inlineformset_factory(

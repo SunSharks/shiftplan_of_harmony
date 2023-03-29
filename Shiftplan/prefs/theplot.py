@@ -46,18 +46,6 @@ app.layout = html.Div([
     Output('chart_plot', 'figure'),
     [Input('df_inp', 'value')])
 def generate_graph(df_inp, session_state=None, *args, **kwargs):
-    # print(args)
-    # print(15*"-"+"generae_graph")
-    # {print(k, kwargs[k]) for k in kwargs}
-    # if session_state is None:
-    #     raise NotImplementedError("Cannot handle a missing session state")
-    # csf = session_state.get('django_dash_df', None)
-    # if not csf:
-    #     csf = dict(clicks=0)
-    #     session_state['bootstrap_demo_state'] = csf
-    # else:
-    #     csf['df'] = df_inp
-    # print(kwargs["request"].session.get("django_dash"))
     if df_inp is None:
         django_dash = kwargs["request"].session.get("django_dash")
         df = pd.read_json(django_dash.get('df'))
@@ -68,11 +56,7 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
         df = pd.read_json(df_inp)
         df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
         df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
-        # print("df_inp NOT none")
-    # user = kwargs['user']    
-    # df.index = [j.id for j in Job.objects.all()]
-    # df.reset_index()
-    print("generae_graph", df)
+    # print("generae_graph", df)
     dff = df.copy()
     fig = chart_plot(dff)
     fig.update_layout(clickmode='event+select')
@@ -84,8 +68,9 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
     Input('chart_plot', 'clickData'))
 def display_click_data(clickData):
     if clickData:
+        print(clickData)
         pref_inp = html.Div([
-            html.P('triggered index: {}'.format(clickData["points"][0]["pointIndex"])),
+            html.P('Rate job: {name}'.format(name=clickData["points"][0]["label"])),
             dcc.Dropdown(
                 id={
                     'type': 'pref_inp',
@@ -94,16 +79,22 @@ def display_click_data(clickData):
                 options=[
                     {'label': i, 'value': i} for i in RATES
                 ],
-                multi=False
+                multi=False,
+                clearable=False,
+                style={'width': '49%', "position": "relative"},
+                maxHeight=500,
+                className="dropdown_row"
             ),
             html.Button(
                 id={
                     'type': 'pref_inp_btn',
                     'index': clickData["points"][0]["pointIndex"]
                 },
-                children="Submit"
-            )
-        ])
+                children="Submit",
+                style={"position": "relative", "display": "inline-block"}
+                )
+
+        ], style={'display': 'inline', "height": "80%"})
         # return json.dumps(clickData, indent=2)
         return pref_inp
 
@@ -112,19 +103,7 @@ def display_click_data(clickData):
     Output('df_inp', 'value'),
     Input({'type': 'pref_inp_btn', 'index': ALL}, 'n_clicks'),
     State({'type': 'pref_inp', 'index': ALL}, 'value'))
-def alter_data(pref_inp_btn, pref_inp, session_state=None, *args, **kwargs):
-    # print("df_inp: ", df_inp)
-    print("pref_inp_btn ", pref_inp_btn)
-    print("pref_inp ", pref_inp)
-    # print("pref_inp_btn ", pref_inp_btn)
-    # if session_state is None:
-    #     raise NotImplementedError("Cannot handle a missing session state")
-    # csf = session_state.get('df', None)
-    # if not csf:
-    #     csf = dict(clicks=0)
-    #     session_state['bootstrap_demo_state'] = csf
-    # else:
-    #     csf['df'] = df_inp
+def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
     django_dash = kwargs["request"].session.get("django_dash")
     if pref_inp != [None] and kwargs['callback_context'].triggered != []:
         pref = int(pref_inp[0])
@@ -155,6 +134,7 @@ def alter_data(pref_inp_btn, pref_inp, session_state=None, *args, **kwargs):
     
 
 def chart_plot(df):
+    print(df)
     tl = px.timeline(
         df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5)
     # fig = px.bar(df, x='during', y='name', color='name')
@@ -195,4 +175,6 @@ def generate_df(user):
         d.update(jobtype)
         l.append(d)
     df = pd.DataFrame(l)
+    df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
+    df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
     return df

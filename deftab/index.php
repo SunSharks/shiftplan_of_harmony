@@ -14,6 +14,80 @@ if (!empty($_GET)){
     exit;
   }
 }
+// =============================================================================
+// Texts
+$add_job_btn_txt = "Add new jobtype.";
+$logout_txt = "logout";
+$edit_existing_jobs_txt = "Bearbeiten bereits in der Datenbank befindlicher Schichten.";
+$prio_link_txt = "Zur Präferenzeneingabe.";
+$tab_link_txt = "Bestätigen und zur Schichttabelle.";
+if(file_exists('texts.php')){
+    include 'texts.php';
+  }
+
+function get_daybox_html_readonly($id, $dayname, $date){
+  $html = "<div id='daybox$id' class='daybox'>
+  <div id='day_label$id' class='inner_daybox'>
+  <label for='day$id'>$dayname</label>
+  </div>
+  <div id='day$id' class='inner_daybox'>
+  <input type='date' name='PREday$id' id='day$id' value='$date' readonly>
+  </div>
+  </div>";
+  return $html;
+}
+
+function get_daybox_html($id){
+  $html = "<div id='daybox$id' class='daybox'> <input type='text' name='day$id' id='day$id' value=''></div> ";
+  return $html;
+}
+
+function insert_daybox_html($id){
+  $html = get_daybox_html($id);
+  $day_cnt++;
+  // printf($html);
+}
+
+function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
+  if ($helper){
+    $checked = "checked";
+    $helper = "Helper";
+    $style = "style='background:rgb(188, 100, 153)'";
+    $divstyle = ";border:2px solid #e2001e;border-radius:5px";
+  }
+  else{
+    $checked = "";
+    $helper = "";
+    $style = "";
+    $divstyle = "";
+  }
+  if ($special){
+    $special = "sensibel";
+    $specialchecked = "checked";
+    $specialstyle = "";
+  }
+  else{
+    $special = "";
+    $specialchecked = "";
+    $specialstyle = "";
+  }
+  $html = "<div class='outerjobbox' title='$infotext' style='height:fit-content;margin:8px;padding:8px'>
+<p id='jobpar'>
+<div id='jobbox$id' class='jobbox'>
+<input type='text' name='job$id' id='job$id' accept-charset='utf-8' value='$jobname' readonly></div>
+<div class='jobbox'>
+<input type='checkbox' class='jobbox' id='helper$id' name='helper$id' onclick='return false;' value='helper$id' $checked></div>
+<div class='jobbox'>
+<label for='checkbox' $style name='helper_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
+<div class='jobbox'>
+<input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $specialchecked></div>
+<div class='jobbox'>
+<label for='checkbox' $specialstyle name='special_label$id' onclick='return false;' id='cb_label$id'>$special</label></div>
+<div class='jobbox'>
+<input name='PREjob$id' type=hidden></div></p></div>";
+  $job_cnt++;
+  return $html;
+}
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +97,7 @@ if (!empty($_GET)){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="icon" type="image/x-icon" href="../images/fl_logo.png"> -->
   <title>schedule definition</title>
   <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -49,14 +124,21 @@ if (!empty($_GET)){
       <button class="logbtn">logout</button>
     </a>
     <a href="edit_existing_jobs.php">
-      <button class="logbtn">Bearbeiten bereits in der Datenbank befindlicher Schichten.</button>
+      <button class="logbtn"><?php echo "$edit_existing_jobs_txt";?></button>
     </a>
   </div>
-  <h1>Definitionen</h1>
+  <h1>Definition des Schichtplanes</h1>
+  <div class="mantxt">
+    <?php
+    if(file_exists('_indexmantxt.txt')){
+        include '_indexmantxt.txt';
+      }
+      ?>
+  </div>
   <div id="definition">
     <form action="tab.php"  method="get">
       <div id="inform">
-        <div class="day">
+        <span class="day">
           <!-- Fetch predefined days. -->
           <?php
             $_SESSION["days"] = fetch_it(get_days_sql());
@@ -69,9 +151,9 @@ if (!empty($_GET)){
             }
           ?>
           <script> set_days(<?php echo json_encode($_SESSION["days"]).", ".$max_dayid; ?>);</script>
-          <div id="add_day"><button id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>
-          <div id="del_day"><button id="del_day_btn" type="button" onclick="delete_daybox();">-</button><br></div>
-        </div>
+          <div id="add_day"><button class="funcbtn" id="add_day_btn" type="button" onclick="create_daybox();">+</button></div>
+          <div id="del_day"><button class="funcbtn" id="del_day_btn" type="button" onclick="delete_daybox();">-</button><br></div>
+        </span>
 
         <div id="job">
           <!-- Fetch predefined jobtypes. LANG!-->
@@ -94,17 +176,15 @@ if (!empty($_GET)){
           </div>
           <div id="add_job">
             <!-- LANG! -->
-            <p>Klicke auf den Button "Neue Tätigkeit", um ein Eingabefeld für die neue Tätigkeit erscheinen zu lassen.
+            <p>Klicke auf den Button "<?php echo "$add_job_btn_txt";?>", um ein Eingabefeld für die neue Tätigkeit erscheinen zu lassen.
                 In das Textfeld gib bitte den Namen der Schicht ein. Setze einen Haken in die entsprechende Checkbox, falls die neue Schicht für Helfende bzw. sensibel ist. </p>
-            <button id="add_job_btn" type="button" onclick="create_jobbox();">Neue Tätigkeit</button>
-            <!-- <br> -->
-            <!-- <div id="new_j"></div> -->
+            <button class="funcbtn" id="add_job_btn" type="button" onclick="create_jobbox();"><?php echo "$add_job_btn_txt";?></button>
           </div>
         </div>
         <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
-            <input id="submitdivbtn" type="submit" value="Bestätigen und zur Schichttabelle.">
+            <input id="submitdivbtn" type="submit" value="<?php echo "$tab_link_txt";?>">
           </p>
         </div>
       </div>
@@ -112,7 +192,7 @@ if (!empty($_GET)){
   </div>
   <div id="prio_link">
     <a href="../crew_prios/index.php">
-      <button class="logbtn">Zur Präferenzeneingabe. </button>
+      <button class="logbtn"><?php echo "$prio_link_txt";?></button>
     </a>
   </div>
   <div class="enddiv">

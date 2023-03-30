@@ -15,7 +15,11 @@ session_start();
 <?php
 include("db.php");
 regain_integrity();
-
+$names_db = fetch_it(get_names_sql());
+$full_names = [];
+for ($i=0; $i<count($names_db); $i++){
+  array_push($full_names, $names_db[$i]["surname"]." ".$names_db[$i]["famname"]);
+}
 $nicknames_db = fetch_it(get_nicknames_sql());
 $nicknames = [];
 for ($i=0; $i<count($nicknames_db); $i++){
@@ -51,13 +55,10 @@ if (isset($_POST["fullname"])){
       </p>
     </div>";
       printf($suc_txt);
-      header('Location: login.php');
-      exit;
     }
     else{
       $alert = "Du bist bereits registriert.";
       echo "<script>alert('$alert');</script>";
-      header('Location: index.php');
     }
   }
 }
@@ -120,15 +121,14 @@ button {
       <p>Herzlich Willkommen. <br>
         Vielen Dank für deine Bereitschaft, uns zu unterstützen.
         Damit niemand anderes deine Präferenzen einsehen oder verändern kann, teile bitte dem Programm mit, wer du bist und setze ein Passwort.
-        Optional kannst du ebenfalls eine E-Mail setzen, damit du unkompliziert und schnell dein Passwort zurücksetzen kannst, falls du es vergessen hast.
-        Optional kannst du dir auch einen Spitznamen geben, mit dem du dich künftig einloggen kannst und der dann auch dem Rest der Crew angezeigt wird.
+        Optional kannst du dir auch einen Spitznamen geben, mit dem du dich künftig einloggen kannst und der dann auch überall angezeigt wird.
         Dieser muss einzigartig sein.
       </p>
       <hr>
-
-      <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
+      <label for="fullname"><b>Dein Name (dein uns bekannter Vor- und Familienname.)</b></label>   <!-- LANG! -->
     <?php
-      $s = "<input type='text' placeholder='Dein Name' name='fullname' accept-charset='utf-8' required>";
+      $regex_fn = join("|", $full_names);
+      $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' title='Bitte gib denselben Namen an, die du für die Anmeldung benutzt hast.' name='fullname' accept-charset='utf-8' required>";
       printf($s);
       ?>
       <label for="nickname"><b>Spitzname</b></label>  <!-- LANG! -->
@@ -139,6 +139,8 @@ button {
         $s = "<input type='text' pattern='$regex_nn' placeholder='[optional] Spitzname' name='nickname' accept-charset='utf-8'>"; //<!-- LANG! -->
         printf($s);
         ?>
+      <label for="email"><b>E-Mail</b></label>
+      <input type="text" placeholder="Deine Mailadresse" name="email">  <!-- LANG! -->
 
       <label for="psw"><b>Passwort</b></label>  <!-- LANG! -->
       <!-- $name, $pw, $nickname, $email -->
@@ -147,8 +149,6 @@ button {
       <label for="psw-repeat"><b>Zur Sicherheit nochmal das Passwort</b></label>
       <input type="password" placeholder="Repeat Password" name="psw-repeat" accept-charset="utf-8" required>
 
-      <label for="email"><b>E-Mail</b></label>
-      <input type="text" placeholder="[optional] Deine Mailadresse" name="email">  <!-- LANG! -->
 
       <!-- <label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me

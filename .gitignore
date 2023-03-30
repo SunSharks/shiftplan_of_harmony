@@ -6,3 +6,6 @@ _*
 *.cip
 .env
 *playground*
+helper_sol/
+crew_sol/
+test.py

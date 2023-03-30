@@ -1,0 +1,21 @@
+<p>
+Welcome,<br>
+there are <?php echo $jobs_count;?> shifts that has to be assigned to a person, that are in total <?php echo $work_hours_sum;?> hours.
+Currently there are <?php echo $num_persons;?> persons. That means in average <?php echo $work_hours_avg;?> working hours per person.
+Currently there are <?php echo $num_registered_users;?> registered users. <br>
+This program lets you rate each shift according your individual preferences. <br>
+An optimization program will then search for the best possible shift distribution for everyone. If the number of shifts to be assigned does not divide the number of people without a remainder, there will be people who will be assigned more shifts than others. However, which persons get assigned how many shifts cannot be influenced by the individual preference specification.
+Thus, an overall particularly poor evaluation of everyone will not result in fewer shifts being assigned, but only in the result being less satisfactory because no real trade-off has been made.
+The best strategy for a result that is as satisfactory as possible for everyone is therefore simply to evaluate the shifts honestly.
+ <br>
+</p>
+<p>
+<h2>Usage</h2>
+In the input fields for each layer, put an integer from 1 to 5 representing the preference for that layer. <br>
+<ul>
+  <li><strong>1</strong> means that you would love to take this shift.</li>
+  <li><strong>5</strong> means that you definitely do not want to take this shift.</li>
+</ul>
+You can mark shifts with the conspicuously colored buttons in the upper part of each shift entry. If you enter a value in a marked layer, this value will be taken over for all marked layers.
+All selections can be reset with "Unselect All".
+</p>

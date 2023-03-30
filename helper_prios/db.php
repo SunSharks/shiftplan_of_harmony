@@ -1,3 +1,25 @@
+<?php
+// Start the session
+session_start();
+$_SESSION["src"] = "helper_prios/index.php";
+// if(!isset($_SESSION['helper'])){
+//   header('Location: login.php?src=helper_prios/index.php');
+//   exit;
+// }
+// if (!empty($_GET)){
+//   if (isset($_GET["log"])){
+//     if ($_GET["log"] === "out"){
+//       unset($_SESSION['helper']);
+//
+//       unset($_SESSION["prios"]);
+//       header('Location: login.php?src=../helper_prios/index.php&log=out');
+//       exit;
+//     }
+//   }
+// }
+$name_id = $_SESSION["helper"]["fullname_id"];
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -7,6 +29,11 @@
 </head>
 <body>
 <?php
+if (!function_exists('str_starts_with')) {
+  function str_starts_with($str, $start) {
+    return (@substr_compare($str, $start, 0, strlen($start))==0);
+  }
+}
 include("../db/db_base.php");
 
 // =============================================================================
@@ -18,13 +45,13 @@ function get_days_sql(){
 
 function get_jobtypes_sql($helper='all'){
   if ($helper === 'all'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes ORDER BY name;";
   }
   else if ($helper === 'true'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1 ORDER BY name;";
   }
   else if ($helper === 'false'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0";
+    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0 ORDER BY name;";
   }
 }
 
@@ -69,32 +96,31 @@ function get_helpers_sql(){
   return "SELECT * FROM Helpers";
 }
 
+function get_names_sql(){
+  return "SELECT * from Names WHERE helper=1;";
+}
+
 function get_name_id_sql($name){
-  $surname = explode(" ", $name, 2)[0];
-  $famname = explode(" ", $name, 2)[1];
+  $surname = join(" ", array_slice(explode(" ", $name), 0, -1));
+  $famname = end(explode(" ", $name));
   return "SELECT id from Names WHERE Names.surname = '$surname' AND Names.famname = '$famname'";
 }
 
+function get_registered_name_ids_sql(){
+  return "SELECT id FROM Names WHERE registered = true";
+}
+
 function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
-//   CREATE TABLE Names (
-//   id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//   surname    VARCHAR(255)     NOT NULL,
-//   famname    VARCHAR(255)     NOT NULL,
-//   registered BOOLEAN          NULL DEFAULT 0,
-//   helper     BOOLEAN          NOT NULL DEFAULT 0
-// );
-// CREATE TABLE Helpers (
-//   id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//   fullname_id  INT                NOT NULL,
-//   pw           VARCHAR(255)       NOT NULL,
-//   nickname     VARCHAR(255)       NOT NULL UNIQUE,
-//   email        VARCHAR(255)       NULL,
-//   ticketnumber INT                NULL,
-//   workload     INT                NOT NULL DEFAULT 4
-// );
-  $explode_name = explode(" ", $name, 2);
-  $namesql = "INSERT INTO Names (surname, famname, helper) VALUES ('$explode_name[0]', '$explode_name[1]', true);";
-  perform($namesql);
+  $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
+  $registered_ids = fetch_it(get_registered_name_ids_sql());
+  for ($i=0; $i<count($registered_ids); $i++){
+    if ($registered_ids[$i]["id"] === $name_id){
+      return "INDB";
+    }
+  }
+  // $explode_name = explode(" ", $name, 2);
+  // $namesql = "INSERT INTO Names (surname, famname, helper) VALUES ('$explode_name[0]', '$explode_name[1]', true);";
+  // perform($namesql);
   // echo "$namesql";
   $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   // echo "$name_id";
@@ -108,7 +134,8 @@ function insert_helper_sql($name, $pw, $nickname, $email, $workload=4){
   }
   $ret = $ret . ";" . set_name_registered_sql($name_id);
   $ret = $ret . ";" . initial_prio_insert_sql($name_id);
-  // echo $ret;
+  echo $ret;
+  echo $name;
   return $ret;
 }
 
@@ -117,7 +144,24 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
-  return "INSERT INTO Preferences (name_id) VALUES ($name_id)";
+  // $name_id = $_SESSION["helper"]["fullname_id"];
+  $sql = "INSERT INTO Preferences (name_id";
+  $valsql = " VALUES ($name_id";
+  $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=1)");
+  $unspecial_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=1 AND special=0)");
+  foreach ($special_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 5";
+  }
+  foreach ($unspecial_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 3";
+  }
+  $sql .= ") ";
+  $valsql .= ");";
+  return $sql . $valsql;
 }
 
 function get_prios_sql($name_id){
@@ -134,8 +178,10 @@ function get_prios_sql($name_id){
 // ;
 
 function insert_prios_sql($prioinps){
+  $name_id = $_SESSION["helper"]["fullname_id"];
+  // printf(json_encode($_SESSION["helper"]));
   $sql1 = "UPDATE Preferences SET ";
-  $sql2 = " WHERE name_id = ";
+  $sql2 = " WHERE name_id = $name_id";
   $endsql = ";";
   $workloadsql = "";
   $breaksql = "";
@@ -143,12 +189,12 @@ function insert_prios_sql($prioinps){
   // $prioinps["username"] = $userid;
   foreach ($prioinps as $key=>$val){
     // echo "$key => $val <br>";
-    if ($key === "name_id"){
-      // $sql1 .= " name_id = $val,";
-      $sql2 .= "$val";
-      $name_id = $val;
-    }
-    else if ($key === "workload" && !empty($val)){
+    // if ($key === "name_id"){
+    //   // $sql1 .= " name_id = $val,";
+    //   $sql2 .= "$val";
+    //   $name_id = $val;
+    // }
+   if ($key === "workload" && !empty($val)){
       $workloadsql = "UPDATE Helpers SET workload = $val WHERE fullname_id = ";
     }
     else if (str_starts_with($key, "prioinp")){
@@ -162,7 +208,7 @@ function insert_prios_sql($prioinps){
     }
   }
   if (!empty($workloadsql)){
-    $workloadsql .= "$nameid;";
+    $workloadsql .= "$name_id;";
   }
   if (!empty($breaksql)){
     $breaksql .= "$name_id;";

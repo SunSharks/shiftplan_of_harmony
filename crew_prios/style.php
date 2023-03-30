@@ -14,6 +14,14 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
   table-layout: fixed;
 } -->
 
+body {
+  background: rgba(230, 220, 220, 0.79);
+  padding: 20px;
+  margin: 0px;
+  block-size: fit-content;
+  overflow: scroll;
+}
+
 table {
   margin-left: 100px;
   table-layout: fixed;
@@ -41,6 +49,7 @@ div {
   overflow-x: visible;
   padding: 0;
 }
+
 .rowhead {
   background-color: rgba(134, 180, 105, 0.57);
   position: absolute;
@@ -71,13 +80,25 @@ div {
         min-width: 50px;
     } -->
 
-.prios {
+#prios {
   <!-- display: grid;
   grid-template-rows: <?=$grid_template_rows?>;
   grid-template-columns: <?=$grid_template_columns?>; -->
   background-color: #2196F3;
   padding: 10px;
+  width: 100%;
   overflow: auto;
+}
+
+[id^="prioinp"]{
+  background-color: #ffffff;
+  color: #000000;
+}
+
+[id^="prioinp"]:readonly {
+  border: 1px solid #999999;
+  background-color: #aaaaaa;
+  color: #000000';
 }
 
 .selbtn {
@@ -86,7 +107,13 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(0,255,0);
+  background-color: rgb(0,200,0);
+}
+
+.selbtn:disabled {
+  border: 1px solid #999999;
+  background-color: #aaaaaa;
+  color: #000000';
 }
 
 .unselbtn {
@@ -95,7 +122,7 @@ div {
   height: 90%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
 }
 
 .prioselbut {
@@ -104,7 +131,7 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(0,255,0);
+  background-color: rgb(0,200,0);
 }
 .priounselbut {
   padding: 0;
@@ -112,9 +139,50 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
+}
+
+#submitdiv {
+  width: fit-content;
+  position: absolute;
+  align: center;
+  margin: 20px;
+  padding:10px;
+  height: 20px;
 }
 
 #submitdivbtn {
   width: fit-content;
+  position: absolute;
+  margin: 20px;
+  height: 40px;
+  padding:10px;
+  display: inline;
+}
+
+#unselall {
+  margin: 20px;
+  width: 50%;
+  align: center;
+  position: absolute;
+  padding:10px;
+  height: 40px;
+  display: inline;
+}
+
+#breakinp {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  display: inline-block;
+  border: 2px solid green;
+  box-sizing: border-box;
+}
+
+#breakdiv{
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  border: 2px solid green;
+  box-sizing: border-box;
 }

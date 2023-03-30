@@ -5,9 +5,13 @@ if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
 }
 if(isset($_SESSION['user'])){
-  $src = $_SESSION["src"];
-  header("Location: $src");
-  exit;
+  echo "Du bist bereits eingeloggt. ";
+  echo "<a href=../crew_prios/index.php>
+    <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
+  </a>";
+  // $src = $_SESSION["src"];
+  // header("Location: https://". $_SERVER["HTTP_HOST"] ."/crew_prios/index.php");
+  // exit;
 }
 ?>
 
@@ -28,50 +32,6 @@ $_SESSION["jts"] = fetch_it(get_jobtypes_sql());
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
  ?>
 <!-- <link rel="stylesheet" type="text/css" href="style.php"> -->
-<?php
-if (isset($_POST["username"])){
-  // printf(json_encode($_POST));
-  $users_db = fetch_it(get_users_sql());
-  // printf(json_encode($users_db));
-  $usernames = array();
-  for ($i=0; $i<count($users_db); $i++){
-    $usernames[$users_db[$i]["nickname"]] = $users_db[$i];
-    // if ()
-  }
-  if (!array_key_exists($_POST["username"], $usernames)){
-    $n = $_POST["username"];
-    $alert = "User $n wurde nicht gefunden."; // LANG!
-    echo "<script>alert('$alert');</script>";
-  }
-  else{
-    $user = $usernames[$_POST["username"]];
-    if (password_verify($_POST["password"], $user['pw'])){
-      /* The password is correct. */
-      $login = true;
-      $_SESSION["user"] = $user;
-      $suc_txt = "<div id='suc_text'>
-        <p>
-        Hallo $nickname.
-          Du wurdest erfolgreich eingeloggt.
-      </p>
-    </div>";
-      printf($suc_txt);
-      header('Location: login.php');
-      exit;
-    }
-    else{
-      $fail_txt = "<div id='suc_text'>
-        <p>
-        Das hat nicht geklappt.
-      </p>
-    </div>";
-      printf("$fail_txt");
-    }
-  }
-}
-
-?>
-
 <style>
 Body {
   font-family: Calibri, Helvetica, sans-serif;
@@ -112,6 +72,57 @@ button {
         background-color: lightblue;
     }
 </style>
+<?php
+if (isset($_POST["username"])){
+  // printf(json_encode($_POST));
+  $users_db = fetch_it(get_users_sql());
+  // printf(json_encode($users_db));
+  $usernames = array();
+  for ($i=0; $i<count($users_db); $i++){
+    $usernames[$users_db[$i]["nickname"]] = $users_db[$i];
+    // if ()
+  }
+  if (!array_key_exists($_POST["username"], $usernames)){
+    $n = $_POST["username"];
+    $alert = "User $n wurde nicht gefunden."; // LANG!
+    echo "<script>alert('$alert');</script>";
+  }
+  else{
+    $user = $usernames[$_POST["username"]];
+    if (password_verify($_POST["password"], $user['pw'])){
+      /* The password is correct. */
+      $login = true;
+      $_SESSION["user"] = $user;
+      $_SESSION["access_jobs"] = get_persons_exclusive_access($_SESSION["user"]["fullname_id"]);
+      $name = $user["nickname"];
+      $suc_txt = "<div id='suc_text'>
+        <p>
+        Hallo $name.
+          Du wurdest erfolgreich eingeloggt.
+      </p>
+    </div>";
+      printf($suc_txt);
+      echo "<a href=../crew_prios/index.php>
+        <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
+      </a>";
+      // $src = $_SESSION["src"];
+      // header("Location: https://".$_SERVER["HTTP_HOST"]."/users/login.php");
+      // exit;
+    }
+    else{
+      $fail_txt = "<div id='suc_text'>
+        <p>
+        Das hat nicht geklappt.
+      </p>
+    </div>";
+      printf("$fail_txt");
+    }
+  }
+}
+
+?>
+
+
 </head>
 
 
@@ -125,8 +136,9 @@ button {
   <h1>Login</h1>
     <form action="login.php" method="post" style="border:1px solid #ccc">
      <div class="container">
+       <!-- LANG! -->
          <label>Username : </label>
-         <input type="text" placeholder="Enter Username" name="username" required>
+         <input type="text" placeholder="Enter Username" name="username" title="Falls du einen Spitznamen angegeben hast, ist es der, falls nicht, ist es einfach dein Vor- und Nachname (unter Beachtung von Groß-/Kleinschreibung und mit Leerzeichen getrennt)." required>
          <label>Password : </label>
          <input type="password" placeholder="Enter Password" name="password" required>
          <button type="submit">Login</button>

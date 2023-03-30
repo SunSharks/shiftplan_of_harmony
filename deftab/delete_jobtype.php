@@ -3,14 +3,14 @@
 session_start();
 $_SESSION["src"] = "../deftab/edit_existing_jobs.php";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/login.php?src=../deftab/edit_existing_jobs.php');
+  header('Location: ../users/logout.php?src=../deftab/index.php');
   exit;
 }
 if (!empty($_GET)){
   if ($_GET["log"] === "out"){
     unset($_SESSION['user']);
     // printf(json_encode($_SESSION["user"]));
-    header('Location: ../users/login.php?src=../deftab/index.php');
+    header('Location: ../users/logout.php?src=../deftab/index.php&log=out');
     exit;
   }
 }
@@ -22,6 +22,7 @@ if (!empty($_GET)){
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="icon" type="image/x-icon" href="../images/fl_logo.png"> -->
   <link rel="stylesheet" type="text/css" href="tabstyle.css">
 
   <title>delete jobtype</title>

@@ -8,10 +8,6 @@
 <body>
 <?php
 include("../db/db_base.php");
-$day_order = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
-$day_cnt = 0;
-// $days = [];
-$job_cnt = 0;
 
 function get_days_sql(){
   $ret = "SELECT * FROM Days ORDER BY date ASC";
@@ -107,70 +103,6 @@ function insert_job_sql($job_json){
     return "";
   }
     return "INSERT INTO Jobs (abs_start, abs_end, during, start_day_id, end_day_id, dt_start, dt_end, jt_primary) VALUES ($job_json->start, $job_json->end, $job_json->during, $job_json->start_day_id, $job_json->end_day_id, $job_json->dt_start, $job_json->dt_end, $job_json->jobtype_id)";
-}
-
-function get_daybox_html_readonly($id, $dayname, $date){
-  $html = "<div id='daybox$id' class='daybox'>
-  <div id='day_label$id' class='inner_daybox'>
-  <label for='day$id'>$dayname</label>
-  </div>
-  <div id='day$id' class='inner_daybox'>
-  <input type='date' name='PREday$id' id='day$id' value='$date' readonly>
-  </div>
-  </div>";
-  return $html;
-}
-
-function get_daybox_html($id){
-  $html = "<div id='daybox$id' class='daybox'> <input type='text' name='day$id' id='day$id' value=''></div> ";
-  return $html;
-}
-
-function insert_daybox_html($id){
-  $html = get_daybox_html($id);
-  $day_cnt++;
-  // printf($html);
-}
-
-function get_jobbox_html($id, $jobname, $helper, $infotext, $special){
-  if ($helper){
-    $checked = "checked";
-    $helper = "Helper";
-    $style = "style='background:rgb(188, 100, 153)'";
-    $divstyle = ";border:2px solid #e2001e;border-radius:5px";
-  }
-  else{
-    $checked = "";
-    $helper = "";
-    $style = "";
-    $divstyle = "";
-  }
-  if ($special){
-    $special = "sensibel";
-    $specialchecked = "checked";
-    $specialstyle = "";
-  }
-  else{
-    $special = "";
-    $specialchecked = "";
-    $specialstyle = "";
-  }
-  $html = "<div class='outerjobbox' title='$infotext' style='height:fit-content;margin:8px;padding:8px'>
-<p id='jobpar'>
-<div id='jobbox$id' class='jobbox'>
-<input type='text' name='job$id' id='job$id' accept-charset='utf-8' value='$jobname' readonly></div>
-<div class='jobbox'>
-<input type='checkbox' class='jobbox' id='helper$id' name='helper$id' onclick='return false;' value='helper$id' $checked></div>
-<div class='jobbox'>
-<label for='checkbox' $style name='helper_label$id' onclick='return false;' id='cb_label$id'>$helper</label></div>
-<div class='jobbox'>
-<input type='checkbox' class='jobbox' id='special$id' name='special$id' onclick='return false;' value='special$id' $specialchecked></div>
-<div class='jobbox'>
-<label for='checkbox' $specialstyle name='special_label$id' onclick='return false;' id='cb_label$id'>$special</label></div>
-<div class='jobbox'>
-<input name='PREjob$id' type=hidden></div></p></div>";
-  $job_cnt++;
-  return $html;
 }
 ?>
 </body>

@@ -1,13 +1,18 @@
 <?php
 // Start the session
 session_start();
+$src="";
+$logouttxt = "<div id='logouttxt'><p>Du wurdest erfolgreich ausgeloggt.</p></div>";
 if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
   $src = $_SESSION["src"];
+  if (isset($_GET["log"])){
+    echo $logouttxt;
+  }
 }
 if(isset($_SESSION['user'])){
   $src = $_SESSION["src"];
-  header("Location: $src");
+  header("Location: https://". $_SERVER["HTTP_HOST"]. "/crew_prios/index.php");
   exit;
 }
 ?>
@@ -50,11 +55,20 @@ button {
         padding: 25px;
         background-color: lightblue;
     }
+
+  #buttons {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px 20px;
+    border: 2px solid green;
+    box-sizing: border-box;
+  }
 </style>
 </head>
 
 
 <body>
+  <div id="buttons">
   <div id="login" class="head_row">
     <p> Hast du dich bereits registriert? Dann kannst du dich hier einloggen. </p>
 
@@ -69,6 +83,7 @@ button {
       <button>Create Account</button>
     </a>
   </div>
+</div>
 
 </body>
 </html>

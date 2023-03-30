@@ -4,6 +4,8 @@ import db_connect as db
 from datetime import datetime
 import pandas as pd
 import logging
+import numpy as np
+import pickle
 
 try:
     from colorama import init
@@ -32,6 +34,7 @@ class Data_Handler:
             self.users = pd.DataFrame(db.fetch_users())
             self.names = pd.DataFrame(db.fetch_names(helper=False))
             self.preferences = pd.DataFrame(db.fetch_preferences_by_group("user"))
+            self.exclusives = pd.DataFrame(db.fetch_exclusives())
 
         elif self.group == "helper":
             self.jts = pd.DataFrame(db.fetch_jobtypes(group="helper"))
@@ -39,22 +42,69 @@ class Data_Handler:
             self.users = pd.DataFrame(db.fetch_helpers())
             self.names = pd.DataFrame(db.fetch_names(helper=True))
             self.preferences = pd.DataFrame(db.fetch_preferences_by_group("helper"))
-
+            self.exclusives = pd.DataFrame(db.fetch_exclusives())
 
         self.days.set_index("id", inplace=True)
         self.jts.set_index("id", inplace=True)
         self.names.set_index("id", inplace=True)
+        # print(self.preferences)
         self.preferences.set_index("name_id", inplace=True)
+        self.names_to_users()
+        with open("{}_sol/days.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.days, f)
+        with open("{}_sol/jts.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.jts, f)
+        with open("{}_sol/jobs.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.jobs, f)
+        with open("{}_sol/users.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.users, f)
+        with open("{}_sol/names.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.names, f)
+        with open("{}_sol/preferences.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.preferences, f)
+        with open("{}_sol/exclusives.pkl".format(self.group), 'wb') as f:
+            pickle.dump(self.exclusives, f)
         logging.info("Data Handler initialized.")
+        self.print_job_five()
+
+        # print(len(self.preferences.index))
 
         # print(self.preferences)
 
+    def names_to_users(self):
+        sensible_jts = self.jts.loc[self.jts["special"] == 1].index
+        unsensible_jts = self.jts.loc[self.jts["special"] == 0].index
+        sensible_jobs = self.jobs.loc[self.jobs["jt_primary"].isin(sensible_jts)].index
+        unsensible_jobs = self.jobs.loc[self.jobs["jt_primary"].isin(unsensible_jts)].index
+        default_preferences = np.empty(len(self.jobs.index))
+        default_preferences[sensible_jobs] = 5
+        default_preferences[unsensible_jobs] = 3
+
+        unregistered_names = self.names.loc[~self.names.index.isin(
+            self.users["fullname_id"])]
+        # print(unregistered_names)
+        for id, sn, fn in unregistered_names[["surname", "famname"]].itertuples(index=True):
+            self.users = self.users.append(
+                {'fullname_id': id, 'nickname': sn+fn, 'break': 4, 'bias': 0, 'workload': 4}, ignore_index=True)
+            # prefs = []
+            default_row = {}
+            for i, c in enumerate(self.preferences):
+                if c == "name_id":
+                    default_row["name_id"] = id
+                    continue
+                default_row[c] = default_preferences[i]
+            df = pd.DataFrame(default_row, index=[id])
+            # print(df.shape)
+            self.preferences = pd.concat([self.preferences, df])
+        # print(self.preferences.index)
+        no_preferences = self.names.loc[~self.names.index.isin(self.preferences.index)].index
+        for id in no_preferences:
+            # default_row["name_id"] = id
+            df = pd.DataFrame(default_row, index=[id])
+            self.preferences = pd.concat([self.preferences, df])
 
     def is_neighbor(j1_end, j2_start):
         return j1_end == j2_start
-
-
-
 
     def tester(self):
         # print(self.conflicts.loc[self.conflicts["jobid"] ==4])
@@ -70,11 +120,15 @@ class Data_Handler:
                 if not c in self.jobs.values:
                     # print(c)
                     approved = False
-
-        print(50*"-")
-        print(approved)
+        #
+        # print(50*"-")
+        # print(approved)
 
         #
+    def print_job_five(self):
+        print("Nur mit 5 bewertet: ")
+        print(self.preferences.loc[:, self.preferences.nunique() == 5])
+
 
 if __name__ == "__main__":
     handler = Data_Handler()

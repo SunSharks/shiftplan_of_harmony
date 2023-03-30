@@ -14,7 +14,15 @@ $grid_template_rows = str_repeat(" auto ", $num_jts+1);
   table-layout: fixed;
 } -->
 
+body {
+  background: rgba(230, 220, 220, 0.79);
+  padding: 20px;
+  margin: 0px;
+  block-size: fit-content;
+}
+
 table {
+  margin-left: 100px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -28,6 +36,8 @@ th {
 }
 td {
   margin: 0;
+  width: fit-content;
+  height: fit-content;
   <!-- border: 1px solid #000;
   white-space: nowrap;
   border-top-width: 0px; -->
@@ -68,12 +78,13 @@ div {
         min-width: 50px;
     } -->
 
-.prios {
+#prios {
   <!-- display: grid;
   grid-template-rows: <?=$grid_template_rows?>;
   grid-template-columns: <?=$grid_template_columns?>; -->
   background-color: #2196F3;
   padding: 10px;
+  width: 100%;
   overflow: auto;
 }
 
@@ -83,7 +94,7 @@ div {
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(0,255,0);
+  background-color: rgb(0,200,0);
 }
 
 .unselbtn {
@@ -92,35 +103,61 @@ div {
   height: 90%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
 }
 
-.prioselbut {
-  padding: 0px;
-  margin: 0px;
-  height: 100%;
-  width: 100%;
-  display: inline;
-  background-color: rgb(0,255,0);
-}
 .priounselbut {
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
   display: inline;
-  background-color: rgb(255,0,0);
+  background-color: rgb(200,0,0);
+}
+
+
+#submitdiv {
+  width: fit-content;
+  position: absolute;
+  align: center;
+  margin: 20px;
+  padding:10px;
+  height: 20px;
 }
 
 #submitdivbtn {
   width: fit-content;
+  position: absolute;
+  margin: 20px;
+  height: 40px;
+  padding:10px;
+  display: inline;
 }
 
-#workload {
-       width: 50%;
-       margin: 8px 0;
-       padding: 12px 20px;
-       display: inline-block;
-       border: 2px solid green;
-       box-sizing: border-box;
-   }
+#unselall {
+  margin: 20px;
+  width: 50%;
+  align: center;
+  position: absolute;
+  padding:10px;
+  height: 40px;
+  display: inline;
+}
+
+
+#breakinp, #workload {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  display: inline-block;
+  border: 2px solid green;
+  box-sizing: border-box;
+}
+
+#non_prios{
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+  border: 2px solid green;
+  box-sizing: border-box;
+}

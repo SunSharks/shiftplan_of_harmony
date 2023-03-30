@@ -2,17 +2,8 @@
 // Start the session
 session_start();
 ?>
-
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>signup</title>
-
 <?php
+$REDIRECT = false;
 include("db.php");
 regain_integrity();
 $names_db = fetch_it(get_names_sql());
@@ -27,11 +18,10 @@ for ($i=0; $i<count($nicknames_db); $i++){
   array_push($nicknames, $nicknames_db[$i]["nickname"]);
 }
 // printf(json_encode($nicknames));
-
  ?>
 <?php
 if (isset($_POST["fullname"])){
-  printf(recover_umlauts(json_encode($_POST), "\\"));
+  // printf(recover_umlauts(json_encode($_POST), "\\"));
   if ($_POST["psw"] != $_POST["psw-repeat"]){
     $alert = "Die beiden eingegebenen Passwörter sind nicht identisch.\\r\\nGib bitte zweimal dasselbe Passwort ein.";
     echo "<script>alert('$alert');</script>";
@@ -43,7 +33,7 @@ if (isset($_POST["fullname"])){
     else{
       $nickname = $_POST["nickname"];
     }
-    $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname, $_POST["email"]);
+    $sql = insert_user_sql($_POST["fullname"], $_POST["psw"], $nickname);
     if ($sql != "INDB"){
       $pdo = connect();
       perform_query($pdo, $sql);
@@ -51,19 +41,27 @@ if (isset($_POST["fullname"])){
       $suc_txt = "<div id='suc_text'>
         <p>
         Hallo $nickname.
-          Du wurdest erfolgreich registriert.
+          Du wurdest erfolgreich registriert.<br>Klick auf Login, um dich einzuloggen.
       </p>
     </div>";
-      printf($suc_txt);
-      header('Location: login.php');
-      exit;
     }
     else{
       $alert = "Du bist bereits registriert.";
-      echo "<script>alert('$alert');</script>";
-      header('Location: index.php');
+      $alerthtml = "<script>alert('$alert');</script>";
+      echo $alerthtml;
     }
   }
+}
+if ($REDIRECT === false){
+  echo "
+  <!DOCTYPE html>
+  <html lang='de'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>signup</title>
+";
 }
 ?>
 
@@ -129,7 +127,7 @@ button {
       </p>
       <hr>
 
-      <label for="fullname"><b>Dein Name</b></label>   <!-- LANG! -->
+      <label for="fullname"><b>Dein Name (dein uns bekannter Vor- und Familienname.)</b></label>   <!-- LANG! -->
     <?php
       $regex_fn = join("|", $full_names);
       $s = "<input type='text' pattern='$regex_fn' placeholder='Dein Name' name='fullname' accept-charset='utf-8' required>";

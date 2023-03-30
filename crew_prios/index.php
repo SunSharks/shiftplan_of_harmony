@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "../crew_prios/index.php";
+$_SESSION["src"] = "crew_prios";
 if(!isset($_SESSION['user'])){
-  header('Location: ../users/logout.php?src=../crew_prios/index.php');
+  header('Location: https://'. $_SERVER["HTTP_HOST"]. '/users/logout.php');
   exit;
 }
 if (!empty($_GET)){
@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['user']);
       // printf(json_encode($_SESSION["user"]));
       unset($_SESSION["prios"]);
-      header('Location: ../users/logout.php?src=../crew_prios/index.php');
+      header('Location: https://'. $_SERVER["HTTP_HOST"]. '/users/logout.php?log=out');
       exit;
     }
   }
@@ -26,26 +26,28 @@ if (!empty($_GET)){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>schedule definition</title>
+  <link rel="icon" type="image/x-icon" href="../images/fl_logo.png">
+  <title>crew preferences</title>
 
 
 <?php
 include("../users/db.php");
-perform(create_preferences_table_sql());
+perform(create_preferences_table_sql(""));
 regain_integrity();
 // printf("test1");
 regain_preference_integrity();
 // printf("test2");
 $_SESSION["days"] = fetch_it(get_days_sql());
 $_SESSION["jts"] = fetch_it(get_jobtypes_sql("false"));
-if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
-  header('Location: ../deftab/index.php');
-  exit;
-}
+// if (empty($_SESSION["jts"]) || empty($_SESSION["days"])){
+//   header('Location: ../deftab/index.php');
+//   exit;
+// }
 $_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
 // printf(json_encode($_SESSION["user"]));
 $_SESSION["prios"] = fetch_prios($_SESSION["user"]["fullname_id"]);
 // printf(json_encode($_SESSION["prios"]));
+include("stats.php");
  ?>
 <link rel="stylesheet" type="text/css" href="style.php">
 <?php
@@ -70,19 +72,30 @@ if (!empty($_POST)){
     <a href="index.php?log=out">
       <button>logout</button>
     </a>
-    <a href="../deftab/index.php">
+    <!-- <a href="../deftab/index.php">
       <button>shiftplandef</button>
-    </a>
+    </a> -->
   </div>
   <h1>Prioritäten</h1>
+  <div class="mantxt">
+    <?php
+    if(file_exists('_indexmantxt.txt')){
+        include '_indexmantxt.txt';
+      }
+    else if(file_exists('indexmantxt.txt')){
+      include 'indexmantxt.txt';
+    }
+      ?>
+  </div>
   <div id="prios" class="prios">
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
-      <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
+      <div id='breakdiv' class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label>
       <?php
       $break = $_SESSION["user"]["break"];
       echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
       ?>
-
+      </div>
+      <div>
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
           <tr> <!-- DAYNAME ROW -->
@@ -114,16 +127,51 @@ if (!empty($_POST)){
           </tr>
           <!-- JOBTYPE ROWS -->
           <?php
+          function get_disabled_strings($restricted, $jt_name){
+            /*
+            get_disabled_strings(bool &$restricted, str &$jt_name): array
+            Returns array of strings depending on value of $restricted.
+            Returns ["", "", "", ""] if $restricted == false or user is authorized for this job.
+            Returns ["readonly", "style='<readonly input style>'", "disabled", "style='<disabled button style>'"] if $restricted == true and user is not authorized for this job.
+            */
+            $ar = array("", "", "", "");
+            $disabled_style = "";
+            if ($restricted == 1){
+              $ar[0] = " readonly ";
+              $ar[2] = " disabled ";
+              $ar[1] = "style='border:1px solid #999999;
+              background-color:#aaaaaa;
+              color:#000000'";
+              $ar[3] = "style='border:1px solid #999999;
+              background-color:#aaaaaa;
+              color:#000000'";
+            }
+            if ($restricted == 1 && in_array($jt_name, $_SESSION["access_jobs"])){
+              $ar = array("", "", "", "");
+            }
+            return $ar;
+          }
             $odd_style = "style='background-color:#edf9e1'";
             $even_style = "style='background-color:#d3e3c4'";
             foreach ($_SESSION["jts"] as $jt){
+              $res = $jt["restricted_access"];
+              $disabled_strs = get_disabled_strings($res, $jt['name'].$jt['name_appendix']);
+              if ($disabled_strs[0] != ""){
+                continue;
+              }
+              $readonly = $disabled_strs[0];
+              $disabled = $disabled_strs[2];
+              $inp_style = $disabled_strs[1];
+              $btn_style = $disabled_strs[3];
               $jt_id = $jt["id"];
+              // printf("---".json_encode($_SESSION["access_jobs"]));
               $rowidstr = "id='row$jt_id'";
               $row_class = $jt['name'];
               $style = $odd_style;
               $title = "title='".$jt["competences"]. "'";
               echo "<tr $rowidstr $row_class $style>";
-              $n = $jt["name"];
+              // printf(json_encode($jt));
+              $n = $jt["name"].$jt["name_appendix"];
               echo "<th $title class='rowhead' align='left' height='50'><b>$n</b></th>";
               $jt_jobs = fetch_jobtype_jobs($jt["id"]);
               $idx = 0;
@@ -148,9 +196,9 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>+</button></div>";
-                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>-</button></div>";
-                $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5'></div>";
+                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)' $disabled>select</button></div>";
+                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)' $disabled>unselect</button></div>";
+                $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5' $readonly></div>";
                 echo "<div class='priotd'><td $style colspan='$span_hours' align='center' height='50'>$selbut$unselbut$inp</td></div>";
                 echo "<script>add_prio_id($id);</script>";
                 $idx = $j["abs_end"];
@@ -170,7 +218,9 @@ if (!empty($_POST)){
             }
           ?>
       </table>
-      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
+    </div>
+    <div id=buttons style='display:inline;'>
+      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()' style="display:inline;">Unselect All</button></div>
       <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
@@ -178,9 +228,10 @@ if (!empty($_POST)){
             $name_id = $_SESSION["user"]["fullname_id"];
             echo "<input id='name_id' name='name_id' value='$name_id' hidden >";
             ?>
-            <input id="submitdivbtn" type="submit" value="Speichern">
+            <input id="submitdivbtn" type="submit" value="Speichern" style="display:inline;">
           </p>
         </div>
+      </div>
     </form>
   </div>
 

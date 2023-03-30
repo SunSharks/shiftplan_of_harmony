@@ -4,11 +4,10 @@ session_start();
 if (!empty($_GET)){
   $_SESSION["src"] = $_GET["src"];
 }
-if(isset($_SESSION['helper'])){
-  echo "Du bist bereits eingeloggt. ";
-  echo "<a href=../helper_prios/index.php>
-    <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
-  </a>";
+if(isset($_SESSION['user'])){
+  $src = $_SESSION["src"];
+  header("Location: https://schichtplan.funkloch-festival.de/$src");
+  exit;
 }
 ?>
 
@@ -23,12 +22,16 @@ if(isset($_SESSION['helper'])){
 
 <?php
 include("db.php");
+regain_integrity();
+$_SESSION["days"] = fetch_it(get_days_sql());
+$_SESSION["jts"] = fetch_it(get_jobtypes_sql());
+$_SESSION["num_timecols"] = 24 * count($_SESSION["days"]);
  ?>
 <!-- <link rel="stylesheet" type="text/css" href="style.php"> -->
 <?php
 if (isset($_POST["username"])){
   // printf(json_encode($_POST));
-  $users_db = fetch_it(get_helpers_sql());
+  $users_db = fetch_it(get_users_sql());
   // printf(json_encode($users_db));
   $usernames = array();
   for ($i=0; $i<count($users_db); $i++){
@@ -45,17 +48,17 @@ if (isset($_POST["username"])){
     if (password_verify($_POST["password"], $user['pw'])){
       /* The password is correct. */
       $login = true;
-      $_SESSION["helper"] = $user;
+      $_SESSION["user"] = $user;
       $suc_txt = "<div id='suc_text'>
         <p>
-        Hallo $nickname.
+        Hallo.
           Du wurdest erfolgreich eingeloggt.
       </p>
     </div>";
-    printf($suc_txt);
-    echo "<a href=../helper_prios/index.php>
-      <button style='background-color:rgb(163, 76, 60)'>Zur Präferenzeneingabe</button>
-    </a>";
+      printf($suc_txt);
+      $src = $_SESSION["src"];
+      header("Location: $src");
+      exit;
     }
     else{
       $fail_txt = "<div id='suc_text'>
@@ -73,7 +76,7 @@ if (isset($_POST["username"])){
 <style>
 Body {
   font-family: Calibri, Helvetica, sans-serif;
-  background-color: pink;
+  background-color: rgba(140, 133, 130, 0.79);
 }
 button {
        background-color: #4CAF50;
@@ -123,14 +126,15 @@ button {
   <h1>Login</h1>
     <form action="login.php" method="post" style="border:1px solid #ccc">
      <div class="container">
+       <!-- LANG! -->
          <label>Username : </label>
-         <input type="text" placeholder="Enter Username" name="username" required>
+         <input type="text" placeholder="Enter Username" name="username" title="Falls du einen Spitznamen angegeben hast, ist es der, falls nicht, ist es einfach dein Vor- und Nachname (unter Beachtung von Groß-/Kleinschreibung und mit Leerzeichen getrennt)." required>
          <label>Password : </label>
          <input type="password" placeholder="Enter Password" name="password" required>
          <button type="submit">Login</button>
          <input type="checkbox" checked="checked"> Remember me
          <button type="button" class="cancelbtn"> Cancel</button>
-         Forgot <a href="#"> password? </a>
+         <!-- Forgot <a href="#"> password? </a> -->
      </div>
      </form>
 

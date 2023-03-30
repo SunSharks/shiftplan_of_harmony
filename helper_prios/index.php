@@ -1,9 +1,9 @@
 <?php
 // Start the session
 session_start();
-$_SESSION["src"] = "../helper_prios/index.php";
+$_SESSION["src"] = "helper_prios/index.php";
 if(!isset($_SESSION['helper'])){
-  header('Location: login.php?src=../helper_prios/index.php');
+  header('Location: login.php?src=helper_prios/index.php');
   exit;
 }
 if (!empty($_GET)){
@@ -12,7 +12,7 @@ if (!empty($_GET)){
       unset($_SESSION['helper']);
 
       unset($_SESSION["prios"]);
-      header('Location: login.php?src=../helper_prios/index.php');
+      header('Location: login.php?src=../helper_prios/index.php&log=out');
       exit;
     }
   }
@@ -26,7 +26,8 @@ if (!empty($_GET)){
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>schedule definition</title>
+  <link rel="icon" type="image/x-icon" href="../images/fl_logo.png">
+  <title>helper preferences</title>
 
 
 <?php
@@ -65,8 +66,6 @@ if (!empty($_POST)){
 
 <script src=insert_prios.js></script>
 </head>
-
-
 <body>
   <div id="head_row" class="head_row">
     <a href="index.php?log=out">
@@ -74,20 +73,29 @@ if (!empty($_POST)){
     </a>
   </div>
   <h1>Prioritäten</h1>
+  <div class="mantxt">
+    <?php
+    if(file_exists('_indexmantxt.txt')){
+        include '_indexmantxt.txt';
+      }
+      ?>
+  </div>
     <form name="prioform" action="index.php"  method="post" onsubmit="placeholder_to_value()">
+      <div id="non_prios">
       <div id="workload_div">
         <?php
         $wl = $_SESSION["helper"]["workload"];
         $break = $_SESSION["helper"]["break"];
         // echo "$break\r\n";
-        echo "<label for='workload'>Wie viele Stunden möchtest du maximal arbeiten?</label>";
-        echo "<input id='workload' name='workload' type='number' placeholder='$wl' min='4' title='Eine Schicht dauert mindestens 4 Stunden'>";
+        echo "<div><label for='workload'>Wie viele Stunden möchtest du maximal arbeiten?</label></div>";
+        echo "<input id='workload' name='workload' type='number' placeholder='$wl' min='0' title='Eine Schicht dauert mindestens 4 Stunden'>";
         ?>
       </div>
       <div class='breakinpdiv'><label id='breakinplabel' for='breakinp'>Mindestpause zwischen 2 Schichten</label></div>
       <?php
       echo "<div class='breakinpdiv'><input type='number' id='breakinp' name='breakinp' placeholder='$break' min='0' max='8'></input></div>";
       ?>
+    </div>
       <div id="prios" class="prios">
       <table id="priotab" border="5" cellspacing="0" align="center">
           <!--<caption>Timetable</caption>-->
@@ -152,8 +160,8 @@ if (!empty($_POST)){
                   $style = $odd_style;
                 }
                 $val = $_SESSION["prios"][$id];
-                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>+</button></div>";
-                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>-</button></div>";
+                $selbut = "<div class='prioselbut'><button type='button' class='selbtn' id='selbtn$id' onclick='select_entry($id)'>select</button></div>";
+                $unselbut = "<div class='priounselbut'><button type='button' class='unselbtn' id='unselbtn$id' style='display:none' onclick='unselect_entry($id)'>unselect</button></div>";
                 $inp = "<div class='prioinputfield'><input type='number' id='prioinp$id' name='prioinp$id' onchange='on_input($id)' placeholder='$val' min='1' max='5'></div>";
                 echo "<div class='priotd'><td $style colspan='$span_hours' align='center' height='50'>$selbut$unselbut$inp</td></div>";
                 echo "<script>add_prio_id($id);</script>";
@@ -174,20 +182,21 @@ if (!empty($_POST)){
             }
           ?>
       </table>
-      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()'>Unselect All</button></div>
+    </div>
+    <div id=buttons style='display:inline;'>
+      <div class='unselall'><button type='button' id='unselall' onclick='unselect_all()' style="display:inline;">Unselect All</button></div>
       <div id="submitdiv">
           <p>
             <!-- <input name="show_only_new_jobs" type="checkbox" value="true">Show only new -->
             <?php
-            $name_id = $_SESSION["helper"]["fullname_id"];
+            $name_id = $_SESSION["user"]["fullname_id"];
             echo "<input id='name_id' name='name_id' value='$name_id' hidden >";
             ?>
-            <input id="submitdivbtn" type="submit" value="Speichern">
+            <input id="submitdivbtn" type="submit" value="Speichern" style="display:inline;">
           </p>
         </div>
-        </div>
+      </div>
     </form>
-
 
 </body>
 </html>

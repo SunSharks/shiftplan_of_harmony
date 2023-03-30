@@ -1,10 +1,10 @@
 CREATE DATABASE Testplan CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-
-DROP TABLE Days;
-DROP TABLE Jobtypes;
-DROP TABLE Jobs;
-DROP TABLE Users;
+--
+-- DROP TABLE Days;
+-- DROP TABLE Jobtypes;
+-- DROP TABLE Jobs;
+-- DROP TABLE Users;
 
 
 CREATE TABLE Days (
@@ -18,7 +18,8 @@ CREATE TABLE Jobtypes (
   competences   TEXT NULL,
   special       BOOLEAN NOT NULL DEFAULT 0,
   helper        BOOLEAN NOT NULL DEFAULT 0,
-  user_id       INT NOT NULL
+  user_id       INT NOT NULL,
+  restricted_access BOOLEAN NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Twins (
@@ -59,6 +60,7 @@ CREATE TABLE Names (
   helper     BOOLEAN          NOT NULL DEFAULT 0
 );
 
+
 CREATE TABLE Helpers (
   id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   fullname_id  INT                NOT NULL UNIQUE,
@@ -68,4 +70,11 @@ CREATE TABLE Helpers (
   ticketnumber INT                NULL UNIQUE,
   workload     INT                NOT NULL DEFAULT 4,
   break        INT                NOT NULL DEFAULT 4
+);
+
+CREATE TABLE Exclusives (
+  id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  jt_name     VARCHAR(255)       NOT NULL,
+  fullname_id     INT            NOT NULL UNIQUE,
+  user_id       INT              NULL UNIQUE
 );

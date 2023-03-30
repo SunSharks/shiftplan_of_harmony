@@ -7,6 +7,11 @@
 </head>
 <body>
 <?php
+if (!function_exists('str_starts_with')) {
+  function str_starts_with($str, $start) {
+    return (@substr_compare($str, $start, 0, strlen($start))==0);
+  }
+}
 include("../db/db_base.php");
 
 error_reporting(-1); // reports all errors
@@ -27,13 +32,13 @@ function get_days_sql(){
 
 function get_jobtypes_sql($helper='all'){
   if ($helper === 'all'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes ORDER BY name;";
   }
   else if ($helper === 'true'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=1";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes WHERE helper=1 ORDER BY name;";
   }
   else if ($helper === 'false'){
-    return "SELECT id, name, helper, special, competences FROM Jobtypes WHERE helper=0";
+    return "SELECT id, name, helper, special, competences, restricted_access, name_appendix FROM Jobtypes WHERE helper=0 ORDER BY name;";
   }
 }
 
@@ -60,8 +65,15 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
   $ret = $drop . 'CREATE TABLE IF NOT EXISTS'.' Preferences (
     name_id INT NOT NULL PRIMARY KEY';
   for ($i=0; $i<count($job_ids); $i++){
+    // TODO!
+    if(unpack_singleton_fetch(perform("SELECT COUNT(id) FROM Jobtypes WHERE id=$job_ids[$i] AND special=1;"))[0] === "1"){
+      $def = 5;
+    }
+    else{
+      $def = 3;
+    }
     $ret = $ret . ",
-    job$job_ids[$i] INT NOT NULL DEFAULT 3 check( job$job_ids[$i] > 0 and job$job_ids[$i] < 6)
+    job$job_ids[$i] INT NOT NULL DEFAULT $def check( job$job_ids[$i] > 0 and job$job_ids[$i] < 6)
     ";
   }
   $ret .= ");";
@@ -71,7 +83,7 @@ function create_preferences_table_sql($drop="DROP TABLE Preferences;"){
 }
 
 function get_names_sql(){
-  return "SELECT * from Names";
+  return "SELECT * from Names WHERE helper=0;";
 }
 
 function get_name_id_sql($name){
@@ -92,7 +104,7 @@ function get_users_sql(){
   return "SELECT * FROM Users";
 }
 
-function insert_user_sql($name, $pw, $nickname, $email){
+function insert_user_sql($name, $pw, $nickname){
   $name_id = fetch_it(get_name_id_sql($name))[0]["id"];
   $registered_ids = fetch_it(get_registered_name_ids_sql());
   for ($i=0; $i<count($registered_ids); $i++){
@@ -102,14 +114,10 @@ function insert_user_sql($name, $pw, $nickname, $email){
   }
   $hash = password_hash($pw, PASSWORD_DEFAULT);
   $ret = "";
-  if (empty($email)){
-    $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname) VALUES ($name_id, '$hash', '$nickname')";
-  }
-  else{
-    $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname, email) VALUES ($name_id, '$hash', '$nickname', '$email')";
-  }
+  $ret = $ret . "INSERT INTO Users (fullname_id, pw, nickname) VALUES ($name_id, '$hash', '$nickname')";
   $ret = $ret . ";" . set_name_registered_sql($name_id);
   $ret = $ret . ";" . initial_prio_insert_sql($name_id);
+  // printf($ret);
   return $ret;
 }
 // INSERT INTO Users (fullname_id, pw, nickname, email) SELECT id, "bla", "downlord", "la@bla.py" FROM Names WHERE Names.surname="Lysanne";
@@ -119,7 +127,24 @@ function set_name_registered_sql($name_id){
 }
 
 function initial_prio_insert_sql($name_id){
-  return "INSERT INTO Preferences (name_id) VALUES ($name_id)";
+  $sql = "INSERT INTO Preferences (name_id";
+  $valsql = " VALUES ($name_id";
+  $special_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=0 AND special=1)");
+  $unspecial_jobs = fetch_it("SELECT id FROM Jobs WHERE Jobs.jt_primary IN (SELECT id FROM Jobtypes WHERE helper=0 AND special=0)");
+  foreach ($special_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 5";
+  }
+  foreach ($unspecial_jobs as $j){
+    $id = $j["id"];
+    $sql .= ", job$id";
+    $valsql .= ", 3";
+  }
+  $sql .= ") ";
+  $valsql .= ");";
+  // printf( $sql . $valsql);
+  return $sql . $valsql;
 }
 
 function get_prios_sql($name_id){
@@ -164,6 +189,15 @@ function insert_prios_sql($prioinps){
   $sql = $breaksql . $sql1 . $sql2 .  $endsql;
   // printf($sql);
   return $sql;
+}
+
+function get_persons_exclusive_access($fullname_id){
+  $exclusives = fetch_it("SELECT jt_name FROM Exclusives WHERE fullname_id=$fullname_id;");
+  $ex = array();
+  for ($i=0; $i<count($exclusives); $i++){
+    array_push($ex, $exclusives[$i]["jt_name"]);
+  }
+  return $ex;
 }
 
 // =============================================================================

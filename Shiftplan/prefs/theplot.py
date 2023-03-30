@@ -65,12 +65,17 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
 
 @app.callback(
     Output('click-data', 'children'),
-    Input('chart_plot', 'clickData'))
-def display_click_data(clickData):
+    Input('chart_plot', 'clickData'),
+    State('df_inp', 'value'))
+def display_click_data(clickData, df_inp):
     if clickData:
-        print(clickData)
+        print("clickData: ", clickData)
+        # if df_inp != None:
+        #     print("df_inp")
+        #     print(df_inp["description"])
         pref_inp = html.Div([
             html.P('Rate job: {name}'.format(name=clickData["points"][0]["label"])),
+            html.P(),
             dcc.Dropdown(
                 id={
                     'type': 'pref_inp',
@@ -136,7 +141,7 @@ def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
 def chart_plot(df):
     print(df)
     tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5)
+        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
     # fig = px.bar(df, x='during', y='name', color='name')
     tl.update_yaxes(autorange="reversed")
     # fig['layout']['xaxis'].update({'type': None})
@@ -177,4 +182,6 @@ def generate_df(user):
     df = pd.DataFrame(l)
     df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
     df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
+    df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
     return df

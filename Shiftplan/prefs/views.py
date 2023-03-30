@@ -59,8 +59,6 @@ def chart_view(request, pk, **kwargs):
         d.update(job)
         d.update(jobtype)
         l.append(d)
-    # shiftplan = get_object_or_404(Shiftplan, pk=pk)
-    # jobtypes = Jobtype.objects.filter(shiftplan_id=pk)#.values_list('id', flat=True)
     # jt_jobs = [Job.objects.filter(jobtype_id=jt.id) for jt in jobtypes]
     # l = []
     # for jt, j_qs in zip(jobtypes, jt_jobs):
@@ -90,70 +88,19 @@ def chart_view(request, pk, **kwargs):
         print(df['rating'])
     except:
         df['rating'] = 3
-    # try:
-    #     user_job_rating = UserJobRating.objects.filter(user=current_user)
-    #     print("user_job_rating ", user_job_rating)
-    # except UserJobRating.DoesNotExist:
-    #     user_job_rating = []
-    # if len(user_job_rating) == 0:
-    #     for jt in jt_jobs:
-    #         for j in jt:
-    #             ujr = UserJobRating(user=current_user, job=j, rating=j.rating)
-    #             ujr.save()
-    
-    # df = pd.DataFrame([
-    #     dict(Task="Job A", Start='2009-01-01', Finish='2009-02-28', Resource="Alex"),
-    #     dict(Task="Job B", Start='2009-03-05', Finish='2009-04-15', Resource="Alex"),
-    #     dict(Task="Job C", Start='2009-02-20', Finish='2009-05-30', Resource="Max")
-    #     ])
-    # print(df)
-    # set_df(df)
     print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    print(df)
+    context = {"jt_descriptions": [{"name": n, "description": d} for n, d in zip(df['name'], df['description'])]
+        # df.loc[df.index==i]["name"]: df.loc[df.index==i]["description"] for i in df.index
+    }
     df = df.to_json()
-    print(df)
+    print(context)
     session = request.session
     djaploda = session.get('django_dash', {})
     ndf = djaploda.get('df', df)
     ndf = df
     djaploda['df'] = ndf
-    session['django_dash'] = djaploda
-
-    # Use some of the information during template rendering
-    context = {}
+    session['django_dash'] = djaploda    
     print(5*'---\n')
     return render(request, 'prefs/chart.html', context)
-
-# class Tst:
-#     def __init__(self):
-#         self.Task = "Job A"
-#         self.Start = '2009-01-01'
-#         self.Finish = '2009-02-01'
-#         self.Resource = "Alex"
-
-#     def as_dict(self):
-#         return {'Task': self.Task, 'Start': self.Start, 'Finish': self.Finish, 'Resource': self.Resource}
-
-
-# tst = [Tst()]
-# df = pd.DataFrame([x.as_dict() for x in tst])
-
-    # return render(request, 'prefs/chart.html', context)
-    # answers = Answer.objects.filter(question_id=1).select_related() 
-    # qs = Chart.objects.all()
-    # projects_data = [
-    #     {
-    #         'Project': x.name,
-    #         'Start': x.start_date,
-    #         'Finish': x.finish_date,
-    #         'Responsible': x.responsible.username
-    #     } for x in qs
-    # ]
-    # df = pd.DataFrame(projects_data)
-    # fig = px.timeline(
-    #     df, x_start="Start", x_end="Finish", y="Project", color="Responsible"
-    # )
-    # 
-    

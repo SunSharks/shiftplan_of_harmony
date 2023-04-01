@@ -1,0 +1,12 @@
+<h1>Time Intervals</h1>
+{% if ti_list %}
+    <ul>
+    {% for ti in ti_list %}
+      <li>{{ ti }} <a href="{% url 'defs:update_ti' ti.id %}">update</a></li>
+      <a href="{% url 'defs:delete_ti' ti.id %}">delete</a>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No time intervals are available.</p>
+{% endif %}
+<a href="{% url 'defs:create_ti' sp.id %}">Add time interval</a>

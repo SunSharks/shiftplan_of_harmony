@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Shiftplan, TimeInterval, Jobtype, Job
 
-from .forms import JobtypeForm, JobForm
+from .forms import JobtypeForm, JobForm, TimeIntervalForm
 # from .forms import TimeFormSet, JobtypeFormSet
 from django.views import generic
 from django.views.generic.edit import CreateView, FormView
@@ -21,6 +21,11 @@ class IndexView(generic.ListView):
         """Return all available shiftplan instances."""
         return Shiftplan.objects.all()
 
+# class ShiftplanCreateView(CreateView):
+#     model = Shiftplan
+#     # template_name = 'defs/time_interval_form.html'
+#     fields = ['name']
+
 
 class ShiftplanDefView(FormView):
     model = Shiftplan
@@ -33,6 +38,10 @@ class TimeIntervalCreateView(CreateView):
     # template_name = 'defs/time_interval_form.html'
     fields = ['start_date', 'end_date']
 
+@login_required
+def create_shiftplan(request):
+    context = {}
+    return render(request, "defs/create_shiftplan.html", context)
 
 @login_required
 def shiftplan_def(request, pk):
@@ -59,25 +68,82 @@ def shiftplan_def(request, pk):
 
 # === TIME INTERVALS ===
 
+def time_interval_def(request, pk):
+    shiftplan = get_object_or_404(Shiftplan, pk=pk)
+    time_intervals = TimeInterval.objects.filter(shiftplan=shiftplan)
+    context = {
+        'sp': shiftplan,
+        'ti_list': time_intervals
+    }
+    return render(request, "defs/timeinterval_def.html", context)
+
 
 def create_time_interval(request, pk):
     shiftplan = get_object_or_404(Shiftplan, pk=pk)
     time_intervals = TimeInterval.objects.filter(shiftplan=shiftplan)
-    formset = TimeFormSet(request.POST or None)
+    form = TimeIntervalForm(request.POST or None)
 
     if request.method == "POST":
-        if formset.is_valid():
-            formset.instance = shiftplan
-            formset.save()
+        if form.is_valid():
+            ti = form.save(commit=False)
+            ti.shiftplan = shiftplan
+            ti.save()
             return redirect("defs:ti_def", pk=shiftplan.id)
 
     context = {
-        "formset": formset,
+        "form": form,
         "sp": shiftplan,
         "time_intervals": time_intervals
     }
 
-    return render(request, "defs/add_time_interval.html", context)
+    return render(request, "defs/create_time_interval.html", context)
+
+@login_required
+def create_time_interval_form(request):
+    form = TimeIntervalForm()
+    context = {
+        "form": form
+    }
+    return render(request, "defs/timeinterval_form.html", context)
+
+
+@login_required
+def update_time_interval(request, pk):
+    ti = TimeInterval.objects.get(id=pk)
+    form = TimeIntervalForm(request.POST or None, instance=ti)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("defs:ti_def", pk=ti.shiftplan.id)
+    context = {
+        "form": form,
+        "ti": ti
+    }
+
+    return render(request, "defs/timeinterval_form.html", context)
+
+
+# @login_required
+# def detail_time_interval(request, pk):
+#     jobtype = get_object_or_404(Jobtype, id=pk)
+#     context = {
+#         "jobtype": jobtype
+#     }
+#     return render(request, "defs/jobtype_detail.html", context)
+
+
+@login_required
+def delete_time_interval(request, pk):
+    ti = get_object_or_404(TimeInterval, id=pk)
+    if request.method == "POST":
+        ti.delete()
+        return HttpResponse("")
+
+    return HttpResponseNotAllowed(
+        [
+            "POST",
+        ]
+    )
 
 
 def time_def(request, pk):
@@ -129,7 +195,6 @@ def create_jobtype(request, pk):
     }
 
     return render(request, "defs/create_jobtype.html", context)
-
 
 @login_required
 def create_jobtype_form(request):
@@ -257,3 +322,16 @@ def delete_job(request, pk):
             "POST",
         ]
     )
+
+@login_required
+def bulk_create_jobs(request, pk):
+    jobtype = get_object_or_404(Jobtype, id=pk)
+    time_intervals = TimeInterval.objects.filter(shiftplan=jobtype.shiftplan)
+    print("time_intervals: ", time_intervals)
+    context = {
+        "time_intervals_exist": not not time_intervals,
+        "ti_list": time_intervals,
+        "jobtype": jobtype,
+        "days": []
+    }
+    return render(request, "defs/bulk_create_jobs.html", context)

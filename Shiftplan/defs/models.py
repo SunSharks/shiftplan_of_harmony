@@ -1,9 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import Group
 
 
 class Shiftplan(models.Model):
     name = models.CharField('shiftplan_name', max_length=200, unique=True, blank=False, default="")
     time_format = models.CharField("time_format", max_length=50, default="hourly")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:  # create
+            self.group = Group.objects.create(name = self.name)
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
     def __str__(self):
         return self.name
@@ -17,7 +24,10 @@ class TimeInterval(models.Model):
     end_date = models.DateField(null=True)
 
     def __str__(self):
-        return self.shiftplan.time_format
+        return "{} - {}".format(self.start_date, self.end_date)
+
+    def as_dict(self):
+        return {'start_date': self.start_date, 'end_date': self.end_date}
 # class Grades(models.Model):
 #     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
 #     grade_range = models.PositiveIntegerField(default=5)
@@ -41,7 +51,6 @@ class TimeInterval(models.Model):
 #     def __str__(self):
 #         return str(self.date)
 
-
 class Jobtype(models.Model):
     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
     name = models.CharField('jobtype name', max_length=200)
@@ -50,6 +59,15 @@ class Jobtype(models.Model):
     # restricted = models.BooleanField() # True if jt is restricted to certain group of users
     # user_group = models.ManyToManyField(User)
     default_rating = models.IntegerField(default=3)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None and self.group is None:  # create
+            self.group = self.shiftplan.group
+        # elif not self.group is None:
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
     def __str__(self):
         return self.name

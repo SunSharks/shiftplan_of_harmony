@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 'guardian', # add as well to use permissions related features
+    # 'groups_manager',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'defs',
-    'charts',
+    # 'charts',
     'prefs',
     'bootstrap4',
 ]

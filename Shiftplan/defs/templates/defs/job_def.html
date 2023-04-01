@@ -12,5 +12,6 @@
 {% endfor %}
 
 <li><a href="{% url 'defs:create-job' jobtype.id %}">Add Shift</a></li>
+<li><a href="{% url 'defs:bulk-create-jobs' jobtype.id %}">Bulk create shifts, EXPERIMENTAL!</a></li>
 
 {% endblock %}

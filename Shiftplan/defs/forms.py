@@ -17,6 +17,10 @@ class TimeIntervalForm(forms.ModelForm):
             'start_date',
             'end_date'
         )
+        widgets = {
+            'start_date': DatePickerInput(),
+            'end_date': DatePickerInput(),
+        }
 
 
 class JobtypeForm(forms.ModelForm):
@@ -24,7 +28,8 @@ class JobtypeForm(forms.ModelForm):
         model = Jobtype
         fields = (
             'name',
-            'description'
+            'description',
+            'group'
         )
 
 

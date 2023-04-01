@@ -14,7 +14,7 @@ from .models import Job
 
 class ShiftplanAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields': ['name']}),
+        (None,               {'fields': ['name', 'group']}),
     ]
     # inlines = [SubgroupInline]
 

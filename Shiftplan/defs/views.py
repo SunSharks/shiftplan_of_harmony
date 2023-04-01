@@ -137,7 +137,8 @@ def delete_time_interval(request, pk):
     ti = get_object_or_404(TimeInterval, id=pk)
     if request.method == "POST":
         ti.delete()
-        return HttpResponse("")
+        return HttpResponse("Time Interval deleted.")
+        # return redirect("defs:ti_def", pk=ti.shiftplan.id)
 
     return HttpResponseNotAllowed(
         [

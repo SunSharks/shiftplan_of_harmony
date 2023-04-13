@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'rest_framework',
     'corsheaders',
+    'nested_admin',
     'defs',
     # 'charts',
     'prefs',

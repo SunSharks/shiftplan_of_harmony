@@ -6,16 +6,15 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
 
+
+
 import pandas as pd
 
 from defs.models import Shiftplan, Jobtype, Job
 from .models import UserJobRating
 from .theplot import *
 
-# my_filter_qs = Q()
-# for creator in creator_list:
-#     my_filter_qs = my_filter_qs | Q(creator=creator)
-# my_model.objects.filter(my_filter_qs)
+
 
 
 class IndexView(generic.ListView):
@@ -40,7 +39,7 @@ def regain_integrity(shiftplan_id, user):
         if len(ujr) == 0:
             n_ujr = UserJobRating(user=user, job=j, rating=j.rating)
             n_ujr.save()
-    print("REGAIN INTEGRITY: ", jobs)
+    # print("REGAIN INTEGRITY: ", jobs)
             
 @login_required
 def chart_view(request, pk, **kwargs):
@@ -48,8 +47,18 @@ def chart_view(request, pk, **kwargs):
     
     current_user = request.user if type(request.user) is not AnonymousUser else None
     regain_integrity(pk, current_user)
-    # print("chart_view: ", UserJobRating.objects.filter(user=current_user))
-    user_ratings = UserJobRating.objects.filter(user=current_user)
+    shiftplan = Shiftplan.objects.get(pk=pk)
+    jobtypes = shiftplan.jobtype_set.all()
+    jobs_allowed = []
+    for jt in jobtypes:
+        # print(jt.job_set.all().values_list("pk", flat=True))
+        jobs_allowed.extend(jt.job_set.all())
+    ok_job_qs = Q()
+    for job_pk in jobs_allowed:
+        ok_job_qs = ok_job_qs | Q(job=job_pk, user=current_user)
+    user_ratings = UserJobRating.objects.filter(ok_job_qs)
+    print(50*'+')
+    print(user_ratings)
     l = []
     for ur in user_ratings:
         d = ur.as_dict()
@@ -59,18 +68,10 @@ def chart_view(request, pk, **kwargs):
         d.update(job)
         d.update(jobtype)
         l.append(d)
-    # jt_jobs = [Job.objects.filter(jobtype_id=jt.id) for jt in jobtypes]
-    # l = []
-    # for jt, j_qs in zip(jobtypes, jt_jobs):
-    #     for j in j_qs:
-    #         d = jt.as_dict()
-    #         j_dict = j.as_dict()
-    #         j_dict["db_idx"] = j.id
-    #         d.update(j_dict)
-    #         l.append(d)
+
     df = pd.DataFrame(l)
-    print(50*'+')
-    print(df)
+    # print(50*'+')
+    # print(df)
     # df.index = [j.id for j in Job.objects.all()]
     # df.reset_index()
     # df_transactions['date'] = pd.to_datetime(df_transactions['date'])
@@ -88,19 +89,20 @@ def chart_view(request, pk, **kwargs):
         print(df['rating'])
     except:
         df['rating'] = 3
-    print("CONVERT TO JSON")
+    # print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
     context = {"jt_descriptions": [{"name": n, "description": d} for n, d in zip(df['name'], df['description'])]
         # df.loc[df.index==i]["name"]: df.loc[df.index==i]["description"] for i in df.index
     }
     df = df.to_json()
-    print(context)
+    # print(context)
     session = request.session
     djaploda = session.get('django_dash', {})
     ndf = djaploda.get('df', df)
     ndf = df
     djaploda['df'] = ndf
-    session['django_dash'] = djaploda    
-    print(5*'---\n')
+    session['django_dash'] = djaploda  
+    session["shiftplan_pk"] = pk
+    # print(5*'---\n')
     return render(request, 'prefs/chart.html', context)

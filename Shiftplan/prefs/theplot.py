@@ -14,6 +14,8 @@ from django_plotly_dash import DjangoDash
 from django.contrib.auth.models import User
 from defs.models import Shiftplan, Jobtype, Job
 from .models import UserJobRating
+from django.db.models import Q
+
 
 RATES = range(1, 6)
 styles = {
@@ -110,12 +112,13 @@ def display_click_data(clickData, df_inp):
     State({'type': 'pref_inp', 'index': ALL}, 'value'))
 def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
     django_dash = kwargs["request"].session.get("django_dash")
+    shiftplan_pk = kwargs["request"].session.get("shiftplan_pk")
     if pref_inp != [None] and kwargs['callback_context'].triggered != []:
         pref = int(pref_inp[0])
         current_user = kwargs['user']
         context_trigger = kwargs['callback_context'].triggered[0]
         trigg_id = json.loads(context_trigger['prop_id'].split('.')[0])['index']
-        df = generate_df(current_user)
+        df = generate_df(current_user, shiftplan_pk)
         django_index = df.loc[df.index == int(trigg_id), 'db_idx']
         job_selected = Job.objects.get(id=int(django_index))
         # job_selected = Job.objects.all()[int(trigg_id)]
@@ -131,7 +134,7 @@ def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
         # print("ujr ", ujr)
         ujr.save()
         # df.loc[df["db_idx"] == int(trigg_id), 'rating'] = pref
-        df = generate_df(current_user)
+        df = generate_df(current_user, shiftplan_pk)
         df_json = df.to_json()
         django_dash['df'] = df_json
         print("exiting alter_data, df: ", df)
@@ -168,8 +171,18 @@ def chart_plot(df):
 #     # fig.update_traces(marker_size=20)
 #     return fig
 
-def generate_df(user):
-    user_ratings = UserJobRating.objects.filter(user=user)
+def generate_df(user, sp_pk):
+    current_user = user
+    shiftplan = Shiftplan.objects.get(pk=sp_pk)
+    jobtypes = shiftplan.jobtype_set.all()
+    jobs_allowed = []
+    for jt in jobtypes:
+        # print(jt.job_set.all().values_list("pk", flat=True))
+        jobs_allowed.extend(jt.job_set.all())
+    ok_job_qs = Q()
+    for job_pk in jobs_allowed:
+        ok_job_qs = ok_job_qs | Q(job=job_pk, user=current_user)
+    user_ratings = UserJobRating.objects.filter(ok_job_qs)
     l = []
     for ur in user_ratings:
         d = ur.as_dict()

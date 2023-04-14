@@ -64,7 +64,8 @@ class Jobtype(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None and self.group is None:  # create
             self.group = self.shiftplan.group
-        # elif not self.group is None:
+        elif not self.group is None:
+            self.group = self.group + "_" + self.shiftplan.group
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
 

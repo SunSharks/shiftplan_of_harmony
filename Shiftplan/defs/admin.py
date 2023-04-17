@@ -7,13 +7,14 @@ from .models import Jobtype
 from .models import Job
 
 
-class JobInline(nested_admin.NestedStackedInline):
+class JobInline(nested_admin.NestedTabularInline):
     model = Job
-    extra = 3
+    extra = 0
 
 class JobtypeInline(nested_admin.NestedStackedInline):
     model = Jobtype
     inlines = [JobInline]
+    extra = 0
 
 
 class ShiftplanAdmin(nested_admin.NestedModelAdmin):

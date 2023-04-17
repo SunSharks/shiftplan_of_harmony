@@ -1,0 +1,11 @@
+{% extends "prefs/base.html" %}
+
+{% block content %}
+
+<div hx-target="this" hx-swap="outerHTML">
+  <h3>{{ user.username }} Options</h3>
+  <p>Minimum break hours: {{ min_break_hours }}</p>
+  <button hx-get="{% url 'prefs:user_options' %}">Update</button>
+</div>
+
+{% endblock %}

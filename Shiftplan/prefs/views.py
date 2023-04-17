@@ -23,8 +23,16 @@ class IndexView(generic.ListView):
     context_object_name = 'shiftplan_list'
 
     def get_queryset(self):
-        """Return all available shiftplan instances."""
-        return Shiftplan.objects.all()
+        """Returns all available shiftplan instances that current user is part of."""
+        print(self.request.user.groups.values_list())
+        groups = self.request.user.groups.values_list()
+        ok_shiftplan_qs = Q()
+        for g in groups:
+            if g[1].endswith("_SP"):
+                ok_shiftplan_qs = ok_shiftplan_qs | Q(group=g[0])
+        perm_shiftplans = Shiftplan.objects.filter(ok_shiftplan_qs)
+        return perm_shiftplans
+
 
 
 def regain_integrity(shiftplan_id, user):

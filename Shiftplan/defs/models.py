@@ -9,7 +9,8 @@ class Shiftplan(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:  # create
-            self.group = Group.objects.create(name = self.name)
+            self.group = Group.objects.create(name = self.name+"_SP")
+        self.group = Group.objects.get(name=self.name+"_SP")
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
     def __str__(self):
@@ -62,7 +63,7 @@ class Jobtype(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if self.pk is None and self.group is None:  # create
+        if self.pk is None and self.group is None:
             self.group = self.shiftplan.group
         elif not self.group is None:
             self.group = self.group + "_" + self.shiftplan.group

@@ -12,11 +12,11 @@ class UserJobRating(models.Model):
     rating = models.IntegerField(default=3, blank=True, null=True)
 
     def __str__(self):
-        s = "user: {} job: {} rating: {}".format(self.user, self.job, self.rating)
+        s = "user: {} job: {} rating: {}".format(self.user.username, self.job, self.rating)
         return s
 
     def as_dict(self):
-        return {'user': self.user, 'job': self.job, 'rating': self.rating}
+        return {'user': self.user.pk, 'job': self.job.pk, 'rating': self.rating}
 
     class Meta:
         indexes = [
@@ -32,7 +32,7 @@ class UserOptions(models.Model):
         return f'{self.user.username} Profile, break: {self.min_break_hours}'
 
     def as_dict(self):
-        return {'user': self.user, 'min_break_hours': self.min_break_hours}
+        return {'user': self.user.pk, 'min_break_hours': self.min_break_hours}
 
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)

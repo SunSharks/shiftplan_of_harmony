@@ -104,6 +104,7 @@ def chart_view(request, pk, **kwargs):
     context = {"jt_descriptions": [{"name": n, "description": d} for n, d in zip(df['name'], df['description'])]
         # df.loc[df.index==i]["name"]: df.loc[df.index==i]["description"] for i in df.index
     }
+    print(type(df["user"][0]))
     df = df.to_json()
     # print(context)
     session = request.session

@@ -9,3 +9,12 @@ _*
 helper_sol/
 crew_sol/
 test.py
+
+
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media

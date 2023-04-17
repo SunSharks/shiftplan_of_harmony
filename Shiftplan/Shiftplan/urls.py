@@ -26,7 +26,6 @@ urlpatterns = [
     path('djaploda/', include('django_plotly_dash.urls')),
     path('defs/', include('defs.urls')),
     path('prefs/', include('prefs.urls')),
-    # path('charts/', include('charts.urls')),
     path('admin/', admin.site.urls),
     path('_nested_admin/', include('nested_admin.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),

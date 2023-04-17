@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'nested_admin',
     'defs',
-    # 'charts',
     'prefs',
     'bootstrap4',
 ]
@@ -111,6 +110,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# AUTH_USER_MODEL = "prefs.UserOptions"
 
 
 # Internationalization

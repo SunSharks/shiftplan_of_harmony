@@ -117,9 +117,7 @@ def chart_view(request, pk, **kwargs):
     # print(5*'---\n')
     return render(request, 'prefs/chart.html', context)
 
-@login_required
-def user_options_view(request):
-    current_user = request.user if type(request.user) is not AnonymousUser else None
+def get_or_create_user_options(current_user):
     try:
         user_options = UserOptions.objects.get(user=current_user)
         print("existing user_options: {}".format(user_options))
@@ -127,6 +125,13 @@ def user_options_view(request):
         user_options = UserOptions(user=current_user)
         user_options.save()
         print("new user_options: {}".format(user_options))
+    user_options = UserOptions.objects.get(user=current_user)
+    return user_options
+
+@login_required
+def user_options_view(request):
+    current_user = request.user if type(request.user) is not AnonymousUser else None
+    user_options = get_or_create_user_options(current_user)
     form = UserOptionsForm(current_user, request.POST or None, instance=user_options)
     if request.method == "POST":
         print("POST")
@@ -185,8 +190,9 @@ def user_options_view(request):
 
 @login_required
 def user_options_form(request):
-    user_options = UserOptions.objects.get(user=request.user)
-    form = UserOptionsForm(request.user)
+    current_user = request.user if type(request.user) is not AnonymousUser else None
+    user_options = get_or_create_user_options()
+    form = UserOptionsForm(current_user)
     context = {
         "form": form,
         "user_options": user_options
@@ -196,7 +202,8 @@ def user_options_form(request):
 @login_required
 def user_options_detail(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
-    min_break_hours = UserOptions.objects.get(user=current_user).min_break_hours
+    user_options = get_or_create_user_options(current_user)
+    min_break_hours = user_options.min_break_hours
     context = {
         'user': current_user,
         'min_break_hours': min_break_hours

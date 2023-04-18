@@ -1,0 +1,1 @@
+[{"model": "defs.timeinterval", "pk": 2, "fields": {"shiftplan": 3, "start_date": "2023-04-01", "end_date": "2023-04-01"}}, {"model": "defs.timeinterval", "pk": 3, "fields": {"shiftplan": 3, "start_date": "2023-04-13", "end_date": "2023-04-15"}}]

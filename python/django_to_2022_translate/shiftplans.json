@@ -1,0 +1,1 @@
+[{"model": "defs.shiftplan", "pk": 2, "fields": {"name": "Crew", "time_format": "hourly", "group": 2}}, {"model": "defs.shiftplan", "pk": 3, "fields": {"name": "Helfi", "time_format": "hourly", "group": 1}}]

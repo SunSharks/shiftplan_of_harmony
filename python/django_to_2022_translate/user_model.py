@@ -67,8 +67,9 @@ class User_Model(Model):
             self.model.addCons(quicksum(self.vars[i]*self.durings) >= lower)
 
     def feed_night_constraint(self):
-        nightjobs = self.dh.jobs.loc[(self.dh.jobs["dt_start"] >= 0) &
-                                     (self.dh.jobs["dt_start"] <= 8)].index
+        # print(self.dh.jobs["datetime_start"][0].hour)
+        self.dh.jobs["hour_start"] = self.dh.jobs.datetime_start.apply(lambda x: x.hour)
+        nightjobs = self.dh.jobs.loc[(self.dh.jobs["hour_start"] >= 0) &(self.dh.jobs["hour_start"] <= 8)].index
         for p in range(self.num_persons):
             if len(nightjobs) < self.num_persons:
                 self.model.addCons(quicksum(self.vars[p][i] for i in nightjobs) <= 1)
@@ -82,23 +83,23 @@ class User_Model(Model):
     def feed_restricted_jobs(self):
         # TODO
         """SELECT * FROM Jobs WHERE Jobs.jt_primary IN ( SELECT id FROM Jobtypes WHERE Jobtypes.name IN ( SELECT jt_name FROM Exclusives));"""
-        uniques = self.dh.exclusives.jt_name.unique()
-        allowed_rows = []
-        unallowed_rows = []
-        jobs = []
-        for name in uniques:
-            self.dh.jts['fullname'] = self.dh.jts.name.str.cat(self.dh.jts.name_appendix)
-            jt_prims = self.dh.jts.loc[self.dh.jts['fullname'] == name].index
-            pers = self.dh.exclusives.loc[self.dh.exclusives["jt_name"] == name]["fullname_id"]
-            allowed_rows.append(self.dh.users.loc[self.dh.users["fullname_id"].isin(pers)].index)
-            unallowed_rows.append(self.dh.users.loc[~self.dh.users["fullname_id"].isin(pers)].index)
-            jobs.append(self.dh.jobs.loc[self.dh.jobs["jt_primary"].isin(jt_prims)].index)
-            print(name)
-            print(self.dh.jts['fullname'])
-        for i, job in enumerate(jobs):
-            for j in job:
-                self.model.addCons(quicksum(self.vars[u][j] for u in allowed_rows[i]) == 1)
-                self.model.addCons(quicksum(self.vars[u][j] for u in unallowed_rows[i]) == 0)
+        # uniques = self.dh.exclusives.jt_name.unique()
+        # allowed_rows = []
+        # unallowed_rows = []
+        # jobs = []
+        # for name in uniques:
+        #     self.dh.jts['fullname'] = self.dh.jts.name.str.cat(self.dh.jts.name_appendix)
+        #     jt_prims = self.dh.jts.loc[self.dh.jts['fullname'] == name].index
+        #     pers = self.dh.exclusives.loc[self.dh.exclusives["jt_name"] == name]["fullname_id"]
+        #     allowed_rows.append(self.dh.users.loc[self.dh.users["fullname_id"].isin(pers)].index)
+        #     unallowed_rows.append(self.dh.users.loc[~self.dh.users["fullname_id"].isin(pers)].index)
+        #     jobs.append(self.dh.jobs.loc[self.dh.jobs["jt_primary"].isin(jt_prims)].index)
+        #     print(name)
+        #     print(self.dh.jts['fullname'])
+        # for i, job in enumerate(jobs):
+        #     for j in job:
+        #         self.model.addCons(quicksum(self.vars[u][j] for u in allowed_rows[i]) == 1)
+        #         self.model.addCons(quicksum(self.vars[u][j] for u in unallowed_rows[i]) == 0)
 
     def feed_fairness(self):
         """ TODO!

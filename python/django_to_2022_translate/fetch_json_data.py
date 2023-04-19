@@ -67,7 +67,7 @@ def fetch_jobs(*jobtype_ids):
         FROM Jobs WHERE jt_primary IN(
         SELECT id from Jobtypes WHERE helper = {}
         )"""
-    print(jobtype_ids)
+    # print(jobtype_ids)
     # print(models["jobs"])
     jobs = models["jobs"]#.loc[
     #         models["jobs"]["jobtype"] in jobtype_ids]
@@ -76,6 +76,7 @@ def fetch_jobs(*jobtype_ids):
     jobs['datetime_end'] = pd.to_datetime(jobs['end_date'] + ' ' + jobs['end_time'])
     jobs["during"] = jobs['datetime_end'] - jobs['datetime_start']
     jobs['during'] = jobs['during'] / pd.Timedelta(hours=1)
+    jobs = jobs.reset_index(drop=True)
     # print(jobs)
     return jobs
 
@@ -110,16 +111,19 @@ def fetch_users(shiftplan_pk):
         "bias_hours": "bias"
         })
     # print("user_options: ", user_options)
+    user_options["break"] = pd.to_timedelta(user_options["break"], unit="h", errors='raise')
     return user_options
 
 
 def fetch_preferences_by_group(users, jobs):
-    print(users, jobs)
+    # print(users, jobs)
     all_ujrs = models["user_job_ratings"]
     
     ujrs = all_ujrs[all_ujrs["user"].isin(list(users["user_pk"]))]
     ujrs = ujrs[ujrs["job"].isin(list(jobs["pk"]))]
+    # ujrs.set_index(list(range(len(ujrs.index))))
     # print(ujrs)
+    # print(jobs)
     return ujrs
 
 

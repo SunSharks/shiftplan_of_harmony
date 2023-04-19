@@ -117,11 +117,14 @@ class Data_Handler:
         """
         conflicts = {}
         # print(self.dh.jobs)
+        c = 0
         for id, s, e in self.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
             # print(id)
             tmp = self.jobs.loc[((self.jobs["datetime_start"] >= s) & (self.jobs["datetime_start"] < e))
                                    | ((self.jobs["datetime_end"] >= s) & (self.jobs["datetime_end"] <= e))]
-            conflicts[id] = tmp
+            conflicts[c] = tmp
+            c += 1
+        # print(conflicts)
         return conflicts
 
 

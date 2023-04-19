@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from pyscipopt import *
 import numpy as np
 import pandas as pd
@@ -93,35 +92,48 @@ class Model:
                 return self.get_n_series(depth, self.neighbors_per_job[id][nb_lst_idx], nb_lst_idx, series)
 
     def feed_forced_break(self):
-        """Enforces break after self.jobs_until_forced_break shifts as hard constraint.
+        """TODO: Enforces break after self.jobs_until_forced_break shifts as hard constraint.
         """
-        self.neighbors_per_job = {}
-        for id, end in self.dh.jobs[["abs_end"]].itertuples(index=True):
-            # print(self.dh.jobs.loc[end == self.dh.jobs['abs_start']])
-            neighbors = self.dh.jobs.loc[end == self.dh.jobs['abs_start']]
-            self.neighbors_per_job[id] = list(neighbors.index)
-        n_series_ids = []
-        for id in self.neighbors_per_job:
-            s = self.get_n_series(3, id)
-            if s:
-                n_series_ids.append(tuple(s))
-        # print(set(n_series_ids))
-        for p in range(self.num_persons):
-            n_series_ids = set(n_series_ids)
-            for ser in n_series_ids:
-                self.model.addCons(quicksum(self.vars[p][i]
-                                            for i in ser) <= self.jobs_until_forced_break)
+        pass
+        # self.neighbors_per_job = {}
+        # for id, end in self.dh.jobs[["abs_end"]].itertuples(index=True):
+        #     # print(self.dh.jobs.loc[end == self.dh.jobs['abs_start']])
+        #     neighbors = self.dh.jobs.loc[end == self.dh.jobs['abs_start']]
+        #     self.neighbors_per_job[id] = list(neighbors.index)
+        # n_series_ids = []
+        # for id in self.neighbors_per_job:
+        #     s = self.get_n_series(3, id)
+        #     if s:
+        #         n_series_ids.append(tuple(s))
+        # # print(set(n_series_ids))
+        # for p in range(self.num_persons):
+        #     n_series_ids = set(n_series_ids)
+        #     for ser in n_series_ids:
+        #         self.model.addCons(quicksum(self.vars[p][i]
+        #                                     for i in ser) <= self.jobs_until_forced_break)
 
     def find_conflicts(self, br):
-        """Moved to data handler without break."""
+        """Finds conflicting jobs for each job.
+        Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
+        @param br: individual minimum break between two shifts."""
+        conflicts = {}
+        # print(self.dh.jobs)
+        for id, s, e in self.dh.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
+            # print(id)
+            tmp = self.dh.jobs.loc[((self.dh.jobs["datetime_start"] >= s-br) & (self.dh.jobs["datetime_start"] < e+br))
+                                   | ((self.dh.jobs["datetime_end"] >= s-br) & (self.dh.jobs["datetime_end"] <= e+br))]
+            conflicts[id] = tmp
+        return conflicts
 
 
     def feed_conflicts_per_person(self):
         """TODO: break"""
         for p_id, br in self.persons[["break"]].itertuples(index=True):
-            # print(50*"_")
+            print(50*"_")
             conf = self.find_conflicts(br)
             for key in conf:
+                # print(conf[key].index)
+                print(50*"_")
                 self.model.addCons(quicksum(self.vars[p_id][i] for i in conf[key].index) <= 1)
 
     def feed_diversity(self):

@@ -10,7 +10,7 @@ from django.db.models import Q
 
 import pandas as pd
 
-from defs.models import Shiftplan, Jobtype, Job
+from defs.models import Shiftplan, ShiftplanCrew, ShiftplanCrewMember, Jobtype, Job
 from .models import UserJobRating, UserOptions
 from .forms import UserOptionsForm
 from .theplot import *
@@ -24,12 +24,13 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Returns all available shiftplan instances that current user is part of."""
-        print(self.request.user.groups.values_list())
-        groups = self.request.user.groups.values_list()
+        sp_crew_members = self.request.user.shiftplancrewmember_set.all()
+        print(sp_crew_members[0].crew.name)
+        # sp_crews = sp_crew_members.shiftplancrew_set.all()
+        print(sp_crew_members)
         ok_shiftplan_qs = Q()
-        for g in groups:
-            if g[1].endswith("_SP"):
-                ok_shiftplan_qs = ok_shiftplan_qs | Q(group=g[0])
+        for c in sp_crew_members:
+            ok_shiftplan_qs = ok_shiftplan_qs | Q(crew=c.crew)
         perm_shiftplans = Shiftplan.objects.filter(ok_shiftplan_qs)
         return perm_shiftplans
 

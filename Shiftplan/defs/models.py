@@ -1,13 +1,45 @@
 from django.db import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
+# class ShiftplanGroup(models.Model):
+#     group = OneToOneField(Group, on_delete=models.CASCADE)
+#     shiftplan = OneToOneField()
+
+#     def __str__(self):
+#         s = f"Shiftplan Group: {self.group}"
+#         return s
+class ShiftplanCrew(models.Model):
+    name = models.CharField(max_length=100)
+    members = models.ManyToManyField(User, through='ShiftplanCrewMember')
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        # print(self.shiftplan)
+        # self.name = self.shiftplan.name
+        super().save(*args, **kwargs)
+
+class ShiftplanCrewMember(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    crew = models.ForeignKey(ShiftplanCrew, on_delete=models.CASCADE)
+    is_leader = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user}, {self.crew}"
 
 class Shiftplan(models.Model):
     name = models.CharField('shiftplan_name', max_length=200, unique=True, blank=False, default="")
     time_format = models.CharField("time_format", max_length=50, default="hourly")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    crew = models.OneToOneField(ShiftplanCrew, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.crew = ShiftplanCrew.objects.create(name=self.name)
+        self.crew = ShiftplanCrew.objects.get(name=self.name)
+
+
         if self.pk is None:  # create
             self.group = Group.objects.create(name = self.name+"_SP")
         self.group = Group.objects.get(name=self.name+"_SP")
@@ -16,6 +48,11 @@ class Shiftplan(models.Model):
     def __str__(self):
         return self.name
 
+
+
+# class Crew(models.Model):
+#     name = models.CharField('crew_name', max_length=200, unique=True, blank=False, default="")
+#     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
     
 
 
@@ -60,13 +97,15 @@ class Jobtype(models.Model):
     # restricted = models.BooleanField() # True if jt is restricted to certain group of users
     # user_group = models.ManyToManyField(User)
     default_rating = models.IntegerField(default=3)
+    restricted_to_group = models.BooleanField(default=False)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    
 
     def save(self, *args, **kwargs):
-        if self.pk is None and self.group is None:
-            self.group = self.shiftplan.group
-        elif not self.group is None:
-            self.group = self.group + "_" + self.shiftplan.group
+        # if self.pk is None and self.group is None:
+        #     self.group = self.shiftplan.group
+        # elif not self.group is None:
+        #     self.group = self.group + "_" + self.shiftplan.group
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
 

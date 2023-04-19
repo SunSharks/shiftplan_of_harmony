@@ -1,8 +1,10 @@
 from django.contrib import admin
 import nested_admin
+from django.contrib.auth.admin import GroupAdmin
+from django.contrib.auth.models import User, Group
 from .models import Shiftplan
-# from .models import Subgroup
-# from .models import Day
+from .models import ShiftplanCrew
+from .models import ShiftplanCrewMember
 from .models import Jobtype
 from .models import Job
 
@@ -30,3 +32,15 @@ class ShiftplanAdmin(nested_admin.NestedModelAdmin):
 
 
 admin.site.register(Shiftplan, ShiftplanAdmin)
+
+class ShiftplanCrewMemberInline(admin.StackedInline):
+    model = ShiftplanCrewMember
+    extra = 1
+
+class ShiftplanCrewAdmin(GroupAdmin):
+    model = ShiftplanCrew
+    inlines = [ShiftplanCrewMemberInline]
+    filter_horizontal = ('members',)
+
+admin.site.unregister(Group)
+admin.site.register(ShiftplanCrew, ShiftplanCrewAdmin)

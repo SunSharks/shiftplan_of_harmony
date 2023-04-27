@@ -168,31 +168,10 @@ def chart_plot(df):
     print(df)
     tl = px.timeline(
         df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
-    # fig = px.bar(df, x='during', y='name', color='name')
+    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")
-    # fig['layout']['xaxis'].update({'type': None})
-    # fig.update_xaxes(type='category')
-    # gantt_plot = plot(fig)#, output_type="div")
-    # tl.update_traces()
-    # print(tl.data)
     return tl
-# @app.callback(
-#     Output(component_id="chart_plot", component_property="figure"),
-#     [Input(component_id="job_pref_input", component_property="value")]
-# )
-# def update_graph(pref_selected, session_state=None, **kwargs):
-#     print(pref_selected)
-#     print(type(pref_selected))
-#     if session_state is None:
-#         raise NotImplementedError("Cannot handle a missing session state")
-#     df = session_state.get('df')
-#     print(df)
-#     dff = df.copy()
-#     dff.loc['rating'] = pref_selected
 
-    
-#     # fig.update_traces(marker_size=20)
-#     return fig
 
 def generate_df(user, sp_pk):
     current_user = user

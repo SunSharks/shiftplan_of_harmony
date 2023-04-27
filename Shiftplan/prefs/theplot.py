@@ -2,6 +2,7 @@ import json
 import pandas as pd
 from dash import dcc, html, ctx, MATCH, ALL
 from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
 
 import plotly.express as px
 from plotly.offline import plot
@@ -71,17 +72,14 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
     State('df_inp', 'value'))
 def display_click_data(clickData, df_inp):
     if clickData:
+        clicked_point = clickData["points"][0]
         print("clickData: ", clickData)
-        # if df_inp != None:
-        #     print("df_inp")
-        #     print(df_inp["description"])
         pref_inp = html.Div([
-            html.P('Rate job: {name}'.format(name=clickData["points"][0]["label"])),
             html.P(),
             dcc.Dropdown(
                 id={
                     'type': 'pref_inp',
-                    'index': clickData["points"][0]["pointIndex"]
+                    'index': clicked_point["pointIndex"]
                 },
                 options=[
                     {'label': i, 'value': i} for i in RATES
@@ -91,23 +89,47 @@ def display_click_data(clickData, df_inp):
                 style={'width': '49%', "position": "relative"},
                 maxHeight=500,
                 className="dropdown_row"
-            ),
-            html.Button(
-                id={
-                    'type': 'pref_inp_btn',
-                    'index': clickData["points"][0]["pointIndex"]
-                },
-                children="Submit",
-                style={"position": "relative", "display": "inline-block"}
-                )
-
+            )
         ], style={'display': 'inline', "height": "80%"})
+        modal = html.Div(
+            [
+                # dbc.Button("Open modal", id="open", n_clicks=0), 
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader(dbc.ModalTitle('Rate job: {name}'.format(name=clicked_point["label"]))),
+                        dbc.ModalBody(pref_inp),
+                        dbc.ModalFooter(
+                            dbc.Button("Submit",
+                                id={
+                                    'type': 'pref_inp_btn',
+                                    'index': clicked_point["pointIndex"]
+                                }
+                            )
+                        ),
+                    ],
+                    id="modal",
+                    is_open=True,
+                ),
+            ]
+        )
+        
         # return json.dumps(clickData, indent=2)
-        return pref_inp
+        return modal
+
+# @app.callback(
+#     Output("modal", "is_open"),
+#     [Input("open", "n_clicks"), Input("close", "n_clicks")],
+#     [State("modal", "is_open")],
+# )
+# def toggle_modal(n1, n2, is_open):
+#     if n1 or n2:
+#         return not is_open
+#     return is_open
 
 
 @app.callback(
     Output('df_inp', 'value'),
+    Output("modal", "is_open"),
     Input({'type': 'pref_inp_btn', 'index': ALL}, 'n_clicks'),
     State({'type': 'pref_inp', 'index': ALL}, 'value'))
 def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
@@ -138,7 +160,8 @@ def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
         df_json = df.to_json()
         django_dash['df'] = df_json
         print("exiting alter_data, df: ", df)
-        return df_json
+        modal_show = False
+        return df_json, modal_show
     
 
 def chart_plot(df):

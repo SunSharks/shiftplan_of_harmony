@@ -10,6 +10,7 @@ import chart_studio.plotly as py
 import chart_studio
 chart_studio.tools.set_config_file(world_readable=False, sharing='private')
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from django_plotly_dash import DjangoDash
 
 from django.contrib.auth.models import User
@@ -17,6 +18,20 @@ from defs.models import Shiftplan, Jobtype, Job
 from .models import UserJobRating
 from django.db.models import Q
 
+from .config import rating_color_map
+
+def generate_legend():
+    legend_items = []
+    for rating, color in rating_color_map.items():
+        legend_items.append(
+            go.Scatter(x=[None], y=[None], mode='markers', marker=dict(color=color), showlegend=True, name=f"{rating}")
+        )
+    legend_fig = go.Figure(legend_items)
+
+    # Add a title to the custom legend
+    legend_fig.update_layout(title="Rates")
+    # legend_fig.show()
+    return legend_fig
 
 RATES = range(1, 6)
 styles = {
@@ -32,16 +47,21 @@ app.layout = html.Div([
     dcc.Input(id='df_inp'),
     dcc.Store(id="cache", data=[]),
     html.H1("Preferences", style={"text-align": "center"}),
+    # html.Div(
+    #     dcc.Graph(
+    #         id="the_legend",
+    #         figure=generate_legend()
+    #     )
+    # ),
     html.Div([
             dcc.Markdown("""
                 **Click Data**
-
                 Click on points in the graph.
             """),
             html.Pre(id='click-data', children=[]),
     ], className='three columns'),
     html.Br(),
-    dcc.Graph(id="chart_plot")
+    dcc.Graph(id="chart_plot"),
 ], style=styles['app'])
 
 
@@ -165,9 +185,12 @@ def alter_data(pref_inp_btn, pref_inp, *args, **kwargs):
     
 
 def chart_plot(df):
-    print(df)
+    # print(df)
+    df["rating"] = df["rating"].astype(str)
+    from .config import rating_color_map
+    rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
+        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={}, color_discrete_map=rating_color_map)
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")
     return tl

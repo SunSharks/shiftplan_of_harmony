@@ -1,5 +1,7 @@
 import json
 import pandas as pd
+from datetime import datetime
+
 from dash import dcc, html, ctx, MATCH, ALL
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -73,8 +75,30 @@ def display_click_data(clickData, df_inp):
     if clickData:
         clicked_point = clickData["points"][0]
         print("clickData: ", clickData)
+        jt_name = name=clicked_point["label"]
+        begin_dt = datetime.fromisoformat(clicked_point["base"])
+        end_dt = datetime.fromisoformat(clicked_point["value"])
+        print(begin_dt.date(), end_dt.date())
+        if begin_dt.date() == end_dt.date():
+            body_text = html.Div([
+                html.B('{date}'.format(date=begin_dt.date())),
+                html.P('{begin} - {end}'.format(begin=begin_dt.time().strftime("%H:%M"), end=end_dt.time().strftime("%H:%M"))),
+            ]
+            )
+        else:
+            body_text = html.Div([
+                html.P([
+                    html.B('{date} '.format(date=begin_dt.date())),
+                    '{time}'.format(time=begin_dt.time().strftime("%H:%M"))
+                    ]),
+                html.P([
+                    html.B('{date} '.format(date=end_dt.date())),
+                    '{time}'.format(time=end_dt.time().strftime("%H:%M"))
+                    ]),
+            ]
+            )
         pref_inp = html.Div([
-            html.P(),
+            body_text,
             dcc.Dropdown(
                 id={
                     'type': 'pref_inp',
@@ -90,12 +114,13 @@ def display_click_data(clickData, df_inp):
                 className="dropdown_row"
             )
         ], style={'display': 'inline', "height": "80%"})
+        print(clicked_point, 10*'_')
         modal = html.Div(
             [
                 # dbc.Button("Open modal", id="open", n_clicks=0), 
                 dbc.Modal(
                     [
-                        dbc.ModalHeader(dbc.ModalTitle('Rate job: {name}'.format(name=clicked_point["label"]))),
+                        dbc.ModalHeader(dbc.ModalTitle("Rate {name}".format(name=jt_name))),
                         dbc.ModalBody(pref_inp),
                         dbc.ModalFooter(
                             dbc.Button("Submit",

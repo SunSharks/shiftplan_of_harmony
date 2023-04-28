@@ -74,11 +74,11 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
 def display_click_data(clickData, df_inp):
     if clickData:
         clicked_point = clickData["points"][0]
-        print("clickData: ", clickData)
+        # print("clickData: ", clickData)
         jt_name = name=clicked_point["label"]
         begin_dt = datetime.fromisoformat(clicked_point["base"])
         end_dt = datetime.fromisoformat(clicked_point["value"])
-        print(begin_dt.date(), end_dt.date())
+        # print(begin_dt.date(), end_dt.date())
         if begin_dt.date() == end_dt.date():
             body_text = html.Div([
                 html.B('{date}'.format(date=begin_dt.date())),
@@ -114,13 +114,15 @@ def display_click_data(clickData, df_inp):
                 className="dropdown_row"
             )
         ], style={'display': 'inline', "height": "80%"})
-        print(clicked_point, 10*'_')
+        # print(clicked_point, 10*'_')
         modal = html.Div(
             [
                 # dbc.Button("Open modal", id="open", n_clicks=0), 
                 dbc.Modal(
                     [
-                        dbc.ModalHeader(dbc.ModalTitle("Rate {name}".format(name=jt_name))),
+                        dbc.ModalHeader(
+                            dbc.ModalTitle("Rate {name}".format(name=jt_name)),
+                            close_button=False),
                         dbc.ModalBody(pref_inp),
                         dbc.ModalFooter(
                             dbc.Button("Submit",
@@ -133,6 +135,8 @@ def display_click_data(clickData, df_inp):
                     ],
                     id="modal",
                     is_open=True,
+                    keyboard=False,
+            backdrop="static",
                 ),
             ]
         )
@@ -184,7 +188,7 @@ def alter_data(pref_inp_btn, pref_inp, df_inp, *args, **kwargs):
         df = generate_df(current_user, shiftplan_pk)
         df_json = df.to_json()
         django_dash['df'] = df_json
-        print("exiting alter_data, df: ", df)
+        # print("exiting alter_data, df: ", df)
         modal_show = False
         return df_json, modal_show
     return df_inp, True

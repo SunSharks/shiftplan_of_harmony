@@ -75,7 +75,7 @@ def display_click_data(clickData, df_inp):
     if clickData:
         clicked_point = clickData["points"][0]
         # print("clickData: ", clickData)
-        jt_name = name=clicked_point["label"]
+        jt_name = clicked_point["label"]
         begin_dt = datetime.fromisoformat(clicked_point["base"])
         end_dt = datetime.fromisoformat(clicked_point["value"])
         # print(begin_dt.date(), end_dt.date())
@@ -108,6 +108,7 @@ def display_click_data(clickData, df_inp):
                     {'label': i, 'value': i} for i in RATES
                 ],
                 multi=False,
+                value=clicked_point["marker.color"],
                 clearable=False,
                 style={'width': '49%', "position": "relative"},
                 maxHeight=500,

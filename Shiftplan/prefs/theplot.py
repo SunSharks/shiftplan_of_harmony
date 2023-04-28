@@ -166,9 +166,24 @@ def alter_data(pref_inp_btn, pref_inp, df_inp, *args, **kwargs):
     
 
 def chart_plot(df):
-    print(df)
+    """
+    Returns timeline plot.
+    @param df: input df
+    TODO: discrete color map and legend.
+    """
+    # print(df)
+    # df["rating_str"] = df["rating"].astype(str)
+    rating_color_map = {
+        1: "green",
+        2: "yellow",
+        3: "orange",
+        4: "goldenrod",
+        5: "red"
+        }
+    # rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
+        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={},
+        color_discrete_map=rating_color_map)
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")
     return tl

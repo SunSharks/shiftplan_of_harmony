@@ -50,9 +50,17 @@ class Shiftplan(models.Model):
 
 
 
-# class Crew(models.Model):
+# class SubCrew(models.Model):
 #     name = models.CharField('crew_name', max_length=200, unique=True, blank=False, default="")
 #     shiftplan = models.ForeignKey(Shiftplan, on_delete=models.CASCADE)
+#     members = models.ManyToManyField(ShiftplanCrewMember)
+
+#     def __str__(self):
+#         return self.name 
+
+#     def get_members(self):
+#         return self.shiftplan.crew.members.objects.all()#(subcrewmember__crew=self)
+
     
 
 
@@ -99,6 +107,7 @@ class Jobtype(models.Model):
     default_rating = models.IntegerField(default=3)
     restricted_to_group = models.BooleanField(default=False)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    # subcrew = models.ForeignKey(Subcrew, on_delete=models.CASCADE, blank=True, null=True)
     
 
     def save(self, *args, **kwargs):

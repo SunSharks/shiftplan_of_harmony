@@ -7,6 +7,7 @@ from .models import ShiftplanCrew
 from .models import ShiftplanCrewMember
 from .models import Jobtype
 from .models import Job
+# from .models import SubCrew
 
 
 class JobInline(nested_admin.NestedTabularInline):
@@ -18,11 +19,16 @@ class JobtypeInline(nested_admin.NestedStackedInline):
     inlines = [JobInline]
     extra = 0
 
+# class SubCrewInline(nested_admin.NestedStackedInline):
+#     model = SubCrew
+#     extra = 0
+
 
 class ShiftplanAdmin(nested_admin.NestedModelAdmin):
     fieldsets = [
         (None,               {'fields': ['name', 'group']}),
     ]
+    # inlines = [JobtypeInline, SubCrewInline,]
     inlines = [JobtypeInline,]
     # list_display = ('name', 'group')
     # That adds a “Filter” sidebar that lets people filter the change list by field:

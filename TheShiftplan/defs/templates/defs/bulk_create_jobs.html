@@ -1,0 +1,18 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<h1>Experimental Bulk Create Shifts</h1>
+<p>Jobtype: {{ jobtype.name }}</p>
+{% if time_intervals_exist %}
+    <ul>
+    {% for ti in ti_list %}
+        <li> {{ ti.start_date }} - {{ ti.end_date }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Time Intervals defined.</p>
+    <p><a href="{% url 'defs:ti_def' jobtype.shiftplan.id %}">Create some</a></p>
+{% endif %}
+
+{% endblock %}

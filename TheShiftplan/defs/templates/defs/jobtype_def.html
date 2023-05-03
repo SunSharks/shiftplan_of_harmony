@@ -1,0 +1,17 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<legend><h1>Jobtypes</h1></legend>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% for jt in sp.jobtype_set.all %}
+    <input type="text" name="jt_name" id="jt_name{{ forloop.counter }}" value="{{ jt.name }}" disabled>
+    <li><a href="{% url 'defs:update-jobtype' jt.id %}">Update</a></li>
+    <li><a href="{% url 'defs:detail-jobtype' jt.id %}">Delete</a></li>
+    <li><a href="{% url 'defs:job_def' jt.id %}">Shifts</a></li>
+    <br>
+{% endfor %}
+
+<li><a href="{% url 'defs:create_jobtype' sp.id %}">Add Jobtype</a></li>
+
+{% endblock %}

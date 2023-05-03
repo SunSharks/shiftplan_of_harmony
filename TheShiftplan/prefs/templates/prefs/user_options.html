@@ -1,0 +1,12 @@
+{% extends "prefs/base.html" %}
+
+{% block content %}
+
+<h1>Options</h1>
+<button type="button" hx-get="{% url 'prefs:user_options_form' %}" hx-target="#user_optionsforms" hx-swap="beforeend">
+    Update User Options
+</button>
+
+<div id="user_optionsforms"></div>
+
+{% endblock %}

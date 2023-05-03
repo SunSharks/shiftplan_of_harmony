@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "header.html" %}
+    
+    <style>
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f9f9f9;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          padding: 12px 16px;
+          z-index: 1;
+        }
+        
+        .dropdown:hover .dropdown-content {
+          display: block;
+        }
+    </style>
+    <a href="{% url 'prefs:user_options_detail' %}">User Options</a>
+    <div class="job_descriptions">
+    {% for j in jt_descriptions %}
+    <div class="dropdown">
+        <span>{{ j.name }}</span>
+        <div class="dropdown-content">
+        <p>{{ j.description }}</p>
+        </div>
+    </div>
+
+    {% endfor %}
+    {% autoescape off %}
+        {% comment %} {{ plot_div }} {% endcomment %}
+        {% load plotly_dash %}
+        <div class="{%plotly_class name="thechart" %}", style="height:100%;width:100%;">
+            {% plotly_app name="thechart" ratio=1 %}
+        </div>
+       
+    {% endautoescape %}
+{% endblock content %}

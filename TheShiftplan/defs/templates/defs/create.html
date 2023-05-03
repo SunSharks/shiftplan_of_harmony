@@ -1,0 +1,13 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<h1>Create {{ create_headline }}</h1>
+
+<button type="button" hx-get={{ hx_get }} hx-target="#jobtypeforms" hx-swap="beforeend">
+    Add {{ button_text }}
+</button>
+
+<div id="jobtypeforms"></div>
+
+{% endblock %}

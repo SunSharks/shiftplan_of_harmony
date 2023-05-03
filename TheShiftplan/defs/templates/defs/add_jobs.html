@@ -1,0 +1,12 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<h1>Experimental Add More Shifts</h1>
+
+<button type="button" hx-get="{% url 'defs:add_jobs' %}" hx-target="#jobtypeforms" hx-swap="beforeend">
+    Add more shifts that start and end on full hours.
+</button>
+
+
+{% endblock %}

@@ -4,8 +4,8 @@
 
 <div hx-target="this" hx-swap="outerHTML">
   <h3>{{ user.username }} Options</h3>
-  <p>Minimum break hours: {{ min_break_hours }}</p>
-  <button hx-get="{% url 'prefs:user_options' %}">Update</button>
+  <p>Minimum break hours: {{ user_options.min_break_hours }}</p>
+  <button hx-get="{% url 'prefs:update_user_options' %}">Update</button>
 </div>
 
 {% endblock %}

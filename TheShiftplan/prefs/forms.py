@@ -15,10 +15,5 @@ class UserOptionsForm(forms.ModelForm):
         fields = (
             'min_break_hours',
         )
-        widgets = {
-        }
-    def __init__(self, user, *args, **kwargs):
-        self.user = user
-        super(UserOptionsForm, self).__init__(*args, **kwargs)
 
 

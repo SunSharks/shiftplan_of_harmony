@@ -104,61 +104,12 @@ def get_or_create_user_options(current_user):
 def user_options_view(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options(current_user)
-    form = UserOptionsForm(current_user, request.POST or None, instance=user_options)
-    if request.method == "POST":
-        print("POST")
-        if form.is_valid():
-            form.save()
-            # print("form valid user_options: {}".format(user_options))
-            return redirect("prefs:user_options_detail")
-            # return render(request, "prefs/user_options_detail.html", context={
-            #     "user": current_user,
-            #     "min_break_hours": user_options.min_break_hours
-            # })
-        # else:
-    return render(request, "prefs/user_options_form.html", context={
-        "form": form,
-        "user_options": user_options
-    })
-    # else:
-    #     return render(request, "prefs/user_options.html", context={
-    #         "form": form
-    #     })
-    # return render(request, "prefs/user_options_detail.html", context={
-    #             "user": current_user,
-    #             "min_break_hours": user_options.min_break_hours
-    #         })
-    # return render(request, "prefs/user_options.html")
-    # if request.method == "POST":
-    #     if form.is_valid():
-    #         user_options = form.save(commit=False)
-    #         # jobtype.shiftplan = shiftplan
-    #         user_options.save()
-    #         return redirect("prefs:index")
-    #     else:
-    #         return render(request, "prefs/user_options_form.html", context={
-    #             "form": form
-    #         })
-        # try:
-        #     min_break_hours = request.POST['min_break_hours']
-        # except KeyError:
-        #     # Redisplay the question voting form.
-        #     return render(request, 'prefs/user_options.html', {
-        #         'user': current_user,
-        #         'error_message': "You didn't select a choice.",
-        #     })
-        # else:
-        #     user_options.min_break_hours = min_break_hours
-        #     user_options.save()
-        #     # Always return an HttpResponseRedirect after successfully dealing
-        #     # with POST data. This prevents data from being posted twice if a
-        #     # user hits the Back button.
-        #     return HttpResponseRedirect(reverse('prefs:user_options'))
     context = {
         'user': current_user,
-        'form': form
+        'user_options': user_options
     }
-    return render(request, 'prefs/user_options_form.html', context)
+    return render(request, 'prefs/user_options_detail.html', context)
+
 
 @login_required
 def user_options_form(request):
@@ -172,44 +123,18 @@ def user_options_form(request):
     return render(request, "prefs/user_options_form.html", context)
 
 @login_required
-def user_options_detail(request):
+def update_user_options(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options(current_user)
-    min_break_hours = user_options.min_break_hours
-    context = {
-        'user': current_user,
-        'min_break_hours': min_break_hours
-    }
-    return render(request, 'prefs/user_options_detail.html', context)
-
-# @login_required
-# def create_jobtype(request, pk):
-#     shiftplan = get_object_or_404(Shiftplan, pk=pk)
-#     jobtypes = Jobtype.objects.filter(shiftplan=shiftplan)
-#     form = JobtypeForm(request.POST or None)
-#     if request.method == "POST":
-#         if form.is_valid():
-#             jobtype = form.save(commit=False)
-#             jobtype.shiftplan = shiftplan
-#             jobtype.save()
-#             return redirect("defs:detail-jobtype", pk=jobtype.id)
-#         else:
-#             return render(request, "defs/jobtype_form.html", context={
-#                 "form": form
-#             })
-
-#     context = {
-#         "form": form,
-#         "sp": shiftplan,
-#         "jobtypes": jobtypes
-#     }
-
-#     return render(request, "defs/create_jobtype.html", context)
-
-# @login_required
-# def create_jobtype_form(request):
-#     form = JobtypeForm()
-#     context = {
-#         "form": form
-#     }
-#     return render(request, "defs/jobtype_form.html", context)
+    form = UserOptionsForm(request.POST or None, instance=user_options)
+    if request.method == "POST":
+        print("POST")
+        if form.is_valid():
+            form.save()
+            print("form valid user_options: {}".format(user_options))
+            return redirect("prefs:user_options")
+            
+    return render(request, "prefs/user_options_form.html", context={
+        "form": form,
+        "user_options": user_options
+    })

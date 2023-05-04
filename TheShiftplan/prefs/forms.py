@@ -14,6 +14,8 @@ class UserOptionsForm(forms.ModelForm):
         model = UserOptions
         fields = (
             'min_break_hours',
+            'bias_hours',
+            'bias_hours_explanation',
         )
 
 

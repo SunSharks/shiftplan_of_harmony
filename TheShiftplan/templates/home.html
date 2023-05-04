@@ -4,12 +4,12 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1>Shiftplan</h1>
 {% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
-  <p><a href="{% url 'prefs:index' %}">Preferences</a></p>
+  {% include 'header.html' %}
+  <h1>Shiftplan</h1>
+  <p><a href="{% url 'prefs:chart' %}">Preferences</a></p>
 {% else %}
+  <h1>Shiftplan</h1>
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a>
 {% endif %}

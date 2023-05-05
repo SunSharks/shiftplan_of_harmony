@@ -33,14 +33,18 @@ def chart_view(request, **kwargs):
     jobtypes = Jobtype.objects.all()
     jobs_allowed = []
     for jt in jobtypes:
+        if jt.subcrew:
+            print(current_user in jt.subcrew.members.all())
+            if not current_user in jt.subcrew.members.all():
+                continue
         # print(jt.job_set.all().values_list("pk", flat=True))
         jobs_allowed.extend(jt.job_set.all())
     ok_job_qs = Q()
     for job_pk in jobs_allowed:
         ok_job_qs = ok_job_qs | Q(job=job_pk, user=current_user)
     user_ratings = UserJobRating.objects.filter(ok_job_qs)
-    print(50*'+')
-    print(user_ratings)
+    # print(50*'+')
+    # print(user_ratings)
     l = []
     for ur in user_ratings:
         d = ur.as_dict()
@@ -77,7 +81,7 @@ def chart_view(request, **kwargs):
     context = {"jt_descriptions": [{"name": n, "description": d} for n, d in zip(df['name'], df['description'])]
         # df.loc[df.index==i]["name"]: df.loc[df.index==i]["description"] for i in df.index
     }
-    print(type(df["user"][0]))
+    # print(type(df["user"][0]))
     df = df.to_json()
     # print(context)
     session = request.session
@@ -96,7 +100,7 @@ def get_or_create_user_options(current_user):
     except UserOptions.DoesNotExist:
         user_options = UserOptions(user=current_user)
         user_options.save()
-        print("new user_options: {}".format(user_options))
+        # print("new user_options: {}".format(user_options))
     user_options = UserOptions.objects.get(user=current_user)
     return user_options
 
@@ -104,9 +108,13 @@ def get_or_create_user_options(current_user):
 def user_options_view(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options(current_user)
+    print(current_user.subcrew_set.all().values_list())
+    subcrews = current_user.subcrew_set.all().values_list()
+    subcrews = [{"name": s[1], "description": s[2]} for s in subcrews]
     context = {
         'user': current_user,
-        'user_options': user_options
+        'user_options': user_options,
+        'subcrews': subcrews
     }
     return render(request, 'prefs/user_options_detail.html', context)
 
@@ -133,7 +141,7 @@ def update_user_options(request):
             form.save()
             print("form valid user_options: {}".format(user_options))
             return redirect("prefs:user_options")
-            
+
     return render(request, "prefs/user_options_form.html", context={
         "form": form,
         "user_options": user_options

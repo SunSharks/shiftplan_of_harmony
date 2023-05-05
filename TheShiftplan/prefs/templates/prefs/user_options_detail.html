@@ -5,7 +5,24 @@
 <div hx-target="this" hx-swap="outerHTML">
   <h3>{{ user.username }} Options</h3>
   <p>Minimum break hours: {{ user_options.min_break_hours }}</p>
+  <p>Bias hours: {{ user_options.bias_hours }}</p>
+  <p>Bias hours explanation: {{ user_options.bias_hours_explanation }}</p>
   <button hx-get="{% url 'prefs:update_user_options' %}">Update</button>
 </div>
+
+<div id="subcrews">
+  <h4>Subcrews</h4>
+  <br>
+  {% for s in subcrews %}
+  <div class="subcrew_name">
+    {{ s.name }}
+  </div>
+  <div class="subcrew_description">
+    {{ s.description }}
+  </div>
+  {% endfor %}
+</div>
+
+
 
 {% endblock %}

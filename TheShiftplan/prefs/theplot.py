@@ -213,6 +213,9 @@ def generate_df(user):
     jobtypes = Jobtype.objects.all()
     jobs_allowed = []
     for jt in jobtypes:
+        if jt.subcrew:
+            if not current_user in jt.subcrew.members.all():
+                continue
         # print(jt.job_set.all().values_list("pk", flat=True))
         jobs_allowed.extend(jt.job_set.all())
     ok_job_qs = Q()

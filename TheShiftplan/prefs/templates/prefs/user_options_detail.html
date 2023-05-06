@@ -16,7 +16,7 @@
     <p>Bias hours approved: {{ bias_hours.approved }}</p>
   </div>
 
-
+  {% if subcrews|length %}
   <div id="subcrews" class="segment">
     <h4>Subcrews</h4>
     {% for s in subcrews %}
@@ -28,6 +28,7 @@
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 
 <button hx-get="{% url 'prefs:update_user_options' %}">Update</button>
 </div>

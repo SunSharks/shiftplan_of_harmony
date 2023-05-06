@@ -2,10 +2,9 @@ from django.contrib import admin
 import nested_admin
 # from django.contrib.auth.admin import GroupAdmin
 # from django.contrib.auth.models import User, Group
-from .models import Jobtype
-from .models import Job
-from .models import SubCrew
+from .models import Jobtype, Job, SubCrew, UserProfile
 
+from .signals import *
 
 class JobInline(nested_admin.NestedTabularInline):
     model = Job
@@ -32,3 +31,4 @@ admin.site.register(Jobtype, JobtypeAdmin)
 #     model = SubCrew
 
 admin.site.register(SubCrew)
+admin.site.register(UserProfile)

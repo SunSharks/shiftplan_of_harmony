@@ -5,10 +5,9 @@ from django.template import loader
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 
-from .models import Jobtype, Job, SubCrew
+from .models import Jobtype, Job, SubCrew, UserProfile
 
 from .forms import JobtypeForm, JobForm
-# from .forms import TimeFormSet, JobtypeFormSet
 from django.views import generic
 from django.views.generic.edit import CreateView, FormView
 

@@ -27,18 +27,14 @@ class UserJobRating(models.Model):
 class UserOptions(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     min_break_hours = models.IntegerField(default=4, blank=True, null=True)
-    bias_hours = models.IntegerField(default=0, blank=True, null=True)
-    bias_hours_explanation = models.TextField(default="", blank=True, null=True)
-    # bias_hours_approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.user.username} UserOptions, break: {self.min_break_hours}, bias: {self.bias_hours}'
+        return f'{self.user.username} UserOptions, break: {self.min_break_hours}'
 
     def as_dict(self):
         return {
             'user': self.user.pk,
-            'min_break_hours': self.min_break_hours,
-            'bias_hours': self.bias_hours
+            'min_break_hours': self.min_break_hours
         }
 
 class BiasHours(models.Model):

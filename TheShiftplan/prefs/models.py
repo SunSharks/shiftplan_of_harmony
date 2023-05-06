@@ -45,3 +45,6 @@ class BiasHours(models.Model):
 
     def __str__(self):
         return f'{self.user.username} BiasHours, bias: {self.bias_hours}, explanation: {self.explanation}'
+
+    class Meta:
+        ordering = ('approved',)

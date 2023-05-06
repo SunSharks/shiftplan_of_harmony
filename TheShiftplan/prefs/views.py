@@ -4,9 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
-
-
-
 import pandas as pd
 
 from defs.models import Jobtype, Job

@@ -1,7 +1,7 @@
 from django.contrib import admin
 import nested_admin
-from django.contrib.auth.admin import GroupAdmin
-from django.contrib.auth.models import User, Group
+# from django.contrib.auth.admin import GroupAdmin
+# from django.contrib.auth.models import User, Group
 from .models import Jobtype
 from .models import Job
 from .models import SubCrew

@@ -29,9 +29,10 @@ class UserOptions(models.Model):
     min_break_hours = models.IntegerField(default=4, blank=True, null=True)
     bias_hours = models.IntegerField(default=0, blank=True, null=True)
     bias_hours_explanation = models.TextField(default="", blank=True, null=True)
+    # bias_hours_approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.user.username} Profile, break: {self.min_break_hours}, bias: {self.bias_hours}'
+        return f'{self.user.username} UserOptions, break: {self.min_break_hours}, bias: {self.bias_hours}'
 
     def as_dict(self):
         return {
@@ -39,3 +40,12 @@ class UserOptions(models.Model):
             'min_break_hours': self.min_break_hours,
             'bias_hours': self.bias_hours
         }
+
+class BiasHours(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bias_hours = models.IntegerField(default=0, blank=True, null=True)
+    explanation = models.TextField(default="", blank=True, null=True)
+    approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} BiasHours, bias: {self.bias_hours}, explanation: {self.explanation}'

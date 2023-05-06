@@ -10,8 +10,8 @@ from django.db.models import Q
 import pandas as pd
 
 from defs.models import Jobtype, Job
-from .models import UserJobRating, UserOptions
-from .forms import UserOptionsForm
+from .models import UserJobRating, UserOptions, BiasHours
+from .forms import UserOptionsForm, BiasHoursForm
 from .theplot import *
 
 
@@ -93,6 +93,18 @@ def chart_view(request, **kwargs):
     # print(5*'---\n')
     return render(request, 'prefs/chart.html', context)
 
+def get_or_create(model, **kwargs):
+    try:
+        instance = model.objects.get(**kwargs)
+        print("existing {}: {}".format(model, instance))
+    except model.DoesNotExist:
+        instance = model(**kwargs)
+        instance.save()
+        print("new {}: {}".format(model, instance))
+    # user_options = UserOptions.objects.get(user=current_user)
+    return instance
+
+
 def get_or_create_user_options(current_user):
     try:
         user_options = UserOptions.objects.get(user=current_user)
@@ -108,12 +120,14 @@ def get_or_create_user_options(current_user):
 def user_options_view(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options(current_user)
+    bias_hours = get_or_create(BiasHours, user=current_user)
     print(current_user.subcrew_set.all().values_list())
     subcrews = current_user.subcrew_set.all().values_list()
     subcrews = [{"name": s[1], "description": s[2]} for s in subcrews]
     context = {
         'user': current_user,
         'user_options': user_options,
+        'bias_hours': bias_hours,
         'subcrews': subcrews
     }
     return render(request, 'prefs/user_options_detail.html', context)
@@ -123,9 +137,11 @@ def user_options_view(request):
 def user_options_form(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options()
-    form = UserOptionsForm(current_user)
+    form_user_options = UserOptionsForm(current_user)
+    form_bias_hours = BiasHoursForm(current_user)
     context = {
-        "form": form,
+        "form_user_options": form_user_options,
+        "form_bias_hours": form_bias_hours,
         "user_options": user_options
     }
     return render(request, "prefs/user_options_form.html", context)
@@ -134,15 +150,22 @@ def user_options_form(request):
 def update_user_options(request):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     user_options = get_or_create_user_options(current_user)
-    form = UserOptionsForm(request.POST or None, instance=user_options)
+    bias_hours = get_or_create(BiasHours, user=current_user)
+    form_user_options = UserOptionsForm(request.POST or None, instance=user_options)
+    form_bias_hours = BiasHoursForm(request.POST or None, instance=bias_hours)
     if request.method == "POST":
         print("POST")
-        if form.is_valid():
-            form.save()
+        if form_user_options.is_valid():
+            form_user_options.save()
             print("form valid user_options: {}".format(user_options))
-            return redirect("prefs:user_options")
+            if form_bias_hours.is_valid():
+                form_bias_hours.save()
+                print("form valid bias_hours: {}".format(bias_hours))
+                return redirect("prefs:user_options")
 
-    return render(request, "prefs/user_options_form.html", context={
-        "form": form,
+    context = {
+        "form_user_options": form_user_options,
+        "form_bias_hours": form_bias_hours,
         "user_options": user_options
-    })
+    }
+    return render(request, "prefs/user_options_form.html", context)

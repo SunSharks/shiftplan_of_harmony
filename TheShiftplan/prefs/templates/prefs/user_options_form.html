@@ -2,7 +2,9 @@
 
     <form action="{% url 'prefs:update_user_options' %}" method="POST">
         {% csrf_token %}
-        {{ form }}
+
+        <div id="user_options_form">{{ form_user_options }}</div>
+        <div id="bias_hours_form">{{ form_bias_hours }}</div>
         {% if user_options %}
             <button type="submit">
                 Submit

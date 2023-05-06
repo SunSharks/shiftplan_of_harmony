@@ -2,6 +2,17 @@ from django.db import models
 from django.contrib.auth.models import Group, User
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    worker = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.user.username} UserProfile, worker: {self.worker}'
+
+    class Meta:
+        ordering = ('worker',)
+
+
 class SubCrew(models.Model):
     name = models.CharField('crew_name', max_length=200, unique=True, blank=False)
     description = models.TextField('description', null=True, blank=True, default='')
@@ -9,6 +20,7 @@ class SubCrew(models.Model):
 
     def __str__(self):
         return self.name 
+
 
 class Jobtype(models.Model):
     name = models.CharField('jobtype name', max_length=200)
@@ -21,7 +33,6 @@ class Jobtype(models.Model):
     subcrew = models.ForeignKey(SubCrew, on_delete=models.CASCADE, blank=True, null=True)
     # subcrew = models.ForeignKey(Subcrew, on_delete=models.CASCADE, blank=True, null=True)
     
-
     def save(self, *args, **kwargs):            
         # if self.pk is None and self.group is None:
         #     self.group = self.shiftplan.group
@@ -29,7 +40,6 @@ class Jobtype(models.Model):
         #     self.group = self.group + "_" + self.shiftplan.group
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
-
 
     def __str__(self):
         return self.name

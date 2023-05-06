@@ -41,10 +41,10 @@ class BiasHours(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bias_hours = models.IntegerField(default=0, blank=True, null=True)
     explanation = models.TextField(default="", blank=True, null=True)
-    approved = models.BooleanField(default=False)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.user.username} BiasHours, bias: {self.bias_hours}, explanation: {self.explanation}'
+        return f'{self.user.username}, bias: {self.bias_hours}, approved: {self.approved}'
 
     class Meta:
         ordering = ('approved',)

@@ -146,8 +146,12 @@ def update_user_options(request):
             if form_bias_hours.is_valid():
                 form_bias_hours.save()
                 if old_bias_hours != (bias_hours.bias_hours, bias_hours.explanation):
-                    bias_hours.approved = False
-                    bias_hours.save()
+                    if bias_hours.bias_hours != 0:
+                        bias_hours.approved = False
+                        bias_hours.save()
+                    else:
+                        bias_hours.approved = True
+                        bias_hours.save()
                 # print("form valid bias_hours: {}".format(bias_hours))
                 return redirect("prefs:user_options")
 

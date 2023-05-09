@@ -1,5 +1,12 @@
 <div class="header"> 
   <ul> 
+  {% load compress %}
+  {% load static %}
+
+
+  {% compress css %}
+      <link type="text/x-scss" href="{% static 'bootstrap/bootstrap.scss' %}" rel="stylesheet" media="screen">
+  {% endcompress %}
        Hi {{ user.username}}.  
       <a href="{% url 'logout' %}"> Logout</a> 
   </ul>

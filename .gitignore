@@ -11,6 +11,8 @@ helper_sol/
 crew_sol/
 test.py
 
+# scss cache
+TheShiftplan/static/CACHE/
 
 # Django, python, ide
 *.log

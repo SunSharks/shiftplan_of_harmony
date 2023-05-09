@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  webserver:
+    build:
+      context: .
+    container_name: shiftplan
+    restart: "always"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./TheShiftplan:/app/shiftplan:rw

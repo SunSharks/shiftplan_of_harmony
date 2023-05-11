@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
+from django.http import HttpResponse
 
 import pandas as pd
 
@@ -28,6 +29,8 @@ def chart_view(request, **kwargs):
     current_user = request.user if type(request.user) is not AnonymousUser else None
     regain_integrity(current_user)
     jobtypes = Jobtype.objects.all()
+    if len(jobtypes) == 0:
+        return HttpResponse('<h1>No Jobtypes defined.</h1>') 
     jobs_allowed = []
     for jt in jobtypes:
         if jt.subcrew:

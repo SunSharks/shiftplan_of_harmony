@@ -39,6 +39,8 @@ def chart_view(request, **kwargs):
                 continue
         # print(jt.job_set.all().values_list("pk", flat=True))
         jobs_allowed.extend(jt.job_set.all())
+    if len(jobs_allowed) == 0:
+        return HttpResponse('<h1>No Jobs defined.</h1>') 
     ok_job_qs = Q()
     for job_pk in jobs_allowed:
         ok_job_qs = ok_job_qs | Q(job=job_pk, user=current_user)

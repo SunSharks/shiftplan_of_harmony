@@ -3,6 +3,7 @@ import nested_admin
 # from django.contrib.auth.admin import GroupAdmin
 # from django.contrib.auth.models import User, Group
 from .models import Jobtype, Job, SubCrew, UserProfile
+from .forms import JobtypeForm
 
 from .signals import *
 
@@ -12,6 +13,7 @@ class JobInline(nested_admin.NestedTabularInline):
 
 class JobtypeAdmin(nested_admin.NestedModelAdmin):
     model = Jobtype
+    form = JobtypeForm
     fieldsets = [
         (None,               {'fields': ['name', 'description', 'default_rating', 'restricted_to_subcrew', 'subcrew']}),
     ]

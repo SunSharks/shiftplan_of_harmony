@@ -10,13 +10,12 @@ from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
 class JobtypeForm(forms.ModelForm):
     class Meta:
         model = Jobtype
-        fields = (
-            'name',
-            'description',
-            'default_rating',
-            'restricted_to_subcrew',
-            'subcrew',
-        )
+        fields = '__all__'
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     if not self.instance.restricted_to_subcrew:
+    #         self.fields['subcrew'].widget = forms.HiddenInput()
     
     # def __init__(self, *args, **kwargs):
     #     super(JobtypeForm, self).__init__(*args, **kwargs)
@@ -42,10 +41,10 @@ class JobForm(forms.ModelForm):
             'end_time': TimePickerInput(),
         }
 
-JobtypeFormSet = inlineformset_factory(
-    Jobtype,
-    form=JobtypeForm,
-    min_num=0,  # minimum number of forms that must be filled in
-    extra=1,  # number of empty forms to display
-    can_delete=True  # show a checkbox in each form to delete the row
-)
+# JobtypeFormSet = inlineformset_factory(
+#     model=Jobtype,
+#     form=JobtypeForm,
+#     min_num=0,  # minimum number of forms that must be filled in
+#     extra=1,  # number of empty forms to display
+#     can_delete=True  # show a checkbox in each form to delete the row
+# )

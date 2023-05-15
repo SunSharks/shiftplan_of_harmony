@@ -3,8 +3,10 @@
 {% block content %}
 
 <div hx-target="this" hx-swap="outerHTML">
-  <h3>{{ job.name }}{{ job.begin }}{{ job.end }}</h3>
-  <p>Description: {{ job.description }}</p>
+  <h3>{{ job.jobtype.name }}</h3>
+  <p>Start: {{ job.begin_date }} {{ job.begin_time }}</p>
+  <p>End: {{ job.end_date }} {{ job.end_time}}</p>
+  <p>Description: {{ job.jobtype.description }}</p>
   <button hx-get="{% url 'defs:update-job' job.id %}">Update</button>
   <button hx-post="{% url 'defs:delete-job' job.id %}">Delete</button>
 </div>

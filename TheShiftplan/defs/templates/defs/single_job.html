@@ -1,0 +1,6 @@
+<div class="single_job">
+    <input type="text" name="j_name" id="j_{{ j.id }}" value="{{ j.jobtype.name }}" disabled>
+    <li><a href="{% url 'defs:update-job' j.id %}">Update</a></li>
+    <li><a href="{% url 'defs:detail-job' j.id %}">Delete</a></li>
+    <br>
+</div>

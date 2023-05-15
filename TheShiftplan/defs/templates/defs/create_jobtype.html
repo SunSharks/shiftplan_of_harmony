@@ -2,12 +2,8 @@
 
 {% block content %}
 
-<h1>Create jobtypes for shiftplan {{ sp.name }}</h1>
+<h1>Create Jobtypes</h1>
 
-<button type="button" hx-get="{% url 'defs:create-jobtype-form' %}" hx-target="#jobtypeforms" hx-swap="beforeend">
-    Add jobtype
-</button>
 
-<div id="jobtypeforms"></div>
 
 {% endblock %}

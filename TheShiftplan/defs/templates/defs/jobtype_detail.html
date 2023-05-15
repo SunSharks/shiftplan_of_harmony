@@ -9,5 +9,5 @@
   <button hx-post="{% url 'defs:delete-jobtype' jobtype.id %}">Delete</button>
 </div>
 
-<li><a href="{% url 'defs:jobtype_def' jobtype.shiftplan.id %}">Back to Jobtypes Overview</a></li>
+<li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtypes Overview</a></li>
 {% endblock %}

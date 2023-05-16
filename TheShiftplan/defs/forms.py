@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.models import inlineformset_factory
+from django.core.exceptions import ValidationError
 
 from .models import Jobtype, Job, SubCrew
 from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
@@ -40,6 +41,23 @@ class JobForm(forms.ModelForm):
             'begin_time': TimePickerInput(),
             'end_time': TimePickerInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        begin_date = cleaned_data.get("begin_date")
+        end_date = cleaned_data.get("end_date")
+        begin_time = cleaned_data.get("begin_time")
+        end_time = cleaned_data.get("end_time")
+
+        if begin_time >= end_time:
+            if begin_date >= end_date:
+                raise ValidationError(
+                    "Begin has to be before end."
+                )
+        if begin_date > end_date:
+                raise ValidationError(
+                    "Begin date has to be before end date."
+                )
 
 # JobtypeFormSet = inlineformset_factory(
 #     model=Jobtype,

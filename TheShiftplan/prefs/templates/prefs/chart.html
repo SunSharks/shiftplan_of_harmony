@@ -25,15 +25,15 @@
     </style>
     <a href="{% url 'prefs:user_options' %}">User Options</a>
     <div class="job_descriptions">
-    {% for j in jt_descriptions %}
-    <div class="dropdown">
-        <span>{{ j.name }}</span>
-        <div class="dropdown-content">
-        <p>{{ j.description }}</p>
+      {% for j in jt_descriptions %}
+        <div class="dropdown">
+          <span>{{ j.name }}</span>
+          <div class="dropdown-content">
+            <p>{{ j.description }}</p>
+          </div>
         </div>
+      {% endfor %}
     </div>
-
-    {% endfor %}
     {% autoescape off %}
         {% comment %} {{ plot_div }} {% endcomment %}
         {% load plotly_dash %}

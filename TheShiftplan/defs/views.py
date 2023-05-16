@@ -38,9 +38,8 @@ def jobtype_def(request):
 
             return render(request, "defs/single_jobtype.html", {"jt": jobtype})
         else:
-            return render(request, "defs/jobtype_def.html", context={
-                "form": form,
-                "jobtypes": jobtypes
+            return render(request, "defs/jobtype_form.html", context={
+                "form": form
             })
 
     context = {
@@ -112,37 +111,10 @@ def job_def(request, pk):
             return render(request, "defs/single_job.html", {"j": job})
             # return redirect("defs:detail-job", pk=jobtype.id)
         else:
-            return render(request, "defs/job_def.html", context={
+            return render(request, "defs/job_form.html", context={
                 "form": form,
-                "jobtype": jobtype
             })
     return render(request, 'defs/job_def.html', {"form": form,'jobtype': jobtype})
-
-
-# @login_required
-# def create_job(request, pk):
-#     jobtype = get_object_or_404(Jobtype, pk=pk)
-#     jobs = Job.objects.filter(jobtype=jobtype)
-#     form = JobForm(request.POST or None)
-#     if request.method == "POST":
-#         if form.is_valid():
-#             job = form.save(commit=False)
-#             job.jobtype = jobtype
-#             job.save()
-#             return HttpResponse("success")
-#             # return redirect("defs:detail-job", pk=jobtype.id)
-#         else:
-#             # return render(request, "defs/jobtype_form.html", context={
-#             #     "form": form
-#             # })
-#             return HttpResponse("fail")
-
-#     context = {
-#         "form": form,
-#         "jobtype": jobtype
-#     }
-
-#     return render(request, "defs/create_job.html", context)
 
 
 @login_required
@@ -209,6 +181,16 @@ def index_view(request, **kwargs):
         jobs_allowed.extend(jt.job_set.all())
     if len(jobs_allowed) == 0:
         return HttpResponse('<h1>No Jobs defined.</h1>') 
+    prepare_djaploda_session_var(request, jobs_allowed)
+    # print(5*'---\n')
+ 
+    context = {
+        "jt_descriptions": jt_descriptions
+    }
+    return render(request, 'defs/index.html', context)
+
+
+def prepare_djaploda_session_var(request, jobs_allowed):
     ok_job_qs = Q()
     for job_pk in jobs_allowed:
         ok_job_qs = ok_job_qs | Q(pk=job_pk.pk)
@@ -220,7 +202,6 @@ def index_view(request, **kwargs):
         jobtype = j.jobtype.as_dict()
         d.update(jobtype)
         l.append(d)
-    print(jt_descriptions)
     df = pd.DataFrame(l)
     df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
     df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
@@ -229,8 +210,7 @@ def index_view(request, **kwargs):
     # print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    
-    # print(type(df["user"][0]))
+
     df = df.to_json()
     # print(context)
     session = request.session
@@ -238,10 +218,4 @@ def index_view(request, **kwargs):
     ndf = djaploda.get('df', df)
     ndf = df
     djaploda['df'] = ndf
-    session['django_dash'] = djaploda  
-    # print(5*'---\n')
-
-    context = {
-        "jt_descriptions": jt_descriptions
-    }
-    return render(request, 'defs/index.html', context)
+    session['django_dash'] = djaploda

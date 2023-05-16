@@ -67,10 +67,11 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
 def display_click_data(clickData, df_inp):
     if clickData:
         clicked_point = clickData["points"][0]
-        print("clickData: ", clickData)
+        # print("clickData: ", clickData)
         jt_name = clicked_point["label"]
         begin_dt = datetime.fromisoformat(clicked_point["base"])
         end_dt = datetime.fromisoformat(clicked_point["value"])
+        # during = end_dt - begin_dt
         # print(begin_dt.date(), end_dt.date())
         if begin_dt.date() == end_dt.date():
             body_text = html.Div([
@@ -90,41 +91,28 @@ def display_click_data(clickData, df_inp):
                     ]),
             ]
             )
-        pref_inp = html.Div([
-            body_text,
-            dcc.Dropdown(
-                id={
-                    'type': 'pref_inp',
-                    'index': clicked_point["pointIndex"]
-                },
-                options=[
-                    {'label': i, 'value': i} for i in RATES
-                ],
-                multi=False,
-                value=clicked_point["marker.color"],
-                clearable=False,
-                style={'width': '49%', "position": "relative"},
-                maxHeight=500,
-                className="dropdown_row"
-            )
-        ], style={'display': 'inline', "height": "80%"})
-        # print(clicked_point, 10*'_')
         modal = html.Div(
             [
                 # dbc.Button("Open modal", id="open", n_clicks=0), 
                 dbc.Modal(
                     [
                         dbc.ModalHeader(
-                            dbc.ModalTitle("Rate {name}".format(name=jt_name)),
+                            dbc.ModalTitle("{name}".format(name=jt_name)),
                             close_button=False),
-                        dbc.ModalBody(pref_inp),
+                        dbc.ModalBody(body_text),
                         dbc.ModalFooter(
-                            dbc.Button("Submit",
+                            dbc.Button("Close",
                                 id={
-                                    'type': 'pref_inp_btn',
+                                    'type': 'close_modal',
                                     'index': clicked_point["pointIndex"]
                                 }
-                            )
+                            )#,
+                            # dbc.Button("Update Job",
+                            #     id={
+                            #         'type': 'update_job',
+                            #         'index': clicked_point["pointIndex"]
+                            #     }
+                            # )
                         ),
                     ],
                     id="modal",
@@ -139,44 +127,15 @@ def display_click_data(clickData, df_inp):
 
 
 
-# @app.callback(
-#     Output('df_inp', 'value'),
-#     Output("modal", "is_open"),
-#     Input({'type': 'pref_inp_btn', 'index': ALL}, 'n_clicks'),
-#     State({'type': 'pref_inp', 'index': ALL}, 'value'),
-#     State('df_inp', 'value'))
-# def alter_data(pref_inp_btn, pref_inp, df_inp, *args, **kwargs):
-#     django_dash = kwargs["request"].session.get("django_dash")
-#     print(pref_inp_btn)
-#     if pref_inp_btn != [None] and kwargs['callback_context'].triggered != []:
-#         pref = int(pref_inp[0])
-#         current_user = kwargs['user']
-#         context_trigger = kwargs['callback_context'].triggered[0]
-#         trigg_id = json.loads(context_trigger['prop_id'].split('.')[0])['index']
-#         df = generate_df(current_user)
-#         django_index = df.loc[df.index == int(trigg_id), 'db_idx']
-#         job_selected = Job.objects.get(id=int(django_index))
-#         # job_selected = Job.objects.all()[int(trigg_id)]
-        
-#         # user_job_rating = UserJobRating.objects.filter(user=current_user).values()
-#         # print(user_job_rating)
-#         try:
-#             ujr = UserJobRating.objects.get(job=job_selected, user=current_user)
-#         except UserJobRating.DoesNotExist:
-#             ujr = UserJobRating(job=job_selected, user=current_user, rating=int(pref))
-#             # print("New UserJobRating instance.")
-#         setattr(ujr, "rating", pref)
-#         # print("ujr ", ujr)
-#         ujr.save()
-#         # df.loc[df["db_idx"] == int(trigg_id), 'rating'] = pref
-#         df = generate_df(current_user)
-#         df_json = df.to_json()
-#         django_dash['df'] = df_json
-#         print("exiting alter_data, df: ", df)
-#         modal_show = False
-#         return df_json, modal_show
-#     print("noch nicht")
-#     return df_inp, True
+@app.callback(
+    Output("modal", "is_open"),
+    Input({'type': 'close_modal', 'index': ALL}, 'n_clicks'),
+    # Input({'type': 'update_job', 'index': ALL}, 'n_clicks'),
+    State('df_inp', 'value'))
+def close_modal(close_modal, df_inp, *args, **kwargs):
+    if close_modal != [None] and kwargs['callback_context'].triggered != []:
+        return False
+    return True
     
 
 def chart_plot(df):
@@ -185,8 +144,6 @@ def chart_plot(df):
     @param df: input df
     TODO: discrete color map and legend.
     """
-    # print(df)
-    # df["rating_str"] = df["rating"].astype(str)
     rating_color_map = {
         1: "green",
         2: "yellow",
@@ -201,33 +158,3 @@ def chart_plot(df):
     tl.update_yaxes(autorange="reversed")
     return tl
 
-
-def generate_df(user):
-    current_user = user
-    jobtypes = Jobtype.objects.all()
-    jobs_allowed = []
-    for jt in jobtypes:
-        if jt.subcrew:
-            if not current_user in jt.subcrew.members.all():
-                continue
-        # print(jt.job_set.all().values_list("pk", flat=True))
-        jobs_allowed.extend(jt.job_set.all())
-    ok_job_qs = Q()
-    for job_pk in jobs_allowed:
-        ok_job_qs = ok_job_qs | Q(job=job_pk, user=current_user)
-    user_ratings = UserJobRating.objects.filter(ok_job_qs)
-    l = []
-    for ur in user_ratings:
-        d = ur.as_dict()
-        job = ur.job.as_dict()
-        job["db_idx"] = ur.job.id
-        jobtype = ur.job.jobtype.as_dict()
-        d.update(job)
-        d.update(jobtype)
-        l.append(d)
-    df = pd.DataFrame(l)
-    df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
-    df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
-    df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    return df

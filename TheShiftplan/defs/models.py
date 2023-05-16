@@ -24,28 +24,27 @@ class SubCrew(models.Model):
 
 class Jobtype(models.Model):
     name = models.CharField('jobtype name', max_length=200)
-    # subgroup = models.ForeignKey(Subgroup, on_delete=models.CASCADE)
-    description = models.TextField('description', default='')  # former "competences"
-    # restricted = models.BooleanField() # True if jt is restricted to certain group of users
-    # user_group = models.ManyToManyField(User)
+    description = models.TextField('description', default='')  # former 
     default_rating = models.IntegerField(default=3)
     restricted_to_subcrew = models.BooleanField(default=False)
     subcrew = models.ForeignKey(SubCrew, on_delete=models.CASCADE, blank=True, null=True)
-    # subcrew = models.ForeignKey(Subcrew, on_delete=models.CASCADE, blank=True, null=True)
     
     def save(self, *args, **kwargs):            
-        # if self.pk is None and self.group is None:
-        #     self.group = self.shiftplan.group
-        # elif not self.group is None:
-        #     self.group = self.group + "_" + self.shiftplan.group
-
+        if not self.restricted_to_subcrew:
+            self.subcrew = None
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
     def __str__(self):
         return self.name
 
     def as_dict(self):
-        return {'name': self.name, 'description': self.description}
+        return {
+            'name': self.name,
+            'description': self.description,
+            'default_rating': self.default_rating,
+            'restricted_to_subcrew': self.restricted_to_subcrew,
+            'subcrew': self.subcrew
+            }
 
 
 class Job(models.Model):

@@ -1,26 +1,31 @@
 {% extends "defs/base.html" %}
 
 {% block content %}
-
-<li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtype Overview</a></li>
-
-    <legend><h1>Jobs</h1></legend>
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    {% for j in jobtype.job_set.all %}
-        <div class="single_job">
-            <input type="text" name="j_name" id="j_name{{ forloop.counter }}" value="{{ j.jobtype.name }}" disabled>
-            <li><a href="{% url 'defs:update-job' j.id %}">Update</a></li>
-            <li><a href="{% url 'defs:detail-job' j.id %}">Delete</a></li>
-            <br>
+    <div class = "navbar">
+        <div class = "navbar_item">
+            <li><a href="{% url 'defs:index' %}">Back Home</a></li>
         </div>
-    {% endfor %}
+        <div class = "navbar_item">
+            <li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtype Overview</a></li>
+        </div>
+    </div>
+    <legend><h1>{{ jobtype.name }} Jobs</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
+    <div class="item_list">
+        {% for j in jobtype.job_set.all %}
+            <div class="single_job" id="single_job{{ j.id }}">
+                <input type="text" name="j_name" id="j_name{{ forloop.counter }}" value="{{ j.jobtype.name }}" disabled>
+                <li><a href="{% url 'defs:update-job' j.id %}">Update</a></li>
+                <li><a href="{% url 'defs:detail-job' j.id %}">Delete</a></li>
+                <br>
+            </div>
+        {% endfor %}
+    </div>
     <div id="jobforms"></div>
 
-    <button type="button" hx-get="{% url 'defs:job-form' %}" hx-target="#jobforms" hx-swap="beforeend">
+    <button class="add_button" type="button" hx-get="{% url 'defs:job-form' %}" hx-target="#jobforms" hx-swap="beforeend">
         Add job
     </button>
-
-    
 
 {% endblock %}

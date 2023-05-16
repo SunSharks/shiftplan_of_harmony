@@ -32,12 +32,17 @@ def chart_view(request, **kwargs):
     if len(jobtypes) == 0:
         return HttpResponse('<h1>No Jobtypes defined.</h1>') 
     jobs_allowed = []
+    jt_descriptions = []
     for jt in jobtypes:
         if jt.subcrew:
             print(current_user in jt.subcrew.members.all())
             if not current_user in jt.subcrew.members.all():
                 continue
         # print(jt.job_set.all().values_list("pk", flat=True))
+        jt_descriptions.append({
+            "description": jt.description,
+            "name": jt.name
+            })
         jobs_allowed.extend(jt.job_set.all())
     if len(jobs_allowed) == 0:
         return HttpResponse('<h1>No Jobs defined.</h1>') 
@@ -80,10 +85,6 @@ def chart_view(request, **kwargs):
     # print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    context = {"jt_descriptions": [{"name": n, "description": d} for n, d in zip(df['name'], df['description'])]
-        # df.loc[df.index==i]["name"]: df.loc[df.index==i]["description"] for i in df.index
-    }
-    # print(type(df["user"][0]))
     df = df.to_json()
     # print(context)
     session = request.session
@@ -93,6 +94,9 @@ def chart_view(request, **kwargs):
     djaploda['df'] = ndf
     session['django_dash'] = djaploda  
     # print(5*'---\n')
+    context = {
+        "jt_descriptions": jt_descriptions
+    }
     return render(request, 'prefs/chart.html', context)
 
 def get_or_create(model, **kwargs):

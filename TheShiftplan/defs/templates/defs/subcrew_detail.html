@@ -3,11 +3,27 @@
 {% block content %}
 
 <div hx-target="this" hx-swap="outerHTML">
-  <h3> Name: {{ subcrew.name }}</h3>
+  {% if inline %}
+    <button hx-get="{% url 'defs:toggle-detail-subcrew-inline' subcrew.id %}">
+      Toggle Details
+    </button>
+  {% else %}
+    <li><a href="{% url 'defs:subcrew_def' %}">Back to subcrews Overview</a></li>
+  <h3> Subcrew: {{ subcrew.name }}</h3>
+  {% endif %}
   <p>Description: {{ subcrew.description }}</p>
-  <button hx-get="{% url 'defs:update-subcrew' subcrew.id %}">Update</button>
-  <button hx-post="{% url 'defs:delete-subcrew' subcrew.id %}">Delete</button>
+  <p>Jobtypes: 
+  {% for jt in jobtypes %}
+    <li>{{ jt.name }} <a href="{% url 'defs:detail-jobtype' jt.id %}">Update Jobtype</a></li>
+  {% endfor %}
+  </p>
+  {% if inline %}
+  {% else %}
+    <button hx-get="{% url 'defs:update-subcrew' subcrew.id %}">Update</button>
+    <button hx-post="{% url 'defs:delete-subcrew' subcrew.id %}">Delete</button>
+  {% endif %}
+
+  
 </div>
 
-<li><a href="{% url 'defs:subcrew_def' %}">Back to subcrews Overview</a></li>
 {% endblock %}

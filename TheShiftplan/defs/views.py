@@ -90,8 +90,19 @@ def update_jobtype(request, pk):
 @login_required
 def detail_jobtype(request, pk):
     jobtype = get_object_or_404(Jobtype, id=pk)
+    # for jt in jobtypes:
+    #     subcrews_context.update(
+    #         {
+    #             jt.id: (jt.subcrew.id if jobtype.restricted_to_subcrew else  None)
+    #         }
+    #         )
+    try:
+        subcrew_id = jobtype.subcrew.id
+    except:
+        subcrew_id = None
     context = {
-        "jobtype": jobtype
+        "jobtype": jobtype,
+        "subcrew_id": subcrew_id
     }
     return render(request, "defs/jobtype_detail.html", context)
 
@@ -245,10 +256,29 @@ def update_subcrew(request, pk):
 @login_required
 def detail_subcrew(request, pk):
     subcrew = get_object_or_404(SubCrew, id=pk)
+    print(subcrew.jobtype_set.all())
     context = {
-        "subcrew": subcrew
+        "subcrew": subcrew,
+        "jobtypes": subcrew.jobtype_set.all()
     }
     return render(request, "defs/subcrew_detail.html", context)
+
+
+@login_required
+def inline_detail_subcrew(request, pk):
+    subcrew = get_object_or_404(SubCrew, id=pk)
+    print(subcrew.jobtype_set.all())
+    context = {
+        "subcrew": subcrew,
+        "jobtypes": subcrew.jobtype_set.all(),
+        "inline": True
+    }
+    return render(request, "defs/subcrew_detail.html", context)
+
+
+@login_required
+def toggle_inline_detail_subcrew(request, pk):
+    return HttpResponse("")
 
 
 @login_required

@@ -1,7 +1,14 @@
 {% extends "defs/base.html" %}
 
 {% block content %}
-
+<div class = "navbar">
+    <div class = "navbar_item">
+        <li><a href="{% url 'defs:index' %}">Back Home</a></li>
+    </div>
+    <div class = "navbar_item">
+        <li><a href="{% url 'defs:subcrew_def' %}">Subcrew Overview</a></li>
+    </div>
+</div>
 <legend><h1>Jobtypes</h1></legend>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -12,7 +19,7 @@
         <li><a href="{% url 'defs:detail-jobtype' jt.id %}">Delete</a></li>
         <li><a href="{% url 'defs:job_def' jt.id %}">Shifts</a></li>
         {% if jt.restricted_to_subcrew %}
-            <li>Restricted to subcrew: {{ jt.subcrew }} <a href="{% url 'defs:detail-subcrew' subcrews_context|dict_key:jt.id %}">Update</a></li>
+            <li>Restricted to subcrew: {{ jt.subcrew }} <a href="{% url 'defs:detail-subcrew' subcrews_context|dict_key:jt.id %}">Update Subcrew</a></li>
         {% else %}
             <li>Open for all users.</li>
         {% endif %}

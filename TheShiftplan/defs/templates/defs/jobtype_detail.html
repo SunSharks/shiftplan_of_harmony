@@ -1,13 +1,25 @@
 {% extends "defs/base.html" %}
 
 {% block content %}
+<div class = "navbar">
+  <div class = "navbar_item">
+      <li><a href="{% url 'defs:index' %}">Back Home</a></li>
+  </div>
+  <div class = "navbar_item">
+      <li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtype Overview</a></li>
+  </div>
+</div>
 
 <div hx-target="this" hx-swap="outerHTML">
-  <h3> Name: {{ jobtype.name }}</h3>
+  <h3> Jobtype: {{ jobtype.name }}</h3>
   <p>Description: {{ jobtype.description }}</p>
+  {% if jobtype.restricted_to_subcrew %}
+            <li>Restricted to subcrew: {{ jobtype.subcrew }} <a href="{% url 'defs:detail-subcrew' subcrew_id %}">Update Subcrew</a></li>
+        {% else %}
+            <li>Open for all users.</li>
+        {% endif %}
   <button hx-get="{% url 'defs:update-jobtype' jobtype.id %}">Update</button>
   <button hx-post="{% url 'defs:delete-jobtype' jobtype.id %}">Delete</button>
 </div>
 
-<li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtypes Overview</a></li>
 {% endblock %}

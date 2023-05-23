@@ -1,7 +1,14 @@
 {% extends "defs/base.html" %}
 
 {% block content %}
-
+<div class = "navbar">
+    <div class = "navbar_item">
+        <li><a href="{% url 'defs:index' %}">Back Home</a></li>
+    </div>
+    <div class = "navbar_item">
+        <li><a href="{% url 'defs:jobtype_def' %}">Jobtype Overview</a></li>
+    </div>
+  </div>
 <legend><h1>Subcrews</h1></legend>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -10,6 +17,11 @@
         <input type="text" name="subcrew_name" id="subcrew_name{{ forloop.counter }}" value="{{ s.name }}" disabled>
         <li><a href="{% url 'defs:update-subcrew' s.id %}">Update</a></li>
         <li><a href="{% url 'defs:detail-subcrew' s.id %}">Delete</a></li>
+        
+        <button type="button" hx-get="{% url 'defs:detail-subcrew-inline' s.id %}" hx-target="#subcrewdetails" hx-swap="beforeend">
+            Details
+        </button>
+        <div id="subcrewdetails"></div>
         <br>
     </div>
 {% endfor %}

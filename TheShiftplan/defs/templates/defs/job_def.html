@@ -8,6 +8,9 @@
         <div class = "navbar_item">
             <li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtype Overview</a></li>
         </div>
+        <div class = "navbar_item">
+            <li><a href="{% url 'defs:visual_job_def' jobtype.id %}">Visual Job Def [Experimental]</a></li>
+        </div>
     </div>
     <legend><h1>{{ jobtype.name }} Jobs</h1></legend>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}

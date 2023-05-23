@@ -24,6 +24,8 @@ urlpatterns = [
     path('subcrews/subcrew_form/', create_subcrew_form, name='subcrew-form'),
     path('subcrews/<int:pk>/update', update_subcrew, name='update-subcrew'),
     path('subcrews/<int:pk>/detail', detail_subcrew, name='detail-subcrew'),
+    path('subcrews/<int:pk>/inline_detail', inline_detail_subcrew, name='detail-subcrew-inline'),
+    path('subcrews/<int:pk>/toggle_inline_detail', toggle_inline_detail_subcrew, name='toggle-detail-subcrew-inline'),
     path('subcrews/<int:pk>/delete', delete_subcrew, name='delete-subcrew'),
 ]
 

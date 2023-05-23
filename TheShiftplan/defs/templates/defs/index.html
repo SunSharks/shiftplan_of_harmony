@@ -1,45 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include "header.html" %}
-    
-    <style>
-        .dropdown {
-          position: relative;
-          display: inline-block;
-        }
-        
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: #f9f9f9;
-          min-width: 160px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          padding: 12px 16px;
-          z-index: 1;
-        }
-        
-        .dropdown:hover .dropdown-content {
-          display: block;
-        }
-    </style>
-    
-    <div class="job_descriptions">
-      {% for j in jt_descriptions %}
-        <div class="dropdown">
-          <span>{{ j.name }}</span>
-          <div class="dropdown-content">
-            <p>{{ j.description }}</p>
-          </div>
-        </div>
-      {% endfor %}
+  {% include "header.html" %}
+  <div class = "navbar">
+    <div class = "navbar_item">
+      <a href="{% url 'defs:jobtype_def' %}">Jobtypes</a>
+      <a href="{% url 'defs:subcrew_def' %}">Subcrews</a>
     </div>
-    {% autoescape off %}
-        {% comment %} {{ plot_div }} {% endcomment %}
-        {% load plotly_dash %}
-        <div class="{%plotly_class name='defplot' %}", style="height:100%;width:100%;">
-            {% plotly_app name="defplot" ratio=1 %}
+  </div>    
+  <style>
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+      }
+      
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+  </style>
+  
+  <div class="job_descriptions">
+    {% for j in jt_descriptions %}
+      <div class="dropdown">
+        <span>{{ j.name }}</span>
+        <div class="dropdown-content">
+          <p>{{ j.description }}</p>
         </div>
-       
-    {% endautoescape %}
+      </div>
+    {% endfor %}
+  </div>
+  {% autoescape off %}
+      {% comment %} {{ plot_div }} {% endcomment %}
+      {% load plotly_dash %}
+      <div class="{%plotly_class name='defplot' %}", style="height:100%;width:100%;">
+          {% plotly_app name="defplot" ratio=1 %}
+      </div>
+      
+  {% endautoescape %}
 {% endblock content %}

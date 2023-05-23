@@ -8,7 +8,7 @@ urlpatterns = [
     ### Jobtypes
     path('jts/', jobtype_def, name='jobtype_def'),
     path('jts/jt_form/', create_jobtype_form, name='jobtype-form'),
-    # path('jts/create/', create_jobtype, name='create-jobtype'),
+    path('jts/<int:pk>/visual_job_def/', visual_job_def, name='visual_job_def'),
     path('jts/<int:pk>/update', update_jobtype, name='update-jobtype'),
     path('jts/<int:pk>/detail', detail_jobtype, name='detail-jobtype'),
     path('jts/<int:pk>/delete', delete_jobtype, name='delete-jobtype'),
@@ -19,5 +19,11 @@ urlpatterns = [
     path('jts/jobs/<int:pk>/update', update_job, name='update-job'),
     path('jts/jobs/<int:pk>/detail', detail_job, name='detail-job'),
     path('jts/jobs/<int:pk>/delete', delete_job, name='delete-job'),
+    ### Subcrews
+    path('subcrews/', subcrew_def, name='subcrew_def'),
+    path('subcrews/subcrew_form/', create_subcrew_form, name='subcrew-form'),
+    path('subcrews/<int:pk>/update', update_subcrew, name='update-subcrew'),
+    path('subcrews/<int:pk>/detail', detail_subcrew, name='detail-subcrew'),
+    path('subcrews/<int:pk>/delete', delete_subcrew, name='delete-subcrew'),
 ]
 

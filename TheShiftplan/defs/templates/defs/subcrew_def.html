@@ -1,0 +1,23 @@
+{% extends "defs/base.html" %}
+
+{% block content %}
+
+<legend><h1>Subcrews</h1></legend>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% for s in subcrews %}
+    <div class="single_subcrew">
+        <input type="text" name="subcrew_name" id="subcrew_name{{ forloop.counter }}" value="{{ s.name }}" disabled>
+        <li><a href="{% url 'defs:update-subcrew' s.id %}">Update</a></li>
+        <li><a href="{% url 'defs:detail-subcrew' s.id %}">Delete</a></li>
+        <br>
+    </div>
+{% endfor %}
+
+<div id="subcrewforms"></div>
+
+<button type="button" hx-get="{% url 'defs:subcrew-form' %}" hx-target="#subcrewforms" hx-swap="beforeend">
+    Add subcrew
+</button>
+
+{% endblock %}

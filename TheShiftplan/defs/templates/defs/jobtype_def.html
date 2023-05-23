@@ -11,6 +11,11 @@
         <li><a href="{% url 'defs:update-jobtype' jt.id %}">Update</a></li>
         <li><a href="{% url 'defs:detail-jobtype' jt.id %}">Delete</a></li>
         <li><a href="{% url 'defs:job_def' jt.id %}">Shifts</a></li>
+        {% if jt.restricted_to_subcrew %}
+            <li>Restricted to subcrew: {{ jt.subcrew }} <a href="{% url 'defs:detail-subcrew' subcrews_context|dict_key:jt.id %}">Update</a></li>
+        {% else %}
+            <li>Open for all users.</li>
+        {% endif %}
         <br>
     </div>
 {% endfor %}

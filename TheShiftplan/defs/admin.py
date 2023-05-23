@@ -20,7 +20,7 @@ class JobtypeAdmin(nested_admin.NestedModelAdmin):
     inlines = [JobInline,]
     extra = 0
     # That adds a “Filter” sidebar that lets people filter the change list by field:
-    list_filter = ['name']
+    list_filter = ['name', 'restricted_to_subcrew']
     # That adds a search box at the top of the change list.
     search_fields = ['name']
 

@@ -36,6 +36,8 @@ for path in paths:
 
 
 defs_names = {
+    "modes": "Mode",
+    "shiftplans": "Shiftplan",
     "user_profiles": "UserProfile",
     "subcrews": "SubCrew", 
     "jobtypes": "Jobtype", 

@@ -8,13 +8,13 @@ import numpy as np
 import logging
 
 
-class User_Model(Model):
-    def __init__(self):
+class AssignEveryJobModel(Model):
+    def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
         self.slack_coef_fairness = 2
         self.eps = 20     # Toleranzstundenanzahl.
 
         self.dh = data_handler.Data_Handler()
-        super().__init__(self.dh.jobs, self.dh.users, self.dh.preferences, groupname="Crew")
+        super().__init__(jobs=jobs, persons=persons, preferences=preferences, jobtypes=jobtypes, shiftplan=shiftplan)
         # print(self.persons)
 
         self.biases = self.persons["bias"].to_numpy()
@@ -50,9 +50,8 @@ class User_Model(Model):
 
 
     def feed_night_constraint(self):
-        # print(self.dh.jobs["datetime_start"][0].hour)
         self.jobs["hour_start"] = self.jobs.datetime_start.apply(lambda x: x.hour)
-        nightjobs = self.dh.jobs.loc[(self.dh.jobs["hour_start"] >= 0) &(self.dh.jobs["hour_start"] <= 8)].index
+        nightjobs = self.jobs.loc[(self.jobs["hour_start"] >= 0) &(self.jobs["hour_start"] <= 8)].index
         for p in range(self.num_persons):
             if len(nightjobs) < self.num_persons:
                 self.model.addCons(quicksum(self.vars[p][i] for i in nightjobs) <= 1)

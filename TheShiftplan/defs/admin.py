@@ -2,7 +2,7 @@ from django.contrib import admin
 import nested_admin
 # from django.contrib.auth.admin import GroupAdmin
 # from django.contrib.auth.models import User, Group
-from .models import Jobtype, Job, SubCrew, UserProfile
+from .models import Mode, Shiftplan, Jobtype, Job, SubCrew, UserProfile
 from .forms import JobtypeForm
 
 from .signals import *
@@ -15,7 +15,7 @@ class JobtypeAdmin(nested_admin.NestedModelAdmin):
     model = Jobtype
     form = JobtypeForm
     fieldsets = [
-        (None,               {'fields': ['name', 'description', 'default_rating', 'restricted_to_subcrew', 'subcrew']}),
+        (None,               {'fields': ['name', 'description', 'default_rating', 'restricted_to_subcrew', 'subcrew', 'priority']}),
     ]
     inlines = [JobInline,]
     extra = 0
@@ -26,7 +26,8 @@ class JobtypeAdmin(nested_admin.NestedModelAdmin):
 
 
 
-
+admin.site.register(Mode)
+admin.site.register(Shiftplan)
 admin.site.register(Jobtype, JobtypeAdmin)
 
 # class SubCrewAdmin(GroupAdmin):

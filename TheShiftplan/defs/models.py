@@ -1,5 +1,29 @@
 from django.db import models
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
+
+class Mode(models.Model):
+    name = models.CharField('mode_name', max_length=200, unique=True, blank=False)
+    description = models.TextField('mode_description', null=True, blank=True, default='')
+
+    def __str__(self):
+        return self.name 
+
+
+class Shiftplan(models.Model):
+    name = models.CharField('shiftplan_name', max_length=200, unique=True, blank=False)
+    mode =  models.ForeignKey(Mode, on_delete=models.CASCADE, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and Shiftplan.objects.exists():
+        # if you'll not check for self.pk 
+        # then error will also be raised in the update of exists model
+            raise ValidationError('There is can be only one Shiftplan instance')
+        return super(Shiftplan, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name 
 
 
 class UserProfile(models.Model):
@@ -28,6 +52,7 @@ class Jobtype(models.Model):
     default_rating = models.IntegerField(default=3)
     restricted_to_subcrew = models.BooleanField(default=False)
     subcrew = models.ForeignKey(SubCrew, on_delete=models.CASCADE, blank=True, null=True)
+    priority = models.IntegerField(default=3)
     
     def save(self, *args, **kwargs):            
         if not self.restricted_to_subcrew:
@@ -43,7 +68,8 @@ class Jobtype(models.Model):
             'description': self.description,
             'default_rating': self.default_rating,
             'restricted_to_subcrew': self.restricted_to_subcrew,
-            'subcrew': self.subcrew
+            'subcrew': self.subcrew,
+            'priority': self.priority
             }
 
 
@@ -54,6 +80,7 @@ class Job(models.Model):
     begin_time = models.TimeField('job begin time')
     end_time = models.TimeField('job end time')
     rating = models.IntegerField('rating', null=True, blank=True)
+    priority = models.IntegerField('priority', null=True, blank=True)
     # during
     '''Default time formats: ['%Y-%m-%d %H:%M:%S',    # '2006-10-25 14:30:59'
  '%Y-%m-%d %H:%M',       # '2006-10-25 14:30'
@@ -68,10 +95,19 @@ class Job(models.Model):
     def save(self, *args, **kwargs):
         if self.rating is None:
             self.rating = self.jobtype.default_rating
+        if self.priority is None:
+            self.priority = self.jobtype.priority
+        
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{jt_name} begin: {b}, {bt} end: {e}, {et}".format(jt_name=self.jobtype.name, b=self.begin_date, e=self.end_date, bt=self.begin_time, et=self.end_time)
+        return f"{self.jobtype.name} begin: {self.begin_date}, {self.begin_time} end: {self.end_date}, {self.end_time}, priority: {self.priority}"
 
     def as_dict(self):
-        return {'begin_date': self.begin_date, 'end_date': self.end_date, "begin_time": self.begin_time, "end_time": self.end_time}
+        return {
+            'begin_date': self.begin_date, 
+            'end_date': self.end_date, 
+            "begin_time": self.begin_time, 
+            "end_time": self.end_time,
+            'priority': self.priority
+        }

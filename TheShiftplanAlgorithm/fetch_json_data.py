@@ -20,11 +20,37 @@ def build_tables_structure():
     for fn in models_names:
         file_path = join(json_path, fn+".json")
         with open(file_path, 'r') as f:
-            models.update({fn: pd.json_normalize(json.loads(f.read()))})
+            try:
+                models.update({fn: pd.json_normalize(json.loads(f.read().strip()))})
+            except JSONDecodeError:
+                print(file_path)
+                print(f.read()[1:])
+                clean_f = f.read()[1:]
+                models.update({fn: pd.json_normalize(json.loads(clean_f))})
     for m in models:
         models[m] = strip_columns(models[m])
     # print(models)
     return models
+
+
+def fetch_shiftplan():
+    """
+    Returns Shiftplan and belonging mode as pandas series.
+    """
+    shiftplans = models["shiftplans"]
+    modes = models["modes"]
+    shiftplans = shiftplans.rename(columns={
+        'mode': 'mode_pk',
+        'name': 'shiftplan_name'
+    })
+    modes = modes.rename(columns={
+        'pk': 'mode_pk',
+        'name': 'mode_name'
+    })
+    shiftplans = shiftplans.merge(modes[['mode_pk', 'mode_name', 'description']], how='left').fillna("")
+    shiftplan = shiftplans.iloc[0]
+    # print(shiftplan)
+    return shiftplan
 
 
 def fetch_jobtypes():
@@ -91,12 +117,18 @@ def fetch_users():
         'user': 'user_pk',
         'approved': 'bias_hours_approved'
     })
+    workloads = models["workloads"]
+    workloads = workloads.rename(columns={
+        'user': 'user_pk'
+    })
     user_options = user_options.merge(users_df[['user_pk', 'username']], how='left').fillna("")
     user_options = user_options.merge(bias_hours[['user_pk', 'bias_hours', 'bias_hours_approved']], how='left').fillna("")
+    user_options = user_options.merge(workloads[['user_pk', 'workload_hours']], how='left').fillna("")
     user_options = user_options.rename(columns={
         'username': 'nickname',
         "min_break_hours": "break",
-        "bias_hours": "bias"
+        "bias_hours": "bias",
+        "workload_hours": "workload"
         })
     # print("user_options: ", user_options)
     user_options["break"] = pd.to_timedelta(user_options["break"], unit="h", errors='raise')
@@ -129,4 +161,4 @@ if __name__ == "__main__":
     # print(list(jobtypes["id"]))
     jobs = fetch_jobs(*list(jobtypes["pk"]))
     users = fetch_users()
-    # print(jobtypes)
+    # print(jobtypes) 

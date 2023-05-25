@@ -4,18 +4,23 @@ import pandas as pd
 import itertools as it
 import logging
 import pickle
+import os
+
+
 logging.getLogger('matplotlib.font_manager').disabled = True
 
-
 class Model:
-    def __init__(self, jobs, persons, preferences, groupname=""):
+    def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
         self.jobs = jobs
         self.persons = persons
         self.preferences = preferences
+        self.jobtypes = jobtypes
+        self.shiftplan = shiftplan
+
         self.jobs = self.jobs.reset_index(drop=True)
         self.persons = self.persons.reset_index(drop=True)
         self.preferences = self.preferences.reset_index(drop=True)
-        self.groupname = groupname
+        print(self.persons)
 
         self.five = -10
         self.three = 0
@@ -76,6 +81,17 @@ class Model:
             self.model.addCons(quicksum(self.vars.T[i]) <= 1)
 
 
+    def assign_every_job_softly(self):
+        self.vars_slack_jobassign = []
+        for j in range(self.num_jobs):
+            self.vars_slack_jobassign.append(self.model.addVar("slack_j{}".format(j), vtype='I'))
+            self.model.addCons(quicksum(self.vars[p][j] for p in range(
+                self.num_persons))+self.vars_slack_jobassign[-1] >= 1)
+            self.model.addCons(self.vars_slack_jobassign[-1] >= 0)
+            self.slack_objective = - self.slack_coef_jobassign * \
+                self.vars_slack_jobassign[-1] + self.slack_objective
+
+
     def get_workload_per_person(self):
         raise NotImplementedError()
 
@@ -116,10 +132,8 @@ class Model:
 
 
     def no_fives(self):
-        print(self.preferences.loc[self.preferences["rating"] == 5])
         fives = self.preferences.loc[self.preferences["rating"] == 5]
         for user_pk, job_pk in fives[["user", "job"]].itertuples(index=False):
-            print(self.persons.loc[self.persons["user_pk"] == user_pk].index)
             user_idx = list(self.persons.loc[self.persons["user_pk"] == user_pk].index)[0]
             job_idx = list(self.jobs.loc[self.jobs["pk"] == job_pk].index)[0]
             self.model.addCons(self.vars[user_idx][job_idx] == 0)
@@ -129,7 +143,6 @@ class Model:
         """TODO: break"""
         # print(self.persons)
         for p_id, br in self.persons[["break"]].itertuples(index=True):
-            print(50*"_")
             # print(p_id, br)
             conf = self.find_conflicts(br)
             for key in conf:
@@ -169,55 +182,43 @@ class Model:
         Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
         @param br: individual minimum break between two shifts."""
         conflicts = {}
-        # print(self.dh.jobs)
-        for id, s, e in self.dh.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
+        # print(self.jobs)
+        for id, s, e in self.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
             # print(id)
-            tmp = self.dh.jobs.loc[((self.dh.jobs["datetime_start"] >= s-br) & (self.dh.jobs["datetime_start"] < e+br))
-                                   | ((self.dh.jobs["datetime_end"] >= s-br) & (self.dh.jobs["datetime_end"] <= e+br))]
+            tmp = self.jobs.loc[((self.jobs["datetime_start"] >= s-br) & (self.jobs["datetime_start"] < e+br))
+                                   | ((self.jobs["datetime_end"] >= s-br) & (self.jobs["datetime_end"] <= e+br))]
             conflicts[id] = tmp
         return conflicts
 
 
     def feed_diversity(self):
-        # TODO
-        jt_categories = self.dh.jts.groupby("name")
-        unique_names = {name: i for i, name in enumerate(self.dh.jts.name.unique())}
-        vals = [unique_names[n] for n in self.dh.jts.name]
-        self.dh.jts["category"] = vals
-        # print(self.dh.jts)
-        # jobmap = np.empty(self.vars.size)
+        """
+        Feed jobtype diversity soft constraint.
+        """
         vars_slack = []
-        vals = [self.jts.loc[j]["category"] for j in self.dh.jobs["jt_primary"]]
-        self.dh.jobs["category"] = vals
-        # print(self.dh.jts)
-        # categories = list(dJob_categories_ind.values())
-        # print(pd.merge(self.dh.jobs, self.dh.jts, on=["jt_primary", id]))
-        # print(self.dh.jobs.loc[self.dh.jobs["jt_primary"] == self.dh.jts.index])
+        vals = [list(self.jobtypes.loc[self.jobtypes["pk"] == j]["name"])[0] for j in self.jobs["jobtype"]]
+        self.jobs["category"] = vals
         for p in range(self.num_persons):
-            for id, cat in self.dh.jobs[["category"]].itertuples(index=True):
+            for id, cat in self.jobs[["category"]].itertuples(index=True):
                 vars_slack.append(self.model.addVar("slack_p{}cat{}".format(p, cat), vtype='I'))
                 self.model.addCons(quicksum((self.vars[p][i] for i in range(
-                    self.num_jobs) if self.dh.jobs.loc[i]["category"] == cat))-vars_slack[-1] <= 1)
+                    self.num_jobs) if self.jobs.loc[i]["category"] == cat))-vars_slack[-1] <= 1)
                 self.model.addCons(vars_slack[-1] >= 0)
                 self.slack_objective = - self.slack_coef_diversity * \
                     vars_slack[-1] + self.slack_objective
 
     def feed_no_break_softly(self):
-        no_break_users = self.dh.users.loc[self.dh.users["break"] == 0].index
+        no_break_users = self.persons.loc[self.persons["break"] == 0].index
         vars_slack = []
         for i in no_break_users:
             vars_slack.append(self.model.addVar("slack_p{}cat{}".format(p, cat), vtype='I'))
 
 
     def feed_objective(self):
-        # print(self.dh.preferences)
+        # print(self.preferences)
         self.weights = np.empty((self.num_persons, self.num_jobs))
         for i, user_pk in self.persons[["user_pk"]].itertuples(index=True):
-            # print(self.dh.preferences.loc[name_id])
-            # print(name_id)
-            # print(10*"*")
             self.weights[i] = self.preferences.loc[self.preferences["user"] == user_pk]["rating"].to_numpy()
-        print(self.weights)
         self.translate_weights()
         self.model.setObjective(
             quicksum(map(quicksum, (self.weights*self.vars)))+self.slack_objective, "maximize")
@@ -227,24 +228,32 @@ class Model:
     def prt_wl(self):
         """Prints workload per person in german language. """
         print("Insgesamt sind {wh} Stunden zu arbeiten für alle {gn}.".format(
-            wh=self.total_workhours, gn=self.groupname))
+            wh=self.total_workhours, gn=self.shiftplan_name))
        
 
     def optimize(self):
         self.model.writeProblem()
         self.model.optimize()
+        mode_name = self.shiftplan["mode_name"]
+        shiftplan_name = self.shiftplan["shiftplan_name"]
         try:
             self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
-            self.dh.solution = self.solution
             print(self.solution)
             # np.save('solution', self.solution)
             sols = self.model.getSols()
-            self.dh.sols = sols
+            self.sols = sols
             # with open("data_handler.pkl", 'wb') as f:
             #     pickle.dump(self.dh, f)
+            solution_path = os.path.join("solutions", f"{mode_name}", f"{shiftplan_name}")
+            if not os.path.exists(solution_path):
+                os.makedirs(solution_path)
+            curr_try = len(os.listdir(solution_path))
+            run_path = os.path.join(solution_path, f"run{curr_try}")
+            os.mkdir(run_path)
             for i, s in enumerate(sols):
                 aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
-                with open("{}_sol/solutions{}.pkl".format(self.dh.group, i), 'wb') as f:
+                out_path = os.path.join(run_path, f"solution{i}.pkl")
+                with open(out_path, 'wb') as f:
                     pickle.dump(aval, f)
         except:
-            pass
+            logging.error("No solutions created.")

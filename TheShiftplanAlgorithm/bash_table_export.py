@@ -48,7 +48,8 @@ defs_names = {n: "defs." + defs_names[n] for n in defs_names}
 prefs_names = {
     "user_job_ratings": "UserJobRating",
     "user_options": "UserOptions",
-    "bias_hours": "BiasHours"
+    "bias_hours": "BiasHours",
+    "workloads": "Workload"
     }
 prefs_names = {n: "prefs.{}".format(prefs_names[n]) for n in prefs_names}
 
@@ -62,7 +63,7 @@ models_names.update(prefs_names)
 
 
 def create_shell_dump_cmds(cmd_filename="_cmd_db_to_json.sh", models_names=models_names):
-    base_str = "python {manage_py_path} dumpdata {what} > {filename}.json\n"
+    base_str = "python {manage_py_path} dumpdata {what} > {filename}.json;"
     cmd_str = ""
     for fn in models_names:
         fname = os.path.join(paths["json_out"], fn)

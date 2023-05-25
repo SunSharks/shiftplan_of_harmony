@@ -1,4 +1,4 @@
-from .models import BiasHours, UserOptions, UserJobRating
+from .models import BiasHours, UserOptions, UserJobRating, Workload
 from defs.models import Job
 
 from django.contrib.auth.models import User
@@ -10,6 +10,7 @@ def user_created(sender, instance, created, **kwargs):
     if created:
         BiasHours.objects.create(user=instance)
         UserOptions.objects.create(user=instance)
+        Workload.objects.create(user=instance)
 
         jobs = Job.objects.all()
         for j in jobs:

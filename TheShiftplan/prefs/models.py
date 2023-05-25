@@ -48,3 +48,14 @@ class BiasHours(models.Model):
 
     class Meta:
         ordering = ('approved',)
+
+
+class Workload(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    workload_hours = models.IntegerField(default=0, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username}, workload: {self.workload_hours}'
+
+    class Meta:
+        ordering = ('workload_hours',)

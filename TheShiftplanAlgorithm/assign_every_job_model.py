@@ -1,4 +1,3 @@
-import data_handler
 # from solution import Solution
 import pandas as pd
 from model import Model
@@ -7,14 +6,14 @@ from pyscipopt import quicksum
 import numpy as np
 import logging
 
+import fetch_json_data as db
 
 class AssignEveryJobModel(Model):
-    def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
+    def __init__(self, **kwargs):
         self.slack_coef_fairness = 2
         self.eps = 20     # Toleranzstundenanzahl.
 
-        self.dh = data_handler.Data_Handler()
-        super().__init__(jobs=jobs, persons=persons, preferences=preferences, jobtypes=jobtypes, shiftplan=shiftplan)
+        super().__init__(**kwargs)
         # print(self.persons)
 
         self.biases = self.persons["bias"].to_numpy()
@@ -125,5 +124,11 @@ class AssignEveryJobModel(Model):
 
 
 if __name__ == "__main__":
-    model = User_Model()
-    # s = Solution(model.dh)
+    shiftplan = db.fetch_shiftplan()
+    # print(shiftplan["mode_name"])
+    jts = db.fetch_jobtypes()
+    jobs = db.fetch_jobs(*list(jts["pk"]))
+    users = db.fetch_users()
+    # subcrews = db.fetch_names(helper=False)
+    preferences = db.fetch_preferences(users, jobs)
+    model = AssignEveryJobModel(jobs=jobs, persons=users, preferences=preferences, jobtypes=jts, shiftplan=shiftplan)

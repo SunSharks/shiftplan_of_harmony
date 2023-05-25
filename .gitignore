@@ -7,9 +7,9 @@ _[^_]*/
 *.cip
 .env
 *playground*
+TheShiftplanAlgorithm/solutions/
 helper_sol/
 crew_sol/
-test.py
 
 # scss cache
 TheShiftplan/static/CACHE/

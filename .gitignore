@@ -8,6 +8,7 @@ _[^_]*/
 .env
 *playground*
 TheShiftplanAlgorithm/solutions/
+TheShiftplanAlgorithm/_cmd_db_to_json.sh
 helper_sol/
 crew_sol/
 

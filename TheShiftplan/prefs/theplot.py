@@ -72,7 +72,8 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
 def display_click_data(clickData, df_inp):
     if clickData:
         clicked_point = clickData["points"][0]
-        print("clickData: ", clickData)
+        # print("clickData: ", clickData)
+        # print(clicked_point)
         jt_name = clicked_point["label"]
         begin_dt = datetime.fromisoformat(clicked_point["base"])
         end_dt = datetime.fromisoformat(clicked_point["value"])
@@ -201,8 +202,7 @@ def chart_plot(df):
         }
     # rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={},
-        color_discrete_map=rating_color_map)
+        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")
     return tl

@@ -35,7 +35,6 @@ app = DjangoDash('solplot', add_bootstrap_links=True)
 app.layout = html.Div([
     dcc.Input(id='df_inp', type="hidden", style={"display": "hidden"}),
     dcc.Store(id="cache", data=[]),
-    html.H1("Preferences", style={"text-align": "center"}),
     html.Div([
             dcc.Markdown("""
                 **Click Data**

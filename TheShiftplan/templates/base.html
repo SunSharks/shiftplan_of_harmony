@@ -9,6 +9,7 @@
   {% bootstrap_css %}
   {% bootstrap_javascript jquery='full' %}
   <meta charset="utf-8">
+  <script src="https://unpkg.com/htmx.org@1.5.0" integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI" crossorigin="anonymous"></script>
   <title>{% block title %}Shiftplan{% endblock %}</title>
 </head>
 <body>
@@ -16,5 +17,10 @@
     {% block content %}
     {% endblock %}
   </main>
+  <script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+  </script>
 </body>
 </html>

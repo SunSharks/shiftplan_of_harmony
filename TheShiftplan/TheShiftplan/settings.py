@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'nested_admin',
     'defs',
     'prefs',
+    'sols',
     'compressor',
     'bootstrap4',
 ]

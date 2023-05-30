@@ -25,4 +25,5 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     path('prefs/', include('prefs.urls')),
     path('defs/', include('defs.urls')),
+    path('sols/', include('sols.urls')),
 ]

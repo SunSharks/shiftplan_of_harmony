@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "header.html" %}
+<div class = "navbar">
+    <div class = "navbar_item">
+        <li><a href="{% url 'sols:index' %}">Back to sols index.</a></li>
+    </div>
+</div>
+<div class="item_list">
+    <ul>
+        {% for s in solutions %}
+            <li><a href="{% url 'sols:show_solution' s.id %}">{{ s.id }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+      
+{% endblock content %}

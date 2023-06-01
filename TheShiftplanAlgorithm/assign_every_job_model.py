@@ -11,7 +11,7 @@ import fetch_json_data as db
 class AssignEveryJobModel(Model):
     def __init__(self, **kwargs):
         self.slack_coef_fairness = 2
-        self.eps = 20     # Toleranzstundenanzahl.
+        self.eps = 4     # Toleranzstundenanzahl.
 
         super().__init__(**kwargs)
         # print(self.persons)

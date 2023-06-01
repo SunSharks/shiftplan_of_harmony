@@ -182,10 +182,10 @@ class Model:
         Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
         @param br: individual minimum break between two shifts."""
         conflicts = {}
-        # print(self.jobs)
+        print(self.jobs)
         for id, s, e in self.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
             # print(id)
-            tmp = self.jobs.loc[((self.jobs["datetime_start"] >= s-br) & (self.jobs["datetime_start"] < e+br))
+            tmp = self.jobs.loc[((self.jobs["datetime_start"] >= s-br) & (self.jobs["datetime_start"] <= e+br))
                                    | ((self.jobs["datetime_end"] >= s-br) & (self.jobs["datetime_end"] <= e+br))]
             conflicts[id] = tmp
         return conflicts
@@ -234,26 +234,24 @@ class Model:
     def optimize(self):
         self.model.writeProblem()
         self.model.optimize()
+        solutions = self.model.getSols()
+        self.solutions = []
+        for i, s in enumerate(solutions):
+            aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
+            self.solutions.append(aval)
+        print(self.solutions)
+
+
+    def dump_solutions_pkl(self):
         mode_name = self.shiftplan["mode_name"]
         shiftplan_name = self.shiftplan["shiftplan_name"]
-        try:
-            self.solution = np.vectorize(lambda x: self.model.getVal(x))(self.vars)
-            print(self.solution)
-            # np.save('solution', self.solution)
-            sols = self.model.getSols()
-            self.sols = sols
-            # with open("data_handler.pkl", 'wb') as f:
-            #     pickle.dump(self.dh, f)
-            solution_path = os.path.join("solutions", f"{mode_name}", f"{shiftplan_name}")
-            if not os.path.exists(solution_path):
-                os.makedirs(solution_path)
-            curr_try = len(os.listdir(solution_path))
-            run_path = os.path.join(solution_path, f"run{curr_try}")
-            os.mkdir(run_path)
-            for i, s in enumerate(sols):
-                aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
-                out_path = os.path.join(run_path, f"solution{i}.pkl")
-                with open(out_path, 'wb') as f:
-                    pickle.dump(aval, f)
-        except:
-            logging.error("No solutions created.")
+        solution_path = os.path.join("solution_pkls", f"{mode_name}", f"{shiftplan_name}")
+        if not os.path.exists(solution_path):
+            os.makedirs(solution_path)
+        curr_try = len(os.listdir(solution_path))
+        run_path = os.path.join(solution_path, f"run{curr_try}")
+        os.mkdir(run_path)
+        for i, s in enumerate(self.solutions):
+            out_path = os.path.join(run_path, f"solution{i}.pkl")
+            with open(out_path, 'wb') as f:
+                pickle.dump(s, f)

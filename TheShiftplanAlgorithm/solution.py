@@ -2,18 +2,21 @@ import numpy as np
 # import matplotlib.pyplot as plt
 import itertools
 import json
+import os
+from datetime import datetime
 import pickle
 
-
-
 class Solution:
-    def __init__(self, solution=None, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
-        self.solution = solution
-        self.jobs = jobs
-        self.persons = persons
-        self.preferences = preferences
-        self.jobtypes = jobtypes
-        self.shiftplan = shiftplan
+    def __init__(self, model, solutions_path="../TheShiftplan/sols/_json/_admin/{}.json"):
+        self.solutions = model.solutions
+        self.jobs = model.jobs
+        self.persons = model.persons
+        self.preferences = model.preferences
+        self.jobtypes = model.jobtypes
+        self.shiftplan = model.shiftplan
+        self.solutions_path = solutions_path
+        self.complete_solutions_path()
+
         self.preferences_np = self.preferences.to_numpy()
         # self.style = ""
         # # self.run_plt()
@@ -21,25 +24,59 @@ class Solution:
         # self.get_last_popular_jobs()
         # self.get_avg_rate()
         # self.get_avg_rate_per_job()
-        self.get_solution_json()
+        self.solution_lists = {}
+        for i, s in enumerate(self.solutions):
+            self.solution_lists[i] = self.create_user_job_assigned(s)
+        self.write_json(json.dumps(self.solution_lists))
 
 
-    def get_solution_json(self):
-        self.jobs_persons = {}
-        persons_assigned = []
+    def create_user_job_assigned(self, solution):
+        """
+        Returns user_job_assigned list of dicts for a single solution.
+        [
+            {
+                "user": <user_pk>,
+                "job": <job_pk>,
+                "assigned": <True/False>
+            }, ...
+        ]
+        @param solution: numpy.ndarray
+        """
+        user_job_assigned = []
         for j in self.jobs.index:
-            job = self.jobs.iloc[j]["pk"]
-            # print()
-            # print(i)
-            # print(np.where(self.solution[i] == 1))
-            assigned_person = np.where(self.solution[:,j] == 1)
-            # print(self.persons.iloc[assigned_person]["user_pk"])
-            persons_assigned.append(self.persons.iloc[assigned_person])
-            self.jobs_persons[job] = assigned_person
-        print(self.jobs_persons)
+            job = int(self.jobs.iloc[j]["pk"])
+            assigned_persons = np.where(solution[:,j] == 1)
+            unassigned_persons = np.where(solution[:,j] != 1)
+            assigned_users = list(self.persons.iloc[assigned_persons]["user_pk"])
+            unassigned_users = list(self.persons.iloc[unassigned_persons]["user_pk"])
+            instances = [
+                {
+                    "user": user,
+                    "job": job,
+                    "assigned": True
+                } for user in assigned_users
+            ]
+            instances.extend([
+                {
+                    "user": user,
+                    "job": job,
+                    "assigned": False
+                } for user in unassigned_users
+            ])
+            user_job_assigned.extend(instances)
+        return user_job_assigned
 
+
+    def complete_solutions_path(self):
+        now = datetime.now()
+        date_str = datetime.strftime(now, '%Y-%m-%d-%H-%M')
+        file_timestamp = f"{date_str}"
+        self.solutions_path = self.solutions_path.format(file_timestamp)
         
             
+    def write_json(self, json_str):
+        with open(self.solutions_path, 'w') as f:
+            f.write(json_str)
 
 
     def get_color_palette(self):

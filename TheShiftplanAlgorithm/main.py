@@ -55,4 +55,5 @@ if __name__ == '__main__':
         logging.error(f"Invalid mode: {mn}.")
         exit()
     model = Model_class(jobs=jobs, persons=users, preferences=preferences, jobtypes=jts, shiftplan=shiftplan)
-    s = Solution(solution=model.solution, jobs=model.jobs, persons=model.persons, preferences=model.preferences, jobtypes=model.jobtypes, shiftplan=model.shiftplan)
+    
+    s = Solution(model)

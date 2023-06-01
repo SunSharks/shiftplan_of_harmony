@@ -185,7 +185,7 @@ class Model:
         conflicts = {}
         # print(self.jobs)
         for id, s, e in self.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
-            tmp = self.jobs.drop(id)
+            tmp = self.jobs#.drop(id)
             tmp = tmp.loc[(tmp["datetime_start"] >= s-br) & (tmp["datetime_start"] < e+br)]
             # print(tmp)
 

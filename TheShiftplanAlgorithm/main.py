@@ -41,6 +41,10 @@ if __name__ == '__main__':
     users = db.fetch_users()
     # subcrews = db.fetch_names(helper=False)
     preferences = db.fetch_preferences(users, jobs)
+    # print("Users\n", users)
+    # print()
+    # print("preferences\n", preferences)
+    # print(len(users.index), len(preferences.index))
 
     if shiftplan["mode_name"] == "assign_every_job":
         from assign_every_job_model import AssignEveryJobModel as Model_class

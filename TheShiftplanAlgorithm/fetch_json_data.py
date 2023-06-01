@@ -3,6 +3,7 @@
 
 import pandas as pd
 import json
+import logging
 from os.path import join
 
 from bash_table_export import models_names
@@ -134,18 +135,20 @@ def fetch_users():
     user_options["break"] = pd.to_timedelta(user_options["break"], unit="h", errors='raise')
     workers = models["user_profiles"].loc[models["user_profiles"]["worker"] == True]
     workers_user_pks = list(workers["user"])
+    # print(workers_user_pks)
     user_options = user_options[user_options["user_pk"].isin(workers_user_pks)]
+    # print(user_options)
     return user_options
 
 
 def fetch_preferences(users, jobs):
-    print(users, jobs)
+    # print(users, jobs)
     all_ujrs = models["user_job_ratings"]
     
     ujrs = all_ujrs[all_ujrs["user"].isin(list(users["user_pk"]))]
     ujrs = ujrs[ujrs["job"].isin(list(jobs["pk"]))]
     # ujrs.set_index(list(range(len(ujrs.index))))
-    # print(ujrs)
+    # print(len(ujrs))
     # print(jobs)
     return ujrs
 

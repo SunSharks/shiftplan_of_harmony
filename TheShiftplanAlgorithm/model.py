@@ -5,6 +5,7 @@ import itertools as it
 import logging
 import pickle
 import os
+from datetime import timedelta
 
 
 logging.getLogger('matplotlib.font_manager').disabled = True
@@ -182,11 +183,12 @@ class Model:
         Returns dictionary {job_id: <DataFrame of conflicting jobs>}.
         @param br: individual minimum break between two shifts."""
         conflicts = {}
-        print(self.jobs)
+        # print(self.jobs)
         for id, s, e in self.jobs[["datetime_start", "datetime_end"]].itertuples(index=True):
-            # print(id)
-            tmp = self.jobs.loc[((self.jobs["datetime_start"] >= s-br) & (self.jobs["datetime_start"] <= e+br))
-                                   | ((self.jobs["datetime_end"] >= s-br) & (self.jobs["datetime_end"] <= e+br))]
+            tmp = self.jobs.drop(id)
+            tmp = tmp.loc[(tmp["datetime_start"] >= s-br) & (tmp["datetime_start"] < e+br)]
+            # print(tmp)
+
             conflicts[id] = tmp
         return conflicts
 
@@ -239,8 +241,14 @@ class Model:
         for i, s in enumerate(solutions):
             aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
             self.solutions.append(aval)
-        print(self.solutions)
-
+        # print(self.solutions)
+        for num, l in enumerate(self.solutions[0]):
+            for num2, i in enumerate(l):
+                if i == 1:
+                    pass
+                    # print(50*'*')
+                    # print(self.persons.iloc[num], "\nassigned\n", self.jobs.iloc[num2])
+                    # print(50*'-')
 
     def dump_solutions_pkl(self):
         mode_name = self.shiftplan["mode_name"]
@@ -255,3 +263,4 @@ class Model:
             out_path = os.path.join(run_path, f"solution{i}.pkl")
             with open(out_path, 'wb') as f:
                 pickle.dump(s, f)
+

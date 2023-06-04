@@ -2,7 +2,16 @@
 
 {% block content %}
 {% include "header.html" %}
-
+<div class = "navbar">
+    <div class = "navbar_item">
+        <a href="{% url 'sols:index' %}">Back to sols index.</a>
+    </div>
+    {% if final_sol %}
+        <div class = "navbar_item">
+            <a href="{% url 'sols:stats' final_sol.id %}">Stats</a>
+        </div>
+    {% endif %}
+</div>
 <div>
     {% if error_message %}
         <p><strong>{{ error_message }}</strong></p>

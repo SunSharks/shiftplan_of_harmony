@@ -6,6 +6,7 @@ app_name = 'sols'
 urlpatterns = [
     path('', index_view, name='index'),
     path('sol_runs/', sol_runs_view, name='sol_runs'),
+    path('stats/<int:pk>/', stats_view, name='stats'),
     path('admin_solutions/<int:pk>/', admin_solutions_view, name='admin_solutions'),
     path('show_solution/<int:pk>/', show_solution_view, name='show_solution'),
     path('set_final_sol_run/<int:pk>/', set_sol_run_final_view, name='set_sol_run_final'),

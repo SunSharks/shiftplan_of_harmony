@@ -16,7 +16,7 @@ from os.path import exists, join
 from utils.create_instances import *
 
 from .models import SolutionRun, Solution, UserJobAssignment
-from defs.models import Jobtype, Job
+from defs.models import UserProfile, Jobtype, Job
 from prefs.models import UserJobRating
 
 from .solplot import *
@@ -257,6 +257,23 @@ def unset_sol_final_view(request, pk):
         final_sol[0].final = False 
         final_sol[0].save()
     return redirect("sols:sol_runs")
+
+
+@login_required
+def stats_view(request, pk):
+    solution = get_object_or_404(Solution, id=pk)
+    current_user = request.user
+    num_workers = len(UserProfile.objects.filter(worker=True))
+    stats = [
+        {"label": "User", "value": current_user.username},
+        {"label": "Workers", "value": num_workers}
+    ]
+    # workers = 
+    context = {}
+    context.update({
+        "stats": stats
+    })
+    return render(request, 'sols/stats.html', context)
 
 
 def create_objects(objs, dt):

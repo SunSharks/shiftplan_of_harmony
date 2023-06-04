@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "navbar">
+    <div class = "navbar_item">
+        <a href="{% url 'sols:index' %}">Back Home</a>
+    </div>
+</div>
+<legend><h1>Stats</h1></legend>
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+{% for s in stats %}
+    <div>
+        {{ s.label }}: {{ s.value }}
+    </div>
+{% endfor %}
+
+{% endblock %}

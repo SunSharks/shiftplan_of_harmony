@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "navbar">
+    <div class = "navbar_item">
+        <li><a href="{% url 'sols:index' %}">Back Home</a></li>
+    </div>
+</div>
+<legend><h1>Solution Runs</h1></legend>
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+{% if final_sol_run %}
+    <div class = "def item">
+        <strong>Final: {{ final_sol_run }}</strong> <a href="{% url 'sols:admin_solutions' final_sol_run.pk %}">Show Solutions.</a>
+        <a href="{% url 'sols:unset_sol_run_final' %}">Unset final.</a>
+    </div>
+{% endif %}
+
+{% for sr in sol_runs %}
+    {% if sr.final %}
+    {% else %}
+        <div class = "def item">
+            {{ sr.pk}} {{ sr.final }}
+            <a href="{% url 'sols:admin_solutions' sr.pk %}">Show Solutions.</a>
+            <a href="{% url 'sols:set_sol_run_final' sr.pk %}">Set final.</a>
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "header.html" %}
+<div class = "navbar">
+    {% if admin_new_solution %}
+        <div class = "navbar_item">
+            There are new solutions.
+            <a href="{% url 'sols:sol_runs' %}">Select from latest solution runs.</a>
+        </div>
+    {% else %}
+        <div class = "navbar_item">
+            <li><a href="{% url 'sols:admin_solutions' %}">Select from latest solutions.</a></li>
+        </div>
+    {% endif %}
+    <div class = "navbar_item">
+        <li><a href="{% url 'sols:sol_runs' %}">Latest solution runs.</a></li>
+    </div>
+</div>
+
+<div>
+    {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+    {% endif %}
+    {% if final_sol %}
+        <h2>Current Final Solution</h2>
+        {% include "sols/show_sol.html" %}
+    {% endif %}
+</div>
+
+
+      
+{% endblock content %}

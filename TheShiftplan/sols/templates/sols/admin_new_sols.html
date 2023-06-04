@@ -17,12 +17,13 @@
     <ul>
         {% for s in solutions %}
                 <button class="add_button" type="button" hx-get="{% url 'sols:show_solution' s.id %}" hx-target="#solplot" hx-swap="innerHTML">
-                    Solution {{ s.id }}
+                    Solution {{ s.id }} {{ s.final }}
                 </button>
         {% endfor %}
     </ul>
 </div>
-<div id="solplot"></div>
+<div id="solplot">
+</div>
 
 
 {% endblock content %}

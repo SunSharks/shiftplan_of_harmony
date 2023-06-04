@@ -8,9 +8,10 @@ from defs.models import Job
 
 class SolutionRun(models.Model):
     timestamp = models.DateTimeField("solution run timestamp", unique=True)
+    final = models.BooleanField(default=False)
 
     def __str__(self):
-        s = f"timestamp: {self.timestamp}"
+        s = f"{self.timestamp}"
         return s
 
 

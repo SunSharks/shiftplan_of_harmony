@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
@@ -27,14 +27,206 @@ time_format = '%Y-%m-%d-%H-%M'
 final_solution_path = join("sols", "_json", "solution.json")
 final_solution_admin_path = join("sols", "_json", "_admin")
 
+
 @login_required
 def index_view(request):
+    final_sol = get_final_final_solution()
     current_user = request.user
-    print(current_user.is_superuser)
     if current_user.is_superuser:
-        return admin_index_view(request)
+        return admin_index_view(request, final_sol)
     else:
-        return normal_index_view(request)
+        return normal_index_view(request, final_sol)
+
+
+@login_required
+def admin_index_view(request, final_sol):
+    current_user = request.user
+    if current_user.is_superuser:
+        context = update_run()
+        if type(final_sol) != str:
+            context.update({
+                "final_sol": final_sol,
+                "show_solution": final_sol,
+                "show_solution_run": final_sol.solution_run
+            })
+        else:
+            context.update({
+                "error_message": final_sol
+            })
+        return render(request, 'sols/admin_index.html', context)
+    else:
+        return HttpResponseNotAllowed("You are not superuser.")
+    # final_solution = Solution.objects.filter(final=True)
+    # print(final_solution)
+    # if exists(final_solution_admin_path):
+    #     return render(request, 'sols/index.html', context)
+    
+    # return HttpResponse("Admin index.")
+
+
+@login_required
+def sol_runs_view(request):
+    context = update_run()
+    sol_runs = SolutionRun.objects.all().order_by('-timestamp')
+    final_sol_run = SolutionRun.objects.filter(final=True)
+    if len(final_sol_run) == 0:
+        context.update({
+            "error_message": "No final solrun."
+        })
+    else:
+        context.update({
+            "final_sol_run": final_sol_run[0]
+        })
+    context.update({
+                "sol_runs": sol_runs
+            })
+    return render(request, 'sols/sol_runs.html', context)
+
+
+@login_required
+def admin_solutions_view(request, pk):
+    sol_run = get_object_or_404(SolutionRun, id=pk)
+    current_user = request.user
+    if current_user.is_superuser:
+        context = update_run()
+    else:
+        return HttpResponseNotAllowed("You are not superuser.")
+    context.update({
+        "solutions": sol_run.solution_set.all()
+    })
+    return render(request, 'sols/admin_new_sols.html', context)
+
+
+@login_required
+def prepare_session_var(request, pk):
+    current_user = request.user
+    solution = get_object_or_404(Solution, id=pk) 
+    jobs = Job.objects.all()
+    if len(jobs) == 0:
+        return HttpResponse('<h1>No Jobs defined.</h1>')
+   
+    user_job_assignments = UserJobAssignment.objects.all()
+    l = []
+    for j in jobs:
+        user_job_assignments = UserJobAssignment.objects.filter(job=j, assigned=True, solution=solution)
+        # print(user_job_assignments)
+        if len(user_job_assignments) == 0:
+            assigned_username = config.dummy_username
+            assigned_rating = 0
+            d = {}
+        # elif len(user_job_assignments) > 1:
+        #     return HttpResponse("Multiple persons assigned to the same job.")
+        else:
+            assigned_username = user_job_assignments[0].user.username
+            assigned_rating = UserJobRating.objects.get(job=user_job_assignments[0].job, user=user_job_assignments[0].user).rating
+            ura = user_job_assignments[0]
+            d = ura.as_dict()
+        job = j.as_dict()
+        jobtype = j.jobtype.as_dict()
+        user_rating = UserJobRating.objects.get(user=current_user, job=j).rating
+        d.update({"assigned_username": assigned_username})
+        d.update({"assigned_rating": assigned_rating})
+        d.update({"user_rating": user_rating})
+        d.update(job)
+        popularity = sum([ujr.rating for ujr in UserJobRating.objects.filter(job=j)]) / len(UserJobRating.objects.filter(job=j))
+        d.update({"popularity": popularity})
+        d.update(jobtype)
+        l.append(d)
+
+    df = pd.DataFrame(l)
+    df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
+    df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
+    # print("CONVERT TO JSON")
+    df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df = df.to_json()
+    # print(context)
+    session = request.session
+    djaploda = session.get('django_dash', {})
+    ndf = djaploda.get('df', df)
+    ndf = df
+    djaploda['df'] = ndf
+    session['django_dash'] = djaploda
+
+
+@login_required
+def show_solution_view(request, pk):
+    solution = get_object_or_404(Solution, id=pk)  
+    jobs = Job.objects.all()
+    if len(jobs) == 0:
+        return HttpResponse('<h1>No Jobs defined.</h1>')
+    # print(5*'---\n')
+    prepare_session_var(request, pk)
+    context = {
+        "show_solution": solution,
+        "show_solution_run": solution.solution_run
+    }
+    return render(request, 'sols/show_sol.html', context)
+
+
+def get_or_create(model, **kwargs):
+    try:
+        instance = model.objects.get(**kwargs)
+        # print("existing {}: {}".format(model, instance))
+    except model.DoesNotExist:
+        instance = model(**kwargs)
+        instance.save()
+        # print("new {}: {}".format(model, instance))
+    # user_options = UserOptions.objects.get(user=current_user)
+    return instance
+
+    context = {
+    }
+    return render(request, 'sols/show_sol.html', context)
+
+
+@login_required
+def set_sol_run_final_view(request, pk):
+    solution_run = get_object_or_404(SolutionRun, id=pk)
+    solution_run.final = True
+    solution_run.save()
+    return redirect("sols:index")
+
+
+@login_required
+def unset_sol_run_final_view(request):
+    context = update_run()
+    final_sol_run = SolutionRun.objects.filter(final=True)
+    if len(final_sol_run) != 0:
+        final_sol_run[0].final = False 
+        final_sol_run[0].save()
+    return redirect("sols:sol_runs")
+
+
+@login_required
+def set_sol_final_view(request, pk):
+    solution = get_object_or_404(Solution, id=pk)
+    solution.final = True
+    solution.save()
+    return redirect("sols:index")
+    # admin_new_solutions_view(request, pk=pk, set_final=True)
+    # return HttpResponse("")
+    # return redirect("sols:show_solution", pk=pk, set_final=True)
+
+
+@login_required
+def unset_sol_final_view(request, pk):
+    context = update_run()
+    solution_run = get_object_or_404(SolutionRun, id=pk)
+    final_sol = Solution.objects.filter(solution_run=solution_run, final=True)
+    if len(final_sol) != 0:
+        final_sol[0].final = False 
+        final_sol[0].save()
+    return redirect("sols:sol_runs")
+
+
+@login_required
+def normal_index_view(request, final_sol):
+    # TODO
+    if type(final_sol) != str:
+        return HttpResponse("Final Solution exists.")
+    else:
+        return HttpResponse(f"Warning: {final_sol}")
 
 
 def create_objects(objs, dt):
@@ -63,16 +255,14 @@ def new_run(latest_admin_json_dt):
     create_objects(objs, latest_admin_json_dt)
 
 
-def set_final_solution(final_solution_pk):
-    pass 
+def set_final_solution(pk):
+    solution = get_object_or_404(Solution, id=pk)
+    solution.final = True
+    solution.save()
 
 
-@login_required
-def admin_index_view(request):
+def update_run():
     latest_sol_run = SolutionRun.objects.all().order_by('-timestamp').first()
-    
-    # print(SolutionRun.objects.all())
-    # print(datetime.strptime(datetime.strftime(latest_sol_run.timestamp, time_format), time_format))
     files_timestamps = [datetime.strptime(fn.replace(".json", ""), time_format) for fn in listdir(final_solution_admin_path)]
     if len(files_timestamps) > 0:
         latest_admin_json_dt = max(files_timestamps)
@@ -81,102 +271,61 @@ def admin_index_view(request):
             if latest_admin_json_dt > latest_sol_run_dt:
                 new_run(latest_admin_json_dt)
                 context = {
-                    'admin_new_solution': True
+                    'admin_new_solution': True,
+                    'existing_solutions': True
+                }
+            else:
+                context = {
+                    'admin_new_solution': False,
+                    'existing_solutions': True
                 }
         else:
             new_run(latest_admin_json_dt)
             context = {
-                    'admin_new_solution': True
+                    'admin_new_solution': True,
+                    'existing_solutions': True
                 }
-            return render(request, 'sols/index.html', context)
+    else:
+        context = {
+            'admin_new_solution': False,
+            'existing_solutions': False
+        }
+    return context
 
-    if exists(final_solution_admin_path):
-        return render(request, 'sols/index.html', context)
-    
-    return HttpResponse("Admin index.")
 
-
-@login_required
-def admin_new_solutions_view(request):
+def get_latest_run():
     latest_sol_run = SolutionRun.objects.all().order_by('-timestamp').first()
-    context = {
+    context.update({
         "solutions": latest_sol_run.solution_set.all()
-    }
-    return render(request, 'sols/admin_new_sols.html', context)
+    })
 
 
-@login_required
-def show_solution_view(request, pk):
-    jobs = Job.objects.all()
-    if len(jobs) == 0:
-        return HttpResponse('<h1>No Jobs defined.</h1>')
-   
-    user_job_assignments = UserJobAssignment.objects.all()
-    # print(50*'+')
-    # print(user_ratings)
-    l = []
+def get_final(model, **kwargs):
+    final = model.objects.filter(final=True, **kwargs)
+    if len(final) == 1:
+        return final[0]
+    elif len(final) == 0: 
+        return 0
+    else:
+        return "More than 1 final. "
 
-    for j in jobs:
-        user_job_assignments = UserJobAssignment.objects.filter(job=j, assigned=True)
-        print(user_job_assignments)
-        if len(user_job_assignments) == 0:
-            assigned_username = config.dummy_username
-            d = {}
-        elif len(user_job_assignments) > 1:
-            return HttpResponse("Multiple persons assigned to the same job.")
+
+def get_final_final_solution():
+    final_sol_run = get_final(SolutionRun)
+    if final_sol_run == 0:
+        return "No final SolutionRun defined."
+    elif type(final_sol_run) == str:
+        return "More than 1 final SolutionRuns."
+    else:
+        final_sol = get_final(Solution, solution_run=final_sol_run)
+        if final_sol == 0:
+            return "No final Solution defined."
+        elif type(final_sol) == str:
+            return "More than 1 final Solutions."
         else:
-            assigned_username = user_job_assignments[0].user.username
-            ura = user_job_assignments[0]
-            d = ura.as_dict()
-        job = j.as_dict()
-        jobtype = j.jobtype.as_dict()
-        d.update({"assigned_username": assigned_username})
-        d.update(job)
-        popularity = sum([ujr.rating for ujr in UserJobRating.objects.filter(job=j)]) / len(UserJobRating.objects.filter(job=j))
-        d.update({"popularity": popularity})
-        d.update(jobtype)
-        l.append(d)
-
-    df = pd.DataFrame(l)
-    df['begin'] = pd.to_datetime(df['begin_date'].astype(str) + ' ' + df['begin_time'].astype(str))
-    df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
-    # print("CONVERT TO JSON")
-    df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    df = df.to_json()
-    # print(context)
-    session = request.session
-    djaploda = session.get('django_dash', {})
-    ndf = djaploda.get('df', df)
-    ndf = df
-    djaploda['df'] = ndf
-    session['django_dash'] = djaploda  
-    # print(5*'---\n')
-    context = {
-    }
-    return render(request, 'sols/show_sol.html', context)
-
-def get_or_create(model, **kwargs):
-    try:
-        instance = model.objects.get(**kwargs)
-        # print("existing {}: {}".format(model, instance))
-    except model.DoesNotExist:
-        instance = model(**kwargs)
-        instance.save()
-        # print("new {}: {}".format(model, instance))
-    # user_options = UserOptions.objects.get(user=current_user)
-    return instance
-
-    context = {
-    }
-    return render(request, 'sols/show_sol.html', context)
-
-
-@login_required
-def normal_index_view(request):
-    # TODO
-    if exists(final_solution_path):
-        return HttpResponse("Solution exists.")
-    return HttpResponse("Solution doesn't exist.")
-
-
+            return final_sol
+    # print("final_sol_run", final_sol_run)
+    # latest_sol_run = SolutionRun.objects.all().order_by('-timestamp').first()
+    # context.update({
+    #     "solutions": latest_sol_run.solution_set.all()
+    # })

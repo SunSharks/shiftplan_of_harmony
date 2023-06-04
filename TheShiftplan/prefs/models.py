@@ -59,3 +59,4 @@ class Workload(models.Model):
 
     class Meta:
         ordering = ('workload_hours',)
+

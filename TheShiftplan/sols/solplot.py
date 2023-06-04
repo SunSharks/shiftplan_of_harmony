@@ -21,7 +21,11 @@ from django.db.models import Q
 
 from utils import config 
 
-
+COLOR_MODE_OPTIONS = [
+    {'label': "Own rating", 'value': "user_rating"},
+    {'label': "Assigned Rating", 'value': "assigned_rating"},
+    {'label': "Popularity", 'value': "popularity"}
+]
 RATES = range(1, 6)
 styles = {
     'app':{
@@ -35,6 +39,16 @@ app = DjangoDash('solplot', add_bootstrap_links=True)
 app.layout = html.Div([
     dcc.Input(id='df_inp', type="hidden", style={"display": "hidden"}),
     dcc.Store(id="cache", data=[]),
+    dcc.Dropdown(
+                id="color_mode",
+                options=COLOR_MODE_OPTIONS,
+                multi=False,
+                value="user_rating",
+                clearable=False,
+                style={'width': '49%', "position": "relative"},
+                maxHeight=500,
+                className="mode dropdown"
+            ),
     html.Div([
             dcc.Markdown("""
                 **Click Data**
@@ -49,8 +63,9 @@ app.layout = html.Div([
 
 @app.callback(
     Output('chart_plot', 'figure'),
-    [Input('df_inp', 'value')])
-def generate_graph(df_inp, session_state=None, *args, **kwargs):
+    [Input('df_inp', 'value'),
+    Input('color_mode', 'value')])
+def generate_graph(df_inp, color_mode, session_state=None, *args, **kwargs):
     if df_inp is None:
         django_dash = kwargs["request"].session.get("django_dash")
         df = pd.read_json(django_dash.get('df'))
@@ -62,7 +77,7 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
         df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
     # print("generae_graph", df)
     dff = df.copy()
-    fig = chart_plot(dff)
+    fig = chart_plot(dff, color_mode)
     fig.update_layout(clickmode='event+select')
     return fig
 
@@ -139,10 +154,10 @@ def close_modal(close_modal, *args, **kwargs):
     return True
 
 
-def chart_plot(df):
+def chart_plot(df, color_mode):
     """
     Returns timeline plot.
-    @param df: input df
+    @param df: input df, color_mode
     TODO: discrete color map and legend.
     """
     # print(df)
@@ -155,8 +170,15 @@ def chart_plot(df):
         5: "red"
         }
     # rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
-    tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="popularity", opacity=0.5, labels={}, text="assigned_username")
+    if color_mode == "popularity":
+        tl = px.timeline(
+            df, x_start="begin", x_end="end", y="name", color="popularity", opacity=0.5, labels={}, text="assigned_username")
+    elif color_mode == "assigned_rating":
+        tl = px.timeline(
+            df, x_start="begin", x_end="end", y="name", color="assigned_rating", opacity=0.5, labels={}, text="assigned_username")
+    elif color_mode == "user_rating":
+        tl = px.timeline(
+            df, x_start="begin", x_end="end", y="name", color="user_rating", opacity=0.5, labels={}, text="assigned_username")
     #color_discrete_map=rating_color_map)
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")

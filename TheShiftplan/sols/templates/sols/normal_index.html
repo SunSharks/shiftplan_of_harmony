@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "header.html" %}
+
+<div>
+    {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+    {% endif %}
+    {% if final_sol %}
+        <h2>Final Solution</h2>
+        {% include "sols/normal_show_sol.html" %}
+    {% endif %}
+</div>
+{% endblock content %}

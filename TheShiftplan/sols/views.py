@@ -31,11 +31,33 @@ final_solution_admin_path = join("sols", "_json", "_admin")
 @login_required
 def index_view(request):
     final_sol = get_final_final_solution()
+    try:
+        prepare_session_var(request, final_sol.pk)
+    except AttributeError:
+        pass
     current_user = request.user
     if current_user.is_superuser:
         return admin_index_view(request, final_sol)
     else:
         return normal_index_view(request, final_sol)
+
+
+@login_required
+def normal_index_view(request, final_sol):
+    # TODO
+    context = {}
+    if type(final_sol) != str:
+        context.update({
+                "final_sol": final_sol,
+                "show_solution": final_sol,
+                "show_solution_run": final_sol.solution_run
+            })
+    else:
+        context.update({
+            "error_message": final_sol
+        })
+    return render(request, 'sols/normal_index.html', context)
+        
 
 
 @login_required
@@ -104,7 +126,6 @@ def prepare_session_var(request, pk):
     jobs = Job.objects.all()
     if len(jobs) == 0:
         return HttpResponse('<h1>No Jobs defined.</h1>')
-   
     user_job_assignments = UserJobAssignment.objects.all()
     l = []
     for j in jobs:
@@ -119,17 +140,29 @@ def prepare_session_var(request, pk):
         else:
             assigned_username = user_job_assignments[0].user.username
             assigned_rating = UserJobRating.objects.get(job=user_job_assignments[0].job, user=user_job_assignments[0].user).rating
+            
             ura = user_job_assignments[0]
             d = ura.as_dict()
         job = j.as_dict()
         jobtype = j.jobtype.as_dict()
         user_rating = UserJobRating.objects.get(user=current_user, job=j).rating
-        d.update({"assigned_username": assigned_username})
-        d.update({"assigned_rating": assigned_rating})
-        d.update({"user_rating": user_rating})
+        d.update({
+            "assigned_username": assigned_username
+            })
+        d.update({
+            "assigned_rating": assigned_rating,
+            "assigned_rating_str": str(assigned_rating)
+        })
+        d.update({
+            "user_rating": user_rating,
+            "user_rating_str": str(user_rating)
+        })
         d.update(job)
         popularity = sum([ujr.rating for ujr in UserJobRating.objects.filter(job=j)]) / len(UserJobRating.objects.filter(job=j))
-        d.update({"popularity": popularity})
+        d.update({
+            "popularity": popularity,
+            "popularity_str": str(popularity)
+        })
         d.update(jobtype)
         l.append(d)
 
@@ -146,6 +179,8 @@ def prepare_session_var(request, pk):
     ndf = djaploda.get('df', df)
     ndf = df
     djaploda['df'] = ndf
+    djaploda['username'] = current_user.username
+    djaploda['is_admin'] = current_user.is_superuser
     session['django_dash'] = djaploda
 
 
@@ -161,7 +196,11 @@ def show_solution_view(request, pk):
         "show_solution": solution,
         "show_solution_run": solution.solution_run
     }
-    return render(request, 'sols/show_sol.html', context)
+    current_user = request.user
+    if current_user.is_superuser:
+        return render(request, 'sols/admin_show_sol.html', context)
+    else:
+        return render(request, 'sols/normal_show_sol.html', context)
 
 
 def get_or_create(model, **kwargs):
@@ -218,15 +257,6 @@ def unset_sol_final_view(request, pk):
         final_sol[0].final = False 
         final_sol[0].save()
     return redirect("sols:sol_runs")
-
-
-@login_required
-def normal_index_view(request, final_sol):
-    # TODO
-    if type(final_sol) != str:
-        return HttpResponse("Final Solution exists.")
-    else:
-        return HttpResponse(f"Warning: {final_sol}")
 
 
 def create_objects(objs, dt):

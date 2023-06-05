@@ -17,7 +17,7 @@ from utils.create_instances import *
 
 from .models import SolutionRun, Solution, UserJobAssignment
 from defs.models import UserProfile, Jobtype, Job
-from prefs.models import UserJobRating
+from prefs.models import UserJobRating, BiasHours, UserOptions
 
 from .solplot import *
 
@@ -262,13 +262,47 @@ def unset_sol_final_view(request, pk):
 @login_required
 def stats_view(request, pk):
     solution = get_object_or_404(Solution, id=pk)
+    prepare_session_var(request, pk)
+    session = request.session
+    djaploda = session.get('django_dash', {})
+    df = pd.read_json(djaploda.get('df', {}))
+    df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
+    df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    df['during'] = df['end'] - df['begin']
+    print(df)
     current_user = request.user
     num_workers = len(UserProfile.objects.filter(worker=True))
+    num_jobs = len(Job.objects.all())
+    sum_working_hours = df["during"].sum()
+    sum_bias_hours = sum([b.bias_hours for b in BiasHours.objects.all()])
+    sum_working_hours += pd.to_timedelta(sum_bias_hours, unit='h')
+    avg_workload = sum_working_hours / num_workers
+
+    user_assigned_jobs = UserJobAssignment.objects.filter(solution=solution, user=current_user, assigned=True)
+    user_num_jobs = len(user_assigned_jobs)
+    print(df.loc[df["user"] == current_user.pk])
+    df_user_assigned = df.loc[df["user"] == current_user.pk]
+    user_workload = df_user_assigned["during"].sum()
+    user_break = UserOptions.objects.filter(user=current_user)[0].min_break_hours
+    user_break_str = f"{user_break} hours between 2 shifts"
+    workloads_per_person = df.groupby(['user'])["during"].sum()
+    max_workload = workloads_per_person.max()
+    min_workload = workloads_per_person.min()
+    print(max_workload)
     stats = [
-        {"label": "User", "value": current_user.username},
-        {"label": "Workers", "value": num_workers}
+        {"label": t[0], "value": t[1], "title": t[2]} for t in [
+            ("User", current_user.username, ""),
+            ("My break", user_break_str, ""),
+            ("Workers", num_workers, ""),
+            ("Jobs", num_jobs, ""),
+            ("My Jobs", user_num_jobs, ""),
+            ("Total Workload", sum_working_hours, ""),
+            ("Average Workload", avg_workload, ""),
+            ("My Workload", user_workload, ""),
+            ("Max Workload", max_workload, ""),
+            ("Min Workload", min_workload, "")
+        ]
     ]
-    # workers = 
     context = {}
     context.update({
         "stats": stats

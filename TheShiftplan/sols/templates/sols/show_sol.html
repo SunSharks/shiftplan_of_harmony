@@ -22,20 +22,17 @@
           display: block;
         }
     </style>
-    <h1>Solution {{ show_solution.id }}</h1>
     <div>
       {% if show_solution.final %}
-        This is the final solution.
-        <a href="{% url 'sols:unset_sol_final' show_solution_run.id %}">Unset final.</a>
+        <div>
+          This is the final solution.
+          <a href="{% url 'sols:unset_sol_final' show_solution_run.id %}">Unset final.</a>
+        </div>
       {% else %}
-        <a href="{% url 'sols:set_sol_final' show_solution.id %}">Set final.</a>
+        <div>
+          <a href="{% url 'sols:set_sol_final' show_solution.id %}">Set final.</a>
+        </div>
       {% endif %}
     </div>
-    {% autoescape off %}
-        {% comment %} {{ plot_div }} {% endcomment %}
-        {% load plotly_dash %}
-        <div class="{%plotly_class name="solplot" %}", style="height:100%;width:100%;">
-            {% plotly_app name="solplot" ratio=1 %}
-        </div>
-    {% endautoescape %}
+    {% include "sols/sol_container.html" %}
 {% endblock content %}

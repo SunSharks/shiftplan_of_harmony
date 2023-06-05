@@ -2,13 +2,13 @@
 
 {% block content %}
     <div class = "navbar">
-        <div class = "navbar_item">
+        <div class = "navbar item">
             <li><a href="{% url 'defs:index' %}">Back Home</a></li>
         </div>
-        <div class = "navbar_item">
+        <div class = "navbar item">
             <li><a href="{% url 'defs:jobtype_def' %}">Back to Jobtype Overview</a></li>
         </div>
-        <div class = "navbar_item">
+        <div class = "navbar item">
             <li><a href="{% url 'defs:visual_job_def' jobtype.id %}">Visual Job Def [Experimental]</a></li>
         </div>
     </div>

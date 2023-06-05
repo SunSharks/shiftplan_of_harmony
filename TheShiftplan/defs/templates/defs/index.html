@@ -3,10 +3,13 @@
 {% block content %}
   {% include "header.html" %}
   <div class = "navbar">
-    <div class = "navbar_item">
+    <div class = "navbar item">
       <a href="{% url 'defs:jobtype_def' %}">Jobtypes</a>
+    </div>
+    <div class = "navbar item">
       <a href="{% url 'defs:subcrew_def' %}">Subcrews</a>
     </div>
+    
   </div>    
   <style>
       .dropdown {
@@ -28,7 +31,7 @@
         display: block;
       }
   </style>
-  
+
   <div class="job_descriptions">
     {% for j in jt_descriptions %}
       <div class="dropdown">

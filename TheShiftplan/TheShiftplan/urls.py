@@ -19,11 +19,12 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("auth_accounts/", include("django.contrib.auth.urls")),
     path('djaploda/', include('django_plotly_dash.urls')),
     path('admin/', admin.site.urls),
     path('_nested_admin/', include('nested_admin.urls')),
     path('prefs/', include('prefs.urls')),
     path('defs/', include('defs.urls')),
     path('sols/', include('sols.urls')),
+    path('accounts/', include('accounts.urls')),
 ]

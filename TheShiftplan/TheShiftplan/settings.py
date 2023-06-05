@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'defs',
     'prefs',
     'sols',
+    'accounts',
     'compressor',
     'bootstrap4',
 ]

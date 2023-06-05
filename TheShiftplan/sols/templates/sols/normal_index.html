@@ -7,7 +7,7 @@
         <a href="{% url 'sols:index' %}">Back to sols index.</a>
     </div>
     {% if final_sol %}
-        <div class = "navbar_item">
+        <div class = "navbar item">
             <a href="{% url 'sols:stats' final_sol.id %}">Stats</a>
         </div>
     {% endif %}

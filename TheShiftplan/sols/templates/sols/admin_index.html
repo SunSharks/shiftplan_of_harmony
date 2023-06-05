@@ -4,16 +4,16 @@
 {% include "header.html" %}
 <div class = "navbar">
     {% if admin_new_solution %}
-        <div class = "navbar_item">
+        <div class = "navbar item">
             There are new solutions.
             <a href="{% url 'sols:sol_runs' %}">Select from latest solution runs.</a>
         </div>
     {% else %}
-        <div class = "navbar_item">
+        <div class = "navbar item">
             <li><a href="{% url 'sols:admin_solutions' %}">Select from latest solutions.</a></li>
         </div>
     {% endif %}
-    <div class = "navbar_item">
+    <div class = "navbar item">
         <li><a href="{% url 'sols:sol_runs' %}">Latest solution runs.</a></li>
     </div>
 </div>

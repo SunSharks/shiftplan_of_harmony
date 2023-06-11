@@ -11,16 +11,96 @@ from django.db.models import Q
 
 from .models import Jobtype, Job, SubCrew, UserProfile
 
-from .forms import JobtypeForm, JobForm, SubCrewForm
+from .forms import UploadFileForm, JobtypeForm, JobForm, SubCrewForm
 from django.views import generic
 from django.views.generic.edit import CreateView, FormView
 
 from .defplot import *
-# @login_required
-# def index_view(request):
-#     context = {}
-#     return render(request, 'defs/index.html', context)
 
+from accounts.models import UserCandidate, CandidatesList
+from utils import upload_data
+from utils import config
+
+@login_required
+def index_view(request, **kwargs):
+    # request.session.flush()
+    # print(request.FILES)
+    context = {}
+    current_user = request.user if type(request.user) is not AnonymousUser else None
+    jobtypes = Jobtype.objects.all()
+    if len(jobtypes) == 0:
+        return HttpResponse('<h1>No Jobtypes defined.</h1>') 
+    jobs_allowed = []
+    jt_descriptions = []
+    for jt in jobtypes:
+        jt_descriptions.append({
+            "description": jt.description,
+            "name": jt.name
+            })
+        jobs_allowed.extend(jt.job_set.all())
+    if len(jobs_allowed) == 0:
+        return HttpResponse('<h1>No Jobs defined.</h1>') 
+    prepare_djaploda_session_var(request, jobs_allowed, 'defs/index')
+    # print(5*'---\n')
+    
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["file"]
+            upload = upload_data.Upload(file)
+            success, inst = upload.get_result_df_or_error()
+            if success:
+                create_candidate_instances(file, inst)
+                context.update({
+                    "upload_file": file.name
+                })
+            else:
+                context.update({
+                    "upload_error": inst
+                })
+    else:
+        form = UploadFileForm()
+
+    context.update({
+        "jt_descriptions": jt_descriptions,
+        "upload_file_form": form
+    })
+    return render(request, 'defs/index.html', context)
+
+    
+def create_candidate_instances(file, df):
+    print(df)
+    fname = file.name.split(".")[0]
+    conflicting = CandidatesList.objects.filter(name=fname)
+    conflicting.delete()
+    cand_list = CandidatesList(name=fname, file=file)
+    cand_list.save()
+    renames = {}
+    for c in df.columns:
+        if c.lower() in config.file_to_code_dict:
+            renames[c] = config.file_to_code_dict[c.lower()]
+    # print(renames)
+    df = df.rename(columns=renames)
+    for i in df.index:
+        user_cand = UserCandidate()
+        for attr_name in renames.values():
+            setattr(user_cand, attr_name, df.iloc[i][attr_name])
+        setattr(user_cand, "candidates_list", cand_list)
+        print(user_cand)
+        user_cand.save()
+
+
+@login_required
+def upload_persons_view(request):
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES["file"])
+            return HttpResponseRedirect("/success/url/")
+    else:
+        form = UploadFileForm()
+    return render(request, "upload.html", {"form": form})
+   
 
 @login_required
 def jobtype_def(request):
@@ -294,31 +374,6 @@ def delete_subcrew(request, pk):
         ]
     )
 
-
-@login_required
-def index_view(request, **kwargs):
-    # request.session.flush()
-    current_user = request.user if type(request.user) is not AnonymousUser else None
-    jobtypes = Jobtype.objects.all()
-    if len(jobtypes) == 0:
-        return HttpResponse('<h1>No Jobtypes defined.</h1>') 
-    jobs_allowed = []
-    jt_descriptions = []
-    for jt in jobtypes:
-        jt_descriptions.append({
-            "description": jt.description,
-            "name": jt.name
-            })
-        jobs_allowed.extend(jt.job_set.all())
-    if len(jobs_allowed) == 0:
-        return HttpResponse('<h1>No Jobs defined.</h1>') 
-    prepare_djaploda_session_var(request, jobs_allowed, 'defs/index')
-    # print(5*'---\n')
- 
-    context = {
-        "jt_descriptions": jt_descriptions
-    }
-    return render(request, 'defs/index.html', context)
 
 @login_required
 def prepare_djaploda_session_var(request, jobs_allowed, mode):

@@ -5,6 +5,7 @@ from .views import *
 app_name = 'defs'
 urlpatterns = [
     path('', index_view, name='index'),
+    path('upload_persons/', upload_persons_view, name='upload_persons'),
     ### Jobtypes
     path('jts/', jobtype_def, name='jobtype_def'),
     path('jts/jt_form/', create_jobtype_form, name='jobtype-form'),

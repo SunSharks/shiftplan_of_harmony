@@ -10,6 +10,10 @@ from .models import Jobtype, Job, SubCrew
 from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
 
 
+class UploadFileForm(forms.Form):
+    file = forms.FileField(required=False)
+
+
 # class RenewShiftplanForm(forms.Form):
 #     new_name = forms.CharField(help_text="Enter a new name.")
 

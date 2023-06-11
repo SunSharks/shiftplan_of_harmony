@@ -32,6 +32,34 @@
       }
   </style>
 
+
+  <div class="file upload">
+    <p>Upload User Candidates File</p>
+    {% if upload_file %}
+      Recently uploaded: {{ upload_file }}
+    {% endif %}
+    {% if upload_error %}
+      {{ upload_error }}
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <p>
+        {% for field in upload_file_form %}
+          {% if field.errors %}
+            <ul class="errorlist">
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+          {{ field.label_tag }} {{ field }}
+        {% endfor %}
+        <input type="submit" value="Upload File." />
+      </p>
+    </form>
+  </div>
+
+  
   <div class="job_descriptions">
     {% for j in jt_descriptions %}
       <div class="dropdown">
@@ -42,6 +70,8 @@
       </div>
     {% endfor %}
   </div>
+
+
   {% autoescape off %}
       {% comment %} {{ plot_div }} {% endcomment %}
       {% load plotly_dash %}

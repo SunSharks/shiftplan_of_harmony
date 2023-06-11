@@ -385,6 +385,7 @@ def prepare_djaploda_session_var(request, jobs_allowed, mode):
     l = []
     for j in allowed_jobs:
         d = j.as_dict()
+        d["job"] = j.pk
         jobtype = j.jobtype.as_dict()
         d.update(jobtype)
         l.append(d)

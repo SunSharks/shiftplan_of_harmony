@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from defs.models import Jobtype, Job
 from django.db.models import Q
 
+import logging
 
 RATES = range(1, 6)
 styles = {
@@ -76,7 +77,7 @@ def create_form_modal_body(clicked_point):
         dcc.DatePickerSingle(
             id={
                 'type': 'begin_date',
-                'index': clicked_point["pointIndex"]
+                'index': clicked_point["customdata"][0]
             },
             min_date_allowed=date.today(),
             # max_date_allowed=date(2017, 9, 19),
@@ -86,7 +87,7 @@ def create_form_modal_body(clicked_point):
         dcc.Input(
             id={
                 'type': 'begin_time',
-                'index': clicked_point["pointIndex"]
+                'index': clicked_point["customdata"][0]
             },
             type='time',
             value=begin_dt.time()
@@ -99,7 +100,7 @@ def create_form_modal_body(clicked_point):
         dcc.DatePickerSingle(
             id={
                 'type': 'end_date',
-                'index': clicked_point["pointIndex"]
+                'index': clicked_point["customdata"][0]
             },
             min_date_allowed=date.today(),
             # max_date_allowed=date(2017, 9, 19),
@@ -110,7 +111,7 @@ def create_form_modal_body(clicked_point):
         dcc.Input(
             id={
                 'type': 'end_time',
-                'index': clicked_point["pointIndex"]
+                'index': clicked_point["customdata"][0]
             },
             type='time',
             value=end_dt.time()
@@ -118,7 +119,7 @@ def create_form_modal_body(clicked_point):
         html.Div(
             id={
                 'type': 'output_container',
-                'index': clicked_point["pointIndex"]
+                'index': clicked_point["customdata"][0]
             }
         )
             # html.P([
@@ -172,7 +173,7 @@ def display_click_data(clickData, df_inp, *args, **kwargs):
             footer_text = dbc.Button("Close",
                             id={
                                 'type': 'close_modal',
-                                'index': clicked_point["pointIndex"]
+                                'index': clicked_point["customdata"][0]
                             }
                         )
         elif mode == "defs/job_def":
@@ -181,13 +182,13 @@ def display_click_data(clickData, df_inp, *args, **kwargs):
                 dbc.Button("Close",
                     id={
                         'type': 'close_modal',
-                        'index': clicked_point["pointIndex"]
+                        'index': clicked_point["customdata"][0]
                     }
                 ),
                 dbc.Button("Submit",
                     id={
                         'type': 'submit_form',
-                        'index': clicked_point["pointIndex"]
+                        'index': clicked_point["customdata"][0]
                     }
                 )
             ])
@@ -233,7 +234,7 @@ def close_modal(close_modal, submit_form, begin_date, begin_time, end_date, end_
         context_trigger = kwargs['callback_context'].triggered[0]
         trigg_id = json.loads(context_trigger['prop_id'].split('.')[0])['index']
         df = generate_df(django_dash.get("jobtype"))
-        django_index = df.loc[df.index == int(trigg_id), 'db_idx']
+        django_index = trigg_id
         job_selected = Job.objects.get(id=int(django_index))
         # print(begin_time[0], end_date, end_time)
         setattr(job_selected, "begin_time", begin_time[0])
@@ -280,6 +281,7 @@ def chart_plot(df):
     @param df: input df
     TODO: discrete color map and legend.
     """
+    df["default_rating"] = df["default_rating"].astype(str)
     rating_color_map = {
         1: "green",
         2: "yellow",
@@ -287,10 +289,12 @@ def chart_plot(df):
         4: "goldenrod",
         5: "red"
         }
-    # rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
+    rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     df_colors = list(OrderedDict.fromkeys(df["default_rating"]))
     plotly_colors = [rating_color_map[c] for c in df_colors]
     print(plotly_colors)
+    sorted_jobtype_names = list(df["name"])
+    sorted_jobtype_names.sort()
     tl = px.timeline(
         df,
         x_start="begin",
@@ -299,7 +303,12 @@ def chart_plot(df):
         color="default_rating",
         opacity=0.5,
         labels={},
-        color_discrete_sequence=plotly_colors,
+        category_orders={
+            "default_rating": rating_color_map.keys(),
+            "name": sorted_jobtype_names
+            },
+        color_discrete_map=rating_color_map,
+        custom_data=["job", "default_rating"]
         )
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
     tl.update_yaxes(autorange="reversed")
@@ -310,6 +319,7 @@ def generate_df(jobtype_pk):
     l = []
     for j in jobtype.job_set.all():
         d = j.as_dict()
+        d["job"] = j.pk
         d["db_idx"] = j.id
         d.update(jobtype.as_dict())
         l.append(d)

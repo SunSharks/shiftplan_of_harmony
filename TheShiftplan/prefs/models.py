@@ -16,7 +16,7 @@ class UserJobRating(models.Model):
         return s
 
     def as_dict(self):
-        return {'user': self.user.pk, 'job': self.job.pk, 'rating': self.rating}
+        return {'user': self.user.pk, 'job': self.job.pk, 'rating': f"{self.rating}"}
 
     class Meta:
         indexes = [

@@ -150,18 +150,15 @@ def prepare_session_var(request, pk):
             "assigned_username": assigned_username
             })
         d.update({
-            "assigned_rating": assigned_rating,
-            "assigned_rating_str": str(assigned_rating)
+            "assigned_rating": str(assigned_rating)
         })
         d.update({
-            "user_rating": user_rating,
-            "user_rating_str": str(user_rating)
+            "user_rating": str(user_rating)
         })
         d.update(job)
         popularity = sum([ujr.rating for ujr in UserJobRating.objects.filter(job=j)]) / len(UserJobRating.objects.filter(job=j))
         d.update({
             "popularity": popularity,
-            "popularity_str": str(popularity)
         })
         d.update(jobtype)
         l.append(d)

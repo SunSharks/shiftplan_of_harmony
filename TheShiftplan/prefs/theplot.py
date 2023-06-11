@@ -19,8 +19,12 @@ from defs.models import Jobtype, Job
 from .models import UserJobRating
 from django.db.models import Q
 
+import logging
+from utils.logFormatter import LogFormatter
 
-RATES = range(1, 6)
+
+RATES = list(map(str, range(1, 6)))
+
 styles = {
     'app':{
         'height': '100%',
@@ -43,7 +47,9 @@ app.layout = html.Div([
     ], className='three columns'),
     html.Br(),
     dcc.Graph(id="chart_plot")
-], style=styles['app'])
+    
+], style=styles['app']
+)
 
 
 @app.callback(
@@ -63,6 +69,7 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
     dff = df.copy()
     fig = chart_plot(dff)
     fig.update_layout(clickmode='event+select')
+    fig.update_layout()
     return fig
 
 @app.callback(
@@ -70,10 +77,10 @@ def generate_graph(df_inp, session_state=None, *args, **kwargs):
     Input('chart_plot', 'clickData'),
     State('df_inp', 'value'))
 def display_click_data(clickData, df_inp):
+    logging.debug(f"clickData: {clickData}")
     if clickData:
         clicked_point = clickData["points"][0]
-        # print("clickData: ", clickData)
-        # print(clicked_point)
+        logging.debug(f"clicked_point: {clicked_point}")
         jt_name = clicked_point["label"]
         begin_dt = datetime.fromisoformat(clicked_point["base"])
         end_dt = datetime.fromisoformat(clicked_point["value"])
@@ -107,7 +114,8 @@ def display_click_data(clickData, df_inp):
                     {'label': i, 'value': i} for i in RATES
                 ],
                 multi=False,
-                value=clicked_point["marker.color"],
+                # value=clicked_point["marker.color"],
+                value=clicked_point["customdata"][1],
                 clearable=False,
                 style={'width': '49%', "position": "relative"},
                 maxHeight=500,
@@ -128,7 +136,7 @@ def display_click_data(clickData, df_inp):
                             dbc.Button("Submit",
                                 id={
                                     'type': 'pref_inp_btn',
-                                    'index': clicked_point["pointIndex"]
+                                    'index': clicked_point["customdata"][0]
                                 }
                             )
                         ),
@@ -153,35 +161,37 @@ def display_click_data(clickData, df_inp):
     State('df_inp', 'value'))
 def alter_data(pref_inp_btn, pref_inp, df_inp, *args, **kwargs):
     django_dash = kwargs["request"].session.get("django_dash")
-    print(pref_inp_btn)
+    logging.debug(f"pref_inp_btn: {pref_inp_btn}")
     if pref_inp_btn != [None] and kwargs['callback_context'].triggered != []:
         pref = int(pref_inp[0])
+        logging.info(f"pref_inp: {pref_inp}")
+        logging.debug(f"pref: {pref}")
         current_user = kwargs['user']
         context_trigger = kwargs['callback_context'].triggered[0]
         trigg_id = json.loads(context_trigger['prop_id'].split('.')[0])['index']
+        logging.debug(f"trigg_id: {trigg_id}")
         df = generate_df(current_user)
-        django_index = df.loc[df.index == int(trigg_id), 'db_idx']
+        # django_index = df.loc[df.index == int(trigg_id), 'job']
+        django_index = trigg_id
         job_selected = Job.objects.get(id=int(django_index))
+        logging.debug(f"job_selected: {job_selected}")
         # job_selected = Job.objects.all()[int(trigg_id)]
-        
         # user_job_rating = UserJobRating.objects.filter(user=current_user).values()
-        # print(user_job_rating)
         try:
             ujr = UserJobRating.objects.get(job=job_selected, user=current_user)
         except UserJobRating.DoesNotExist:
-            ujr = UserJobRating(job=job_selected, user=current_user, rating=int(pref))
-            # print("New UserJobRating instance.")
+            ujr = UserJobRating(job=job_selected, user=current_user, rating=pref)
+            logging.debug("New UserJobRating instance.")
         setattr(ujr, "rating", pref)
-        # print("ujr ", ujr)
+        logging.debug(f"ujr: {ujr}")
         ujr.save()
-        # df.loc[df["db_idx"] == int(trigg_id), 'rating'] = pref
         df = generate_df(current_user)
         df_json = df.to_json()
         django_dash['df'] = df_json
-        print("exiting alter_data, df: ", df)
+        # logging.debug(f"exiting alter_data, df:\n{df}")
         modal_show = False
         return df_json, modal_show
-    print("noch nicht")
+    logging.debug("noch nicht")
     return df_inp, True
     
 
@@ -191,8 +201,9 @@ def chart_plot(df):
     @param df: input df
     TODO: discrete color map and legend.
     """
-    # print(df)
-    # df["rating_str"] = df["rating"].astype(str)
+    df["rating"] = df["rating"].astype(str)
+    # df_rat = df["rating"]
+    # logging.debug(f"\n{df_rat.dtypes}")
     rating_color_map = {
         1: "green",
         2: "yellow",
@@ -200,12 +211,26 @@ def chart_plot(df):
         4: "goldenrod",
         5: "red"
         }
-    # rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
+    rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
+    sorted_jobtype_names = list(df["name"])
+    sorted_jobtype_names.sort()
     tl = px.timeline(
-        df, x_start="begin", x_end="end", y="name", color="rating", opacity=0.5, labels={})
-    #color_discrete_map=rating_color_map)
+        df,
+        x_start="begin",
+        x_end="end",
+        y="name",
+        color="rating",
+        opacity=0.5,
+        labels={},
+        category_orders={
+            "rating": rating_color_map.keys(),
+            "name": sorted_jobtype_names
+            },
+        color_discrete_map=rating_color_map,
+        custom_data=["job", "rating"]
+    )
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
-    tl.update_yaxes(autorange="reversed")
+    # tl.update_yaxes(autorange="reversed")
     return tl
 
 

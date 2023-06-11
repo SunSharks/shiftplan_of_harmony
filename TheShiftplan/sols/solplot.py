@@ -150,7 +150,7 @@ def display_click_data(clickData, df_inp, color_mode, is_admin):
         during = end_dt - begin_dt
         
         assigned_user = clicked_point["text"]
-        rating = clicked_point["marker.color"]
+        rating = clicked_point["customdata"][1]
         if color_mode == "popularity":
             visible_rating = f"- Popularity: {rating}"
         elif color_mode == "assigned_rating":
@@ -187,7 +187,7 @@ def display_click_data(clickData, df_inp, color_mode, is_admin):
                             dbc.Button("Close",
                                 id={
                                     'type': 'close_modal',
-                                    'index': clicked_point["pointIndex"]
+                                    'index': clicked_point["customdata"][0]
                                 }
                             )
                         ),
@@ -203,18 +203,20 @@ def display_click_data(clickData, df_inp, color_mode, is_admin):
 
 
 @app.callback(
+    Output('df_inp', 'value'),
     Output("modal", "is_open"),
-    Input({'type': 'close_modal', 'index': ALL}, 'n_clicks'))
-def close_modal(close_modal, *args, **kwargs):
+    Input({'type': 'close_modal', 'index': ALL}, 'n_clicks'),
+    State('df_inp', 'value'))
+def close_modal(close_modal, df_inp, *args, **kwargs):
     # print("close_modal, submit_form")
     # print(close_modal, submit_form)
     django_dash = kwargs["request"].session.get("django_dash")
     df_json = django_dash.get("df")
     # print(df_json)
     if close_modal != [None] and kwargs['callback_context'].triggered != []:
-        return False
+        return df_inp, False
     print("noch nicht")
-    return True
+    return df_inp, True
 
 
 def chart_plot(df, color_mode):
@@ -223,8 +225,8 @@ def chart_plot(df, color_mode):
     @param df: input df, color_mode
     TODO: discrete color map and legend.
     """
-    # print(df)
-    # df["rating_str"] = df["rating"].astype(str)
+    df["assigned_rating"] = df["assigned_rating"].astype(str)
+    df["user_rating"] = df["user_rating"].astype(str)
     rating_color_map = {
         0: "grey",
         1: "green",
@@ -234,16 +236,56 @@ def chart_plot(df, color_mode):
         5: "red"
         }
     rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
+    sorted_jobtype_names = list(df["name"])
+    sorted_jobtype_names.sort()
     if color_mode == "popularity":
         tl = px.timeline(
-            df, x_start="begin", x_end="end", y="name", color="popularity", opacity=0.5, labels={}, text="assigned_username")
+            df,
+            x_start="begin",
+            x_end="end",
+            y="name",
+            color="popularity",
+            opacity=0.5,
+            labels={},
+            text="assigned_username",
+            category_orders={
+                "name": sorted_jobtype_names
+            },
+            custom_data=["job", "popularity"]
+        )
     elif color_mode == "assigned_rating":
         tl = px.timeline(
-            df, x_start="begin", x_end="end", y="name", color="assigned_rating", opacity=0.5, labels={}, text="assigned_username", color_discrete_map=rating_color_map)
+            df,
+            x_start="begin",
+            x_end="end",
+            y="name",
+            color="assigned_rating",
+            opacity=0.5,
+            labels={},
+            text="assigned_username",
+            color_discrete_map=rating_color_map,
+            category_orders={
+                "assigned_rating": rating_color_map.keys(),
+                "name": sorted_jobtype_names
+            },
+            custom_data=["job", "assigned_rating"]
+        )
     elif color_mode == "user_rating":
         tl = px.timeline(
-            df, x_start="begin", x_end="end", y="name", color="user_rating", opacity=0.5, labels={}, text="assigned_username", color_discrete_map=rating_color_map)
-    #color_discrete_map=rating_color_map)
-    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
-    tl.update_yaxes(autorange="reversed")
+            df,
+            x_start="begin",
+            x_end="end",
+            y="name",
+            color="user_rating",
+            opacity=0.5,
+            labels={},
+            text="assigned_username",
+            color_discrete_map=rating_color_map,
+            category_orders={
+                "user_rating": rating_color_map.keys(),
+                "name": sorted_jobtype_names
+            },
+            custom_data=["job", "user_rating"]
+        )
+    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)    
     return tl

@@ -13,6 +13,25 @@ from .forms import UserOptionsForm, BiasHoursForm
 from .theplot import *
 
 
+import logging
+from utils.logFormatter import LogFormatter
+
+try:
+    from colorama import init
+    init()
+except ImportError:
+    pass
+
+LEVEL = logging.DEBUG
+logger = logging.getLogger("")
+logger.setLevel(LEVEL)
+ch = logging.StreamHandler()
+ch.setLevel(LEVEL)
+ch.setFormatter(LogFormatter())
+logger.addHandler(ch)
+
+
+
 def regain_integrity(user):
     jobs = Job.objects.all()
     for j in jobs:
@@ -35,7 +54,6 @@ def chart_view(request, **kwargs):
     jt_descriptions = []
     for jt in jobtypes:
         if jt.subcrew:
-            print(current_user in jt.subcrew.members.all())
             if not current_user in jt.subcrew.members.all():
                 continue
         # print(jt.job_set.all().values_list("pk", flat=True))
@@ -77,11 +95,7 @@ def chart_view(request, **kwargs):
     df['end'] = pd.to_datetime(df['end_date'].astype(str) + ' ' + df['end_time'].astype(str))
     # df['during'] = df.end - df.begin
     
-    # df['user_id'] = current_user.id
-    try:
-        print(df['rating'])
-    except:
-        df['rating'] = 3
+    # logging.debug(df["rating"])
     # print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')

@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 
+from .models import UserCandidate
 from .forms import RegisterForm
+
 
 def registration_view(request):
     if request.method == 'GET':

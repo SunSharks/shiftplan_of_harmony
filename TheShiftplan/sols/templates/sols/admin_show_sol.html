@@ -34,5 +34,8 @@
         </div>
       {% endif %}
     </div>
+    <div>
+      <a href="{% url 'sols:stats' show_solution.id %}">Stats</a>
+  </div>
     {% include "sols/sol_container.html" %}
 {% endblock content %}

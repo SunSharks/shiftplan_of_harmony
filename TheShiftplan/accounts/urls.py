@@ -6,4 +6,5 @@ app_name = 'accounts'
 urlpatterns = [
     # path('', index_view, name='index'),
     path('register/', registration_view, name='register'),
+    path('user_candidates/', users_table_view, name='user_cand_table'),
 ]

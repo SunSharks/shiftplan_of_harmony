@@ -3,9 +3,11 @@ dummy_username = "NOT ASSIGNED"
 code_to_file_dict = {
     "forename": ["forename", "vorname", "first name"],
     "surname": ["surname", "nachname", "last name"],
-    "email": ["email", "e-mail", "mail"]
+    "email": ["email", "e-mail", "mail"],
+    "username": ["username"]
 }
 
+unique_together = ["forename", "surname"]
 
 def vals_to_keys(d):
     vtk_dict = {}

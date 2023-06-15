@@ -42,64 +42,11 @@ def index_view(request, **kwargs):
         return HttpResponse('<h1>No Jobs defined.</h1>') 
     prepare_djaploda_session_var(request, jobs_allowed, 'defs/index')
     # print(5*'---\n')
-    
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"]
-            upload = upload_data.Upload(file)
-            success, inst = upload.get_result_df_or_error()
-            if success:
-                create_candidate_instances(file, inst)
-                context.update({
-                    "upload_file": file.name
-                })
-            else:
-                context.update({
-                    "upload_error": inst
-                })
-    else:
-        form = UploadFileForm()
 
     context.update({
-        "jt_descriptions": jt_descriptions,
-        "upload_file_form": form
+        "jt_descriptions": jt_descriptions
     })
     return render(request, 'defs/index.html', context)
-
-    
-def create_candidate_instances(file, df):
-    print(df)
-    fname = file.name.split(".")[0]
-    conflicting = CandidatesList.objects.filter(name=fname)
-    conflicting.delete()
-    cand_list = CandidatesList(name=fname, file=file)
-    cand_list.save()
-    renames = {}
-    for c in df.columns:
-        if c.lower() in config.file_to_code_dict:
-            renames[c] = config.file_to_code_dict[c.lower()]
-    # print(renames)
-    df = df.rename(columns=renames)
-    for i in df.index:
-        user_cand = UserCandidate()
-        for attr_name in renames.values():
-            setattr(user_cand, attr_name, df.iloc[i][attr_name])
-        setattr(user_cand, "candidates_list", cand_list)
-        print(user_cand)
-        user_cand.save()
-
-
-@login_required
-def upload_persons_view(request):
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
-            return HttpResponseRedirect("/success/url/")
-    else:
-        form = UploadFileForm()
-    return render(request, "upload.html", {"form": form})
    
 
 @login_required

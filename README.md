@@ -1,5 +1,8 @@
 # shiftplan_of_harmony
 
+
+---
+=== Old Structure (2022) ===
 ## deftab/
 ### index.php
 index.php uses def.js for definitions of day and job credentials.

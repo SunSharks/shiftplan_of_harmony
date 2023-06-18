@@ -9,7 +9,7 @@ from .models import UserCandidate
 
 
 class RegisterForm(UserCreationForm):
-    username = forms.CharField(max_length = 100..............................................................................................................................................................................)
+    username = forms.CharField(max_length = 100)
     email  = forms.EmailField(max_length = 100, required=False)
     password1 = forms.CharField(widget = forms.PasswordInput(), max_length = 100)
     password2 = forms.CharField(widget = forms.PasswordInput(),  max_length = 100)

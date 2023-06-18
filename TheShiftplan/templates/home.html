@@ -12,6 +12,14 @@
 {% else %}
   <h1>Shiftplan</h1>
   <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
+  <div class="navbar">
+    <div class="navbar item">
+      <a href="{% url 'login' %}">Log In</a>
+    </div>
+    <div class="navbar item">
+      <a href="{% url 'accounts:register' %}">Register</a>
+    </div>
+  </div>
+  
 {% endif %}
 {% endblock %}

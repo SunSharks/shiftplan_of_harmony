@@ -9,6 +9,8 @@ from .models import UserCandidate
 from .forms import RegisterForm
 from .users_tableplot import *
 
+
+
 def registration_view(request):
     if request.method == 'GET':
         form = RegisterForm()
@@ -17,7 +19,8 @@ def registration_view(request):
         form = RegisterForm(request.POST) 
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = user.username.lower()
+            logging.debug(user.username)
+            # user.username = user.username.lower()
             user.save()
             messages.success(request, 'You have singed up successfully.')
             login(request, user)

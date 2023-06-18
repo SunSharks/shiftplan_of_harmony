@@ -16,7 +16,7 @@ class UserCandidate(models.Model):
     surname = models.CharField('cand surname', max_length=200, blank=True, null=True)
     email = models.EmailField('cand email', blank=True, null=True)
     candidates_list = models.ForeignKey(CandidatesList, on_delete=models.CASCADE, blank=True, null=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         all_empty = True
@@ -35,7 +35,11 @@ class UserCandidate(models.Model):
             logging.info("Not saving. All entries empty.")
 
     def __str__(self):
-        l = [("username", self.username),("forename", self.forename), ("surname", self.surname), ("email", self.email), ("candidates_list", self.candidates_list)]
+        if self.user:
+            user = self.user
+        else:
+            user = "False"
+        l = [("user", user),("username", self.username),("forename", self.forename), ("surname", self.surname), ("email", self.email), ("candidates_list", self.candidates_list)]
         l = [i for i in l if not i[1] is None]
         s = ""
         for label, var in l:

@@ -1,8 +1,7 @@
-
 # ./manage.py dumpdata > db.json
 # python manage.py dumpdata defs > ../python/django_to_2022_translate/db.json
 
-# import mysql.connector
+import mysql.connector
 import pandas as pd
 import json
 from os.path import join

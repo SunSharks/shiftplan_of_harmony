@@ -4,6 +4,8 @@ import fetch_json_data as db
 
 class Data_Handler:
     def __init__(self, name=""):
+        self.shiftplan = db.fetch_shiftplan()
+        # print(self.shiftplan["mode_name"])
         self.jts = db.fetch_jobtypes()
         self.jobs = db.fetch_jobs(*list(self.jts["pk"]))
         self.users = db.fetch_users()

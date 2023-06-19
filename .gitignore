@@ -16,6 +16,7 @@ crew_sol/
 db.sqlite3
 TheShiftplan/media/*
 TheShiftplan/candidates_files
+TheShiftplan/defs/_add_jobplot.py
 
 # scss cache
 TheShiftplan/static/CACHE/

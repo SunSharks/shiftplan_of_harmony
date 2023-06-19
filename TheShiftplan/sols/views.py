@@ -200,20 +200,20 @@ def show_solution_view(request, pk):
         return render(request, 'sols/normal_show_sol.html', context)
 
 
-def get_or_create(model, **kwargs):
-    try:
-        instance = model.objects.get(**kwargs)
-        # print("existing {}: {}".format(model, instance))
-    except model.DoesNotExist:
-        instance = model(**kwargs)
-        instance.save()
-        # print("new {}: {}".format(model, instance))
-    # user_options = UserOptions.objects.get(user=current_user)
-    return instance
+# def get_or_create(model, **kwargs):
+#     try:
+#         instance = model.objects.get(**kwargs)
+#         # print("existing {}: {}".format(model, instance))
+#     except model.DoesNotExist:
+#         instance = model(**kwargs)
+#         instance.save()
+#         # print("new {}: {}".format(model, instance))
+#     # user_options = UserOptions.objects.get(user=current_user)
+#     return instance
 
-    context = {
-    }
-    return render(request, 'sols/show_sol.html', context)
+#     context = {
+#     }
+#     return render(request, 'sols/show_sol.html', context)
 
 
 @login_required

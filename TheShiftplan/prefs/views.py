@@ -184,3 +184,28 @@ def update_user_options(request):
         "user_options": user_options
     }
     return render(request, "prefs/user_options_form.html", context)
+
+
+@login_required
+def description_view(request):
+    current_user = request.user if type(request.user) is not AnonymousUser else None
+    jobtypes = Jobtype.objects.all()
+    jobs_allowed = []
+    jt_descriptions = []
+    for jt in jobtypes:
+        if jt.subcrew:
+            if not current_user in jt.subcrew.members.all():
+                continue
+        # print(jt.job_set.all().values_list("pk", flat=True))
+        jt_descriptions.append({
+            "description": jt.description,
+            "name": jt.name
+            })
+        jobs_allowed.extend(jt.job_set.all())
+    if len(jobs_allowed) == 0:
+        return HttpResponse('<h1>No Jobs defined.</h1>') 
+
+    context = {
+        "jt_descriptions": jt_descriptions
+    }
+    return render(request, 'prefs/job_descriptions.html', context)

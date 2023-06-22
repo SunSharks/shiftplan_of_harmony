@@ -1,4 +1,7 @@
-<!-- Bootstrap5 Accordion
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "header.html" %}<!-- Bootstrap5 Accordion
 <div class="job_descriptions">
   <div class="accordion" id="job_accordion">
     {% for j in jt_descriptions %}
@@ -44,3 +47,5 @@
   </div>
   {% endfor %}
 </div>
+
+{% endblock content %}

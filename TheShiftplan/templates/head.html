@@ -1,0 +1,15 @@
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% load compress %}
+{% load static %}
+{% compress css %}
+    <link type="text/x-scss" href="{% static 'app/main.scss' %}" rel="stylesheet" media="screen">
+{% endcompress %}
+
+<meta charset="utf-8">
+<script src="https://unpkg.com/htmx.org@1.5.0" integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI" crossorigin="anonymous"></script>

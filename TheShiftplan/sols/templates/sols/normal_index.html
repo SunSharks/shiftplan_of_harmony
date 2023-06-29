@@ -1,12 +1,17 @@
 {% extends "base.html" %}
-
+<!-- no container div -->
+{% block content_start %}
+<!-- normal_index -->
+{% endblock %}
+{% block content_end %}
+{% endblock %}
 {% block content %}
 <div class = "navbar">
-    <div class = "navbar item">
+    <div class = "nav-item">
         <a href="{% url 'sols:index' %}">Back to sols index.</a>
     </div>
     {% if final_sol %}
-        <div class = "navbar item">
+        <div class = "nav-item">
             <a href="{% url 'sols:stats' final_sol.id %}">Stats</a>
         </div>
     {% endif %}
@@ -17,7 +22,7 @@
     {% endif %}
     {% if final_sol %}
         <h2>Solution</h2>
-        {% include "sols/normal_show_sol.html" %}
+        {% include "sols/sol_container.html" %}
     {% endif %}
 </div>
 {% endblock content %}

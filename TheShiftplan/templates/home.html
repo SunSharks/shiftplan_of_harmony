@@ -5,7 +5,6 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  {% include 'header.html' %}
   <h1>Shiftplan</h1>
   <p><a href="{% url 'prefs:chart' %}">Preferences</a></p>
   <p><a href="{% url 'sols:index' %}">Solution</a></p>

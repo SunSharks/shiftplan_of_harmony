@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class = "navbar">
-    <div class = "nav-item">
-        <a href="{% url 'sols:index' %}">Back to sols index.</a>
-    </div>
-    {% if final_sol %}
-        <div class = "nav-item">
-            <a href="{% url 'sols:stats' final_sol.id %}">Stats</a>
-        </div>
-    {% endif %}
-</div>
-<div>
+<div class = "navbar navbar-expand navbar-light bg-light">
+    <ul class="navbar-nav nav-fill w-100">
+        <li class = "nav-item">
+            <a class="nav-link" href="{% url 'sols:index' %}">Back to sols index.</a>
+        </li>
+        {% if final_sol %}
+        <li class = "nav-item">
+            <a class="nav-link" href="{% url 'sols:stats' final_sol.id %}">Stats</a>
+        </li>
+        {% endif %}
+    </ul>
+</div
+><div>
     {% if error_message %}
         <p><strong>{{ error_message }}</strong></p>
     {% endif %}

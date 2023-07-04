@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class = "navbar">
-    {% if admin_new_solution %}
-        <div class = "navbar item">
-            There are new solutions.
-            <a href="{% url 'sols:sol_runs' %}">Select from latest solution runs.</a>
-        </div>
-    {% else %}
-        <div class = "navbar item">
-            <li><a href="{% url 'sols:admin_solutions' %}">Select from latest solutions.</a></li>
-        </div>
-    {% endif %}
-    <div class = "navbar item">
-        <li><a href="{% url 'sols:sol_runs' %}">Latest solution runs.</a></li>
-    </div>
+<div class = "navbar navbar-light bg-light navbar-expand">
+    <ul class="navbar-nav nav-fill w-100">
+        {% if admin_new_solution %}
+            <li class="nav-item">
+                There are new solutions.
+                <a class="nav-link" href="{% url 'sols:sol_runs' %}">Select from latest solution runs.</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sols:admin_solutions' %}">Select from latest solutions.</a>
+            </li>
+        {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sols:sol_runs' %}">Latest solution runs.</a>
+            </li>
+    </ul>
 </div>
 
 <div>

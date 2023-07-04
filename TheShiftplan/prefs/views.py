@@ -199,8 +199,11 @@ def description_view(request):
         # print(jt.job_set.all().values_list("pk", flat=True))
         jt_descriptions.append({
             "description": jt.description,
-            "name": jt.name
+            "name": jt.name,
+            "restricted": jt.restricted_to_subcrew,
+            "subcrew": jt.subcrew
             })
+        print(jt.restricted_to_subcrew)
         jobs_allowed.extend(jt.job_set.all())
     if len(jobs_allowed) == 0:
         return HttpResponse('<h1>No Jobs defined.</h1>') 

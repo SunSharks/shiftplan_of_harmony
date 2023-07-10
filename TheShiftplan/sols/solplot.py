@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dash import dcc, html, ctx, MATCH, ALL
 from dash.dependencies import Input, Output, State
@@ -24,7 +24,6 @@ from utils import config
 
 PLOT_MODE_OPTIONS = [
     {'label': "Show only my assigned jobs.", 'value': "user_assigned"},
-    # {'label': "Show my assigned jobs", 'value': "assigned_rating"},
     {'label': "Show all assigned jobs.", 'value': "all_assigned"}
 ]
 COLOR_MODE_OPTIONS = [
@@ -40,8 +39,8 @@ styles = {
         'width': '100%',
         'overflowX': 'show',
         'overflowY': 'show'
-        }
     }
+}
 app = DjangoDash('solplot', add_bootstrap_links=True)
 app.layout = html.Div([
     dcc.Input(id='df_inp', type="hidden", style={"display": "hidden"}),
@@ -69,7 +68,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id="color_mode",
             options=COLOR_MODE_OPTIONS,
-            value="assigned_rating",
+            value="user_id",
             multi=False,
             clearable=False,
             style={'width': '49%', "position": "relative"},
@@ -117,18 +116,20 @@ def generate_graph(df_inp, color_mode, plot_mode, session_state=None, *args, **k
     current_username = django_dash.get('username')
     if df_inp is None:
         df = pd.read_json(django_dash.get('df'))
-        df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
-        df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
     else:
         df = pd.read_json(df_inp)
-        df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
-        df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
+    df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    df['begin_date'] = pd.to_datetime(df['begin_date'], format="%Y-%m-%d")
+    df['end_date'] = pd.to_datetime(df['end'], format="%Y-%m-%d")
+    df['begin_time'] = pd.to_datetime(df['begin_time'], format="%H:%M:%S")
+    df['end_time'] = pd.to_datetime(df['end_time'], format="%H:%M:%S")
     # print("generae_graph", df)
     if plot_mode == "user_assigned":
         # print(df.loc[df["assigned_username"] == current_username])
         df = df.loc[df["assigned_username"] == current_username]
     dff = df.copy()
-    fig = chart_plot(dff, color_mode)
+    fig = chart_plot(dff, color_mode, current_username)
     fig.update_layout(clickmode='event+select')
     return fig
 
@@ -220,7 +221,7 @@ def close_modal(close_modal, df_inp, *args, **kwargs):
     return df_inp, True
 
 
-def chart_plot(df, color_mode):
+def chart_plot(df, color_mode, current_username):
     """
     Returns timeline plot.
     @param df: input df, color_mode
@@ -238,6 +239,7 @@ def chart_plot(df, color_mode):
     rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     sorted_jobtype_names = list(df["name"])
     sorted_jobtype_names.sort()
+    
     if color_mode == "popularity":
         tl = px.timeline(
             df,
@@ -304,5 +306,13 @@ def chart_plot(df, color_mode):
             },
             custom_data=["job", "user_rating"]
         )
-    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)    
+    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
+    t_delt_show_dateline = timedelta(days=1)
+    now = datetime.now()
+    # now = datetime(2023, 6, 1, 4, 20, 0)
+    if min(df["begin_date"]) - t_delt_show_dateline < now and max(df["end_date"]) + t_delt_show_dateline > now:
+        tl.add_vline(x=now, line_width=3, line_color="red")   
     return tl
+
+
+

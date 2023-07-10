@@ -416,9 +416,9 @@ class Shift:
 
     NONE_STR = "None"
 
-    def __init__(self, index, shift_name, username, begin, end, has_predecessors=True):
+    def __init__(self, id, shift_name, username, begin, end, has_predecessors=True):
         self.has_predecessors = has_predecessors
-        self.index = index
+        self.id = id
         self.name = shift_name
         self.username = username
         self.begin = begin
@@ -446,7 +446,13 @@ class Predecessor(Shift):
 
 
 def get_predecessors(df, user_df):
-    pre_columns = ["assigned_username", "begin", "end"]
+    """
+    Returns (list[<shift_instances>], list[<predecessor_instances>])
+    with shift_instances containing shift objects of own shifts and
+    predecessor_instances containing corresponding predecessor objects.
+    @param df: Whole DataFrame containing predecessor candidates.
+    @param user_df: Filtered DataFrame containing only data from which a shift object is to be created.
+    """
     pre_insts = []
     shift_insts = []
     for i in user_df.index:
@@ -457,8 +463,7 @@ def get_predecessors(df, user_df):
         for j in pre.index:
             pre_inst = Predecessor(i, pre["name"][j], pre["assigned_username"][j], pre["begin"][j], pre["end"][j])
             pre_insts.append(pre_inst)
-
-    return shift_insts, user_df, pre_insts
+    return shift_insts, pre_insts
 
 
 # def to_dt(df):
@@ -493,7 +498,7 @@ def own_shifts_view(request):
     
     # logging.debug(user_df)
     # print(df.columns)
-    shift_insts, user_df, predecessors = get_predecessors(df, user_df)
+    shift_insts, predecessors = get_predecessors(df, user_df)
     user_df['begin'] = user_df['begin'].dt.strftime("%Y-%m-%d %H:%M:%S")
     user_df['end'] = user_df['end'].dt.strftime("%Y-%m-%d %H:%M:%S")
     user_df = user_df.to_dict('records')

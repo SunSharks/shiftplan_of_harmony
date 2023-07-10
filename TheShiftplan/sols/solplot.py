@@ -28,6 +28,7 @@ PLOT_MODE_OPTIONS = [
     {'label': "Show all assigned jobs.", 'value': "all_assigned"}
 ]
 COLOR_MODE_OPTIONS = [
+    {'label': "Assigned User", 'value': "user_id"},
     {'label': "Own rating", 'value': "user_rating"},
     {'label': "Assigned Rating", 'value': "assigned_rating"},
     {'label': "Popularity", 'value': "popularity"}
@@ -223,7 +224,6 @@ def chart_plot(df, color_mode):
     """
     Returns timeline plot.
     @param df: input df, color_mode
-    TODO: discrete color map and legend.
     """
     df["assigned_rating"] = df["assigned_rating"].astype(str)
     df["user_rating"] = df["user_rating"].astype(str)
@@ -234,7 +234,7 @@ def chart_plot(df, color_mode):
         3: "orange",
         4: "goldenrod",
         5: "red"
-        }
+    }
     rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     sorted_jobtype_names = list(df["name"])
     sorted_jobtype_names.sort()
@@ -252,6 +252,23 @@ def chart_plot(df, color_mode):
                 "name": sorted_jobtype_names
             },
             custom_data=["job", "popularity"]
+        )
+    elif color_mode == "user_id":
+        tl = px.timeline(
+            df,
+            x_start="begin",
+            x_end="end",
+            y="name",
+            color="assigned_username",
+            opacity=0.5,
+            labels={},
+            text="assigned_username",
+            color_discrete_map=rating_color_map,
+            category_orders={
+                # "assigned_rating": rating_color_map.keys(),
+                "name": sorted_jobtype_names
+            },
+            custom_data=["job", "assigned_rating", "popularity", "user_rating"]
         )
     elif color_mode == "assigned_rating":
         tl = px.timeline(

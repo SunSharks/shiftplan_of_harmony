@@ -416,8 +416,9 @@ class Shift:
 
     NONE_STR = "None"
 
-    def __init__(self, id, shift_name, username, begin, end, has_predecessors=True):
+    def __init__(self, id, shift_name, username, begin, end, has_predecessors=True, has_successors=False):
         self.has_predecessors = has_predecessors
+        self.has_successors = has_successors
         self.id = id
         self.name = shift_name
         self.username = username
@@ -429,14 +430,12 @@ class Shift:
     def get_strings(self):
         self.begin_dayname = self.begin.day_name()
         self.end_dayname = self.end.day_name()
-        self.begin_str = self.begin.strftime("%Y-%m-%d %H:%M:%S")
-        self.end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
+        self.begin_str = self.begin.strftime("%Y-%m-%d %H:%M")
+        self.end_str = self.end.strftime("%Y-%m-%d %H:%M")
         self.begin_date_str = self.begin.date().strftime("%Y-%m-%d")
         self.end_date_str = self.end.date().strftime("%Y-%m-%d")
-        self.begin_time_str = self.begin.time().strftime("%H:%M:%S")
-        self.end_time_str = self.end.time().strftime("%H:%M:%S")
-        if self.begin.date() == self.end.date():
-            self.end_date_str = ""
+        self.begin_time_str = self.begin.time().strftime("%H:%M")
+        self.end_time_str = self.end.time().strftime("%H:%M")
 
 
 class Predecessor(Shift):

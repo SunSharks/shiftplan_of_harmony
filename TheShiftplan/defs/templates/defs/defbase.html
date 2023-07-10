@@ -12,9 +12,13 @@
 </head>
 
 <body>
-    {% block content %}
-    {% endblock content %}
-
+  {% include "header.html" %}
+  <main>
+    <div class="container justify-content-center content">
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </main>
     <script>
         document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';

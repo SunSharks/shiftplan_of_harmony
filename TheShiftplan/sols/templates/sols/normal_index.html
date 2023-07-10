@@ -1,16 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% include "header.html" %}
-<div class = "navbar">
-    <div class = "navbar item">
-        <li><a href="{% url 'sols:own_shifts' %}">Compact own shifts.</a></li>
-    </div>
-    {% if final_sol %}
-        <div class = "navbar item">
-            <a href="{% url 'sols:stats' final_sol.id %}">Stats</a>
-        </div>
-    {% endif %}
+
+<div class = "navbar navbar-expand navbar-light bg-light">
+    <ul class="navbar-nav nav-fill w-100">
+        <li class = "nav-item">
+            <a class="nav-link" href="{% url 'sols:index' %}">Back to sols index.</a>
+        </li>
+        {% if final_sol %}
+            <li class = "nav-item">
+                <a class="nav-link" href="{% url 'sols:stats' final_sol.id %}">Stats</a>
+            </li>
+        {% endif %}
+        <li class = "nav-item">
+            <a class="nav-link" href="{% url 'sols:own_shifts' %}">Compact own shifts</a>
+        </li>
+    </ul>
 </div>
 <div>
     {% if error_message %}
@@ -18,7 +23,7 @@
     {% endif %}
     {% if final_sol %}
         <h2>Solution</h2>
-        {% include "sols/normal_show_sol.html" %}
+        {% include "sols/sol_container.html" %}
     {% endif %}
 </div>
 {% endblock content %}

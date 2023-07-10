@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "header.html" %}
+
+
+<div>
+    {% for shift in shifts %}
+        <span>
+            <h3>
+                {{ shift.name }}
+            </h3>
+            <div>
+                Begin: {{ shift.begin_dayname }}, {{ shift.begin_date_str }} {{ shift.begin_time_str }}
+            </div>
+            <div>
+                End: {{ shift.end_dayname }} {{ shift.end_date_str }} {{ shift.end_time_str }}
+            </div>
+            <div>
+                Predecessor:
+                {% if shift.has_predecessors %}
+                    {% for pre in predecessors %}
+                        {% if pre.parent_id == shift.index %}
+                            <strong>{{ pre.username }}: </strong>
+                            ({{ pre.begin_dayname }}, {{ pre.begin_date_str }} {{ pre.begin_time_str }} ---
+                            {{ pre.end_dayname }} {{ pre.end_date_str }} {{ pre.end_time_str }})
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{ shift.NONE_STR }}
+                {% endif %}
+            </div>
+        </span>
+    {% endfor %}
+
+    <br><br>
+    </div>
+
+
+      
+{% endblock content %}

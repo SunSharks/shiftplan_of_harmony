@@ -3,6 +3,9 @@
 {% block content %}
 {% include "header.html" %}
 <div class = "navbar">
+    <div class = "navbar item">
+        <li><a href="{% url 'sols:own_shifts' %}">Compact own shifts.</a></li>
+    </div>
     {% if admin_new_solution %}
         <div class = "navbar item">
             There are new solutions.

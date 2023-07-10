@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -179,6 +180,7 @@ def prepare_session_var(request, pk):
     djaploda['username'] = current_user.username
     djaploda['is_admin'] = current_user.is_superuser
     session['django_dash'] = djaploda
+    return df
 
 
 @login_required
@@ -396,6 +398,7 @@ def get_final_final_solution():
         return "More than 1 final SolutionRuns."
     else:
         final_sol = get_final(Solution, solution_run=final_sol_run)
+        logging.debug(final_sol)
         if final_sol == 0:
             return "No final Solution defined."
         elif type(final_sol) == str:
@@ -407,3 +410,96 @@ def get_final_final_solution():
     # context.update({
     #     "solutions": latest_sol_run.solution_set.all()
     # })
+
+
+class Shift:
+
+    NONE_STR = "None"
+
+    def __init__(self, index, shift_name, username, begin, end, has_predecessors=True):
+        self.has_predecessors = has_predecessors
+        self.index = index
+        self.name = shift_name
+        self.username = username
+        self.begin = begin
+        self.end = end
+        self.get_strings()
+
+
+    def get_strings(self):
+        self.begin_dayname = self.begin.day_name()
+        self.end_dayname = self.end.day_name()
+        self.begin_str = self.begin.strftime("%Y-%m-%d %H:%M:%S")
+        self.end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
+        self.begin_date_str = self.begin.date().strftime("%Y-%m-%d")
+        self.end_date_str = self.end.date().strftime("%Y-%m-%d")
+        self.begin_time_str = self.begin.time().strftime("%H:%M:%S")
+        self.end_time_str = self.end.time().strftime("%H:%M:%S")
+        if self.begin.date() == self.end.date():
+            self.end_date_str = ""
+
+
+class Predecessor(Shift):
+    def __init__(self, parent_id, shift_name, username, begin, end):
+        self.parent_id = parent_id
+        super().__init__(None, shift_name, username, begin, end)
+
+
+def get_predecessors(df, user_df):
+    pre_columns = ["assigned_username", "begin", "end"]
+    pre_insts = []
+    shift_insts = []
+    for i in user_df.index:
+        pre = df.loc[(df["end"] == user_df["begin"][i]) & (df["name"] == user_df["name"][i])]
+        has_predecessors = bool(len(pre.index))
+        new_shift = Shift(i, user_df["name"][i], user_df["assigned_username"][i], user_df["begin"][i], user_df["end"][i], has_predecessors)
+        shift_insts.append(new_shift)
+        for j in pre.index:
+            pre_inst = Predecessor(i, pre["name"][j], pre["assigned_username"][j], pre["begin"][j], pre["end"][j])
+            pre_insts.append(pre_inst)
+
+    return shift_insts, user_df, pre_insts
+
+
+# def to_dt(df):
+#     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
+#     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+#     df['begin_date'] = pd.to_datetime(df['begin_date'], format="%Y-%m-%d")
+#     df['end_date'] = pd.to_datetime(df['end_date'], format="%Y-%m-%d")
+#     df['begin_time'] = pd.to_datetime(df['begin_time'], format="%H:%M:%S")
+#     df['end_time'] = pd.to_datetime(df['end_time'], format="%H:%M:%S")
+#     return df 
+
+
+# def dt_to_str(df):
+#     df['begin_str'] = df['begin'].dt.strftime("%Y-%m-%d %H:%M:%S")
+#     df['end_str'] = df['end'].dt.strftime("%Y-%m-%d %H:%M:%S")
+#     df['begin_date_str'] = df['begin_date'].dt.strftime("%Y-%m-%d")
+#     df['end_date_str'] = df['end_date'].dt.strftime("%Y-%m-%d")
+#     df['begin_time_str'] = df['begin_time'].dt.strftime("%H:%M:%S")
+#     df['end_time_str'] = df['end_time'].dt.strftime("%H:%M:%S")
+#     return df
+
+@login_required
+def own_shifts_view(request):
+    current_user = request.user
+    final_sol = get_final_final_solution()
+    df = prepare_session_var(request, final_sol.pk)
+    df = pd.read_json(df)
+    df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
+    df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    df["index_col"] = df.index
+    user_df = df.loc[df["user"] == current_user.pk].sort_values(["name", "begin"])
+    
+    # logging.debug(user_df)
+    # print(df.columns)
+    shift_insts, user_df, predecessors = get_predecessors(df, user_df)
+    user_df['begin'] = user_df['begin'].dt.strftime("%Y-%m-%d %H:%M:%S")
+    user_df['end'] = user_df['end'].dt.strftime("%Y-%m-%d %H:%M:%S")
+    user_df = user_df.to_dict('records')
+    # logging.debug(user_df)
+    context = {
+        "shifts": shift_insts,
+        "predecessors": predecessors
+        }
+    return render(request, 'sols/own_shifts.html', context)

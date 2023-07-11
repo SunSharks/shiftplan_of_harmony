@@ -29,9 +29,21 @@ final_solution_path = join("sols", "_json", "solution.json")
 final_solution_admin_path = join("sols", "_json", "_admin")
 
 
+def test():
+    # sol_runs = SolutionRun.objects.all()
+    logging.debug(Jobtype.objects.filter(default_rating=5))
+    logging.debug(Jobtype.objects.filter(default_rating=3))
+    # logging.debug(Jobtype.objects.get(default_rating=3))
+    fin_sol_run = SolutionRun.objects.get(final=True)
+    logging.debug(SolutionRun.objects.get(final=True))
+    # logging.debug(Job.objects.get)
+    logging.debug(Solution.objects.filter(solution_run=fin_sol_run, final=True))
+
+
 @login_required
 def index_view(request):
-    final_sol = get_final_final_solution()
+    test()
+    final_sol = get_final_distribution()
     try:
         prepare_session_var(request, final_sol.pk)
     except AttributeError:
@@ -390,7 +402,7 @@ def get_final(model, **kwargs):
         return "More than 1 final. "
 
 
-def get_final_final_solution():
+def get_final_distribution():
     final_sol_run = get_final(SolutionRun)
     if final_sol_run == 0:
         return "No final SolutionRun defined."
@@ -398,7 +410,7 @@ def get_final_final_solution():
         return "More than 1 final SolutionRuns."
     else:
         final_sol = get_final(Solution, solution_run=final_sol_run)
-        logging.debug(final_sol)
+        # logging.debug(final_sol)
         if final_sol == 0:
             return "No final Solution defined."
         elif type(final_sol) == str:
@@ -424,6 +436,8 @@ class Shift:
         self.username = username
         self.begin = begin
         self.end = end
+        self.during = end - begin
+
         self.get_strings()
 
 
@@ -436,6 +450,14 @@ class Shift:
         self.end_date_str = self.end.date().strftime("%Y-%m-%d")
         self.begin_time_str = self.begin.time().strftime("%H:%M")
         self.end_time_str = self.end.time().strftime("%H:%M")
+
+        during_hrs = self.during.seconds / 3600
+        int_during_hrs = self.during.seconds // 3600
+        if during_hrs == int_during_hrs:
+            self.during_str = f"{int_during_hrs} h"
+        else:
+            during_minutes = (during_hrs - int_during_hrs) * 60
+            self.during_str = f"{int_during_hrs} h {during_minutes} m"
 
 
 class Predecessor(Shift):
@@ -498,7 +520,7 @@ def get_predecessors(df, user_df):
 @login_required
 def own_shifts_view(request):
     current_user = request.user
-    final_sol = get_final_final_solution()
+    final_sol = get_final_distribution()
     df = prepare_session_var(request, final_sol.pk)
     df = pd.read_json(df)
     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")

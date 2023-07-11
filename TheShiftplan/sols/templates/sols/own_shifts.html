@@ -35,13 +35,21 @@
         <div class="card-body">
             <h4 class="card-title mb-0">
                 {{ shift.name }}
-                <span class="badge badge-secondary float-right">Begin: {{ shift.begin_dayname }}, {{ shift.begin_date_str }} {{ shift.begin_time_str }}</span>
+                <span class="badge badge-secondary float-right">{{ shift.begin_dayname }}, {{ shift.begin_date_str }} {{ shift.begin_time_str }} ({{ shift.during_str }})</span>
             </h4>
         </div>
         <ul class="list-group list-group-flush">
-            Predecessor:
             <li class="list-group-item disabled">
-            {% if shift.has_predecessors %}
+                {% if shift.begin_date_str == shift.end_date_str %}
+                    {{shift.begin_dayname}}, {{shift.begin_time_str}} - {{shift.end_time_str}}
+                {% else %}
+                    {{shift.begin_str}} - {{shift.end_str}}
+                {% endif %}
+                <strong>{{shift.username}}</strong>
+            </li>
+            <li class="list-group-item list-group-item-primary">
+                Predecessor:
+                {% if shift.has_predecessors %}
                 {% for pre in predecessors %}
                     {% if pre.parent_id == shift.id %}
                         <strong>{{ pre.username }}: </strong>
@@ -58,33 +66,26 @@
                 {{ shift.NONE_STR }}
             {% endif %}
             </li>
-            <li class="list-group-item list-group-item-primary">
-                {% if shift.begin_date_str == shift.end_date_str %}
-                    {{shift.begin_dayname}}, {{shift.begin_time_str}} - {{shift.end_time_str}}
-                {% else %}
-                    {{shift.begin_str}} - {{shift.end_str}}
-                {% endif %}
-                <strong>{{shift.username}}</strong>
-            </li>
             <li class="list-group-item disabled">
-            {% if shift.has_successors %}
-                {% for suc in successors%}
-                    {% if suc.parent_id == shift.id %}
-                        {% if suc.begin_date_str == suc.end_date_str %}
-                            {{suc.begin_dayname}}, {{suc.begin_time_str}} - {{suc.end_time_str}}
-                        {% else %}
-                            {{suc.begin_str}} - {{suc.end_str}}
+                Successor:
+                {% if shift.has_successors %}
+                    {% for suc in successors%}
+                        {% if suc.parent_id == shift.id %}
+                            {% if suc.begin_date_str == suc.end_date_str %}
+                                {{suc.begin_dayname}}, {{suc.begin_time_str}} - {{suc.end_time_str}}
+                            {% else %}
+                                {{suc.begin_str}} - {{suc.end_str}}
+                            {% endif %}
+                            {% if suc.username == shift.username %}
+                                <strong>{{suc.username}}</strong>
+                            {% else %}
+                                {{suc.username}}
+                            {% endif %}
                         {% endif %}
-                        {% if suc.username == shift.username %}
-                            <strong>{{suc.username}}</strong>
-                        {% else %}
-                            {{suc.username}}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                {{ shift.NONE_STR }}
-            {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{ shift.NONE_STR }}
+                {% endif %}
             </li>
         </ul>
     </div>

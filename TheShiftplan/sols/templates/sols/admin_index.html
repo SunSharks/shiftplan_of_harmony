@@ -4,22 +4,15 @@
 
 <div class = "navbar navbar-light bg-light navbar-expand">
     <ul class="navbar-nav nav-fill w-100">
-        {% if admin_new_solution %}
-            <li class="nav-item">
+        <li class="nav-item">
+            {% if admin_new_solution %}
                 There are new solutions.
-                <a class="nav-link" href="{% url 'sols:sol_runs' %}">Select from latest solution runs.</a>
-            </li>
-        {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'sols:admin_solutions' %}">Select from latest solutions.</a>
-            </li>
-        {% endif %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'sols:sol_runs' %}">Latest solution runs.</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'sols:own_shifts' %}">Compact own shifts.</a>
-            </li>
+            {% endif %}
+            <a class="nav-link" href="{% url 'sols:sol_runs' %}">Solution runs.</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'sols:own_shifts' %}">Compact own shifts.</a>
+        </li>
     </ul>
 </div>
 
@@ -32,7 +25,5 @@
         {% include "sols/sol_container.html" %}
     {% endif %}
 </div>
-
-
       
 {% endblock content %}

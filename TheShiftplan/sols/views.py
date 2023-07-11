@@ -1,4 +1,10 @@
 import logging
+import pandas as pd
+from datetime import datetime
+import json
+from os import listdir
+from os.path import exists, join
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -7,22 +13,17 @@ from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 
-import pandas as pd
-
-from datetime import datetime
-import json
-from os import listdir
-from os.path import exists, join
+from django.conf import settings
+from django.utils.timezone import make_aware
 
 from utils.create_instances import *
+from utils import config
 
+from .solplot import *
 from .models import SolutionRun, Solution, UserJobAssignment
 from defs.models import UserProfile, Jobtype, Job
 from prefs.models import UserJobRating, BiasHours, UserOptions
 
-from .solplot import *
-
-from utils import config 
 
 time_format = '%Y-%m-%d-%H-%M'
 final_solution_path = join("sols", "_json", "solution.json")
@@ -42,7 +43,7 @@ def test():
 
 @login_required
 def index_view(request):
-    test()
+    # test()
     final_sol = get_final_distribution()
     try:
         prepare_session_var(request, final_sol.pk)
@@ -78,6 +79,7 @@ def admin_index_view(request, final_sol):
     current_user = request.user
     if current_user.is_superuser:
         context = update_run()
+        logging.debug(context["admin_new_solution"])
         if type(final_sol) != str:
             context.update({
                 "final_sol": final_sol,
@@ -322,9 +324,19 @@ def stats_view(request, pk):
 
 
 def create_objects(objs, dt):
+    # logging.debug(type(dt))
+    logging.debug(dt)
+    logging.debug(SolutionRun.objects.get(timestamp=dt))
+    logging.debug(SolutionRun.objects.all().order_by('-timestamp').first())
+    # for sr in SolutionRun.objects.all():
+    #     sr.timestamp = make_aware(sr.timestamp)
+    #     sr.save()
+    #     logging.info(sr.timestamp.tzinfo)
+    #     logging.debug(sr)
     try:
         sol_run = SolutionRun(timestamp=dt)
         sol_run.save()
+        logging.info("New SolutionRun object.")
     except IntegrityError:
         return
     for key, val in objs.items():
@@ -355,12 +367,20 @@ def set_final_solution(pk):
 
 def update_run():
     latest_sol_run = SolutionRun.objects.all().order_by('-timestamp').first()
+    # logging.debug(latest_sol_run)
     files_timestamps = [datetime.strptime(fn.replace(".json", ""), time_format) for fn in listdir(final_solution_admin_path)]
     if len(files_timestamps) > 0:
         latest_admin_json_dt = max(files_timestamps)
         if not latest_sol_run is None:
+            logging.debug(latest_sol_run.timestamp)
             latest_sol_run_dt = datetime.strptime(datetime.strftime(latest_sol_run.timestamp, time_format), time_format)
+            latest_sol_run_dt = latest_sol_run.timestamp
+            # latest_sol_run_dt = make_aware(latest_sol_run_dt)
+            latest_admin_json_dt = make_aware(latest_admin_json_dt)
+            # logging.debug(latest_sol_run_dt)
             if latest_admin_json_dt > latest_sol_run_dt:
+                logging.debug("latest_admin_json_dt > latest_sol_run_dt")
+                logging.debug(f"{latest_admin_json_dt} > {latest_sol_run_dt}")
                 new_run(latest_admin_json_dt)
                 context = {
                     'admin_new_solution': True,

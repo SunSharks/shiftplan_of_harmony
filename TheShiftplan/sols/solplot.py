@@ -224,7 +224,9 @@ def close_modal(close_modal, df_inp, *args, **kwargs):
 def chart_plot(df, color_mode, current_username):
     """
     Returns timeline plot.
-    @param df: input df, color_mode
+    @param df: input df
+    @param color_mode: str color mode ("popularity" | "user_id" | "assigned_rating" | "user_rating")
+    @param current_username: username of current user
     """
     df["assigned_rating"] = df["assigned_rating"].astype(str)
     df["user_rating"] = df["user_rating"].astype(str)
@@ -239,6 +241,11 @@ def chart_plot(df, color_mode, current_username):
     rating_color_map = {str(i): rating_color_map[i] for i in rating_color_map}
     sorted_jobtype_names = list(df["name"])
     sorted_jobtype_names.sort()
+
+    # Format own username (uppercase)
+    user_df = df.loc[df["assigned_username"] == current_username]
+    user_df["assigned_username"] = user_df["assigned_username"].str.upper()
+    df.update(user_df)
     
     if color_mode == "popularity":
         tl = px.timeline(
@@ -306,7 +313,8 @@ def chart_plot(df, color_mode, current_username):
             },
             custom_data=["job", "user_rating"]
         )
-    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
+    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)    
+
     t_delt_show_dateline = timedelta(days=1)
     now = datetime.now()
     # now = datetime(2023, 6, 1, 4, 20, 0)

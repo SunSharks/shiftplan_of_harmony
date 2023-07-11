@@ -1,3 +1,5 @@
+import logging
+
 from .models import SolutionRun, Solution, UserJobAssignment
 
 from django.db.models.signals import post_save
@@ -7,7 +9,7 @@ from django.dispatch import receiver
 def solution_saved(sender, instance, created, **kwargs):
     if instance.final:
         final_sol_objs = Solution.objects.filter(final=True, solution_run=instance.solution_run)
-        print(final_sol_objs)
+        logging.debug(final_sol_objs)
         if len(final_sol_objs) > 1:
             for f in final_sol_objs:
                 if instance == f:

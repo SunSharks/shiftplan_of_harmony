@@ -11,7 +11,7 @@ class SolutionRun(models.Model):
     final = models.BooleanField(default=False)
 
     def __str__(self):
-        s = f"{self.timestamp}"
+        s = f"{self.final} {self.timestamp}"
         return s
 
 

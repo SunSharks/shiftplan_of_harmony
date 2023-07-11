@@ -5,7 +5,7 @@
 
     Available Description strings:
     shift.
-        index (int)
+        id (int)
         name
         username
         has_predecessors (bool)
@@ -21,7 +21,7 @@
         end_time_str
         NONE_STR
     pre. extends shift
-        parent_id (shift's index)
+        parent_id (shift's id)
     suc extends shift #TODO
 
     #TODO toggle long or short format (only using weekdays for now)
@@ -30,51 +30,59 @@
 {% block content %}
 
 <div class="container-sm justify-content-center">
+    <div class="card m-3">
+        <div class="card-body">
+            <h4 class="card-title">My Shifts
+            </h4><p class="text-muted mb-0">All your shifts as a list, including who's on before and after yours.</p>
+        </div>
+    </div>
     {% for shift in shifts %}
     <div class="card m-3">
         <div class="card-body">
             <h4 class="card-title mb-0">
-                {{ shift.name }}
-                <span class="badge badge-secondary float-right">{{ shift.begin_dayname }}, {{ shift.begin_date_str }} {{ shift.begin_time_str }} ({{ shift.during_str }})</span>
+                {{ shift.name }} ({{ shift.during_str }})
+                <span class="badge badge-secondary float-right">{{shift.begin_date_str}}</span>
             </h4>
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item disabled">
-                {% if shift.begin_date_str == shift.end_date_str %}
-                    {{shift.begin_dayname}}, {{shift.begin_time_str}} - {{shift.end_time_str}}
-                {% else %}
-                    {{shift.begin_str}} - {{shift.end_str}}
-                {% endif %}
-                <strong>{{shift.username}}</strong>
-            </li>
-            <li class="list-group-item list-group-item-primary">
-                Predecessor:
-                {% if shift.has_predecessors %}
+            {% if shift.has_predecessors %}
                 {% for pre in predecessors %}
                     {% if pre.parent_id == shift.id %}
-                        <strong>{{ pre.username }}: </strong>
-                        ({{ pre.begin_dayname }}, {{ pre.begin_date_str }} {{ pre.begin_time_str }} ---
-                        {{ pre.end_dayname }} {{ pre.end_date_str }} {{ pre.end_time_str }})
-                    {% endif %}
-                    {% if pre.username == shift.username %}
-                        <strong>{{pre.username}}</strong>
-                    {% else %}
-                        {{pre.username}}
+                        {% if pre.begin_date_str == pre.end_date_str %}
+                            {{pre.begin_dayname}}, {{pre.begin_time_str}} - {{pre.end_time_str}}
+                        {% else %}
+                            {{pre.begin_dayname}}, {{pre.begin_time_str}} - {{pre.end_dayname}}, {{pre.end_time_str}}
+                        {% endif %}
+                        {% if pre.username == shift.username %}
+                            <strong>{{pre.username}}</strong>
+                        {% else %}
+                            {{pre.username}}
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             {% else %}
                 {{ shift.NONE_STR }}
             {% endif %}
             </li>
+            <li class="list-group-item list-group-item-primary">
+                <strong>
+                    {% if shift.begin_date_str == shift.end_date_str %}
+                        {{shift.begin_dayname}}, {{shift.begin_time_str}} - {{shift.end_time_str}}
+                    {% else %}
+                        {{shift.begin_dayname}}, {{shift.begin_time_str}} - {{shift.end_dayname}}, {{shift.end_time_str}}
+                    {% endif %}
+                    {{shift.username}}
+                </strong>
+            </li>
             <li class="list-group-item disabled">
-                Successor:
                 {% if shift.has_successors %}
                     {% for suc in successors%}
                         {% if suc.parent_id == shift.id %}
                             {% if suc.begin_date_str == suc.end_date_str %}
                                 {{suc.begin_dayname}}, {{suc.begin_time_str}} - {{suc.end_time_str}}
                             {% else %}
-                                {{suc.begin_str}} - {{suc.end_str}}
+                                {{suc.begin_dayname}}, {{suc.begin_time_str}} - {{suc.end_dayname}}, {{suc.end_time_str}}
                             {% endif %}
                             {% if suc.username == shift.username %}
                                 <strong>{{suc.username}}</strong>

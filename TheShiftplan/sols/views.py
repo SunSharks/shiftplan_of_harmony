@@ -443,6 +443,11 @@ class Predecessor(Shift):
         self.parent_id = parent_id
         super().__init__(None, shift_name, username, begin, end)
 
+class Successor(Shift):
+    def __init__(self, parent_id, shift_name, username, begin, end):
+        self.parent_id = parent_id
+        super().__init__(None, shift_name, username, begin, end)
+
 
 def get_predecessors(df, user_df):
     """
@@ -453,16 +458,22 @@ def get_predecessors(df, user_df):
     @param user_df: Filtered DataFrame containing only data from which a shift object is to be created.
     """
     pre_insts = []
+    suc_insts = []
     shift_insts = []
     for i in user_df.index:
         pre = df.loc[(df["end"] == user_df["begin"][i]) & (df["name"] == user_df["name"][i])]
+        suc = df.loc[(df["begin"] == user_df["end"][i]) & (df["name"] == user_df["name"][i])]
         has_predecessors = bool(len(pre.index))
-        new_shift = Shift(i, user_df["name"][i], user_df["assigned_username"][i], user_df["begin"][i], user_df["end"][i], has_predecessors)
+        has_successors = bool(len(suc.index))
+        new_shift = Shift(i, user_df["name"][i], user_df["assigned_username"][i], user_df["begin"][i], user_df["end"][i], has_predecessors, has_successors)
         shift_insts.append(new_shift)
         for j in pre.index:
             pre_inst = Predecessor(i, pre["name"][j], pre["assigned_username"][j], pre["begin"][j], pre["end"][j])
             pre_insts.append(pre_inst)
-    return shift_insts, pre_insts
+        for j in suc.index:
+            suc_inst = Successor(i, suc["name"][j], suc["assigned_username"][j], suc["begin"][j], suc["end"][j])
+            suc_insts.append(suc_inst)
+    return shift_insts, pre_insts, suc_insts
 
 
 # def to_dt(df):
@@ -497,13 +508,14 @@ def own_shifts_view(request):
     
     # logging.debug(user_df)
     # print(df.columns)
-    shift_insts, predecessors = get_predecessors(df, user_df)
+    shift_insts, predecessors, successors = get_predecessors(df, user_df)
     user_df['begin'] = user_df['begin'].dt.strftime("%Y-%m-%d %H:%M:%S")
     user_df['end'] = user_df['end'].dt.strftime("%Y-%m-%d %H:%M:%S")
     user_df = user_df.to_dict('records')
     # logging.debug(user_df)
     context = {
         "shifts": shift_insts,
-        "predecessors": predecessors
+        "predecessors": predecessors,
+        "successors": successors
         }
     return render(request, 'sols/own_shifts.html', context)

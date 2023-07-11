@@ -22,6 +22,9 @@
     {% if sr.final %}
     {% else %}
         <div class = "def item">
+            {% if sr.pk in new_runs_pks %}
+                <strong>[NEW]</strong> 
+            {% endif %}
             {{ sr }} 
             <a href="{% url 'sols:admin_solutions' sr.pk %}">Show Solutions.</a>
             <a href="{% url 'sols:set_sol_run_final' sr.pk %}">Set final.</a>

@@ -14,6 +14,9 @@ class SolutionRun(models.Model):
         s = f"{self.final}   {self.timestamp}"
         return s
 
+    def as_dict(self):
+        return {'pk': self.pk, 'timestamp': self.timestamp, 'final': self.final}
+
 
 class Solution(models.Model):
     solution_run = models.ForeignKey(SolutionRun, on_delete=models.CASCADE)

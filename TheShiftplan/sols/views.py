@@ -78,7 +78,7 @@ def normal_index_view(request, final_sol):
 def admin_index_view(request, final_sol):
     current_user = request.user
     if current_user.is_superuser:
-        context = update_run()
+        context = update_run(request)
         logging.debug(context["admin_new_solution"])
         if type(final_sol) != str:
             context.update({
@@ -103,9 +103,11 @@ def admin_index_view(request, final_sol):
 
 @login_required
 def sol_runs_view(request):
-    context = update_run()
+    context = update_run(request)
     sol_runs = SolutionRun.objects.all().order_by('-timestamp')
     final_sol_run = SolutionRun.objects.filter(final=True)
+    session = request.session
+    new_runs_pks = session.get("new_runs_pks", [])
     if len(final_sol_run) == 0:
         context.update({
             "error_message": "No final solrun."
@@ -115,8 +117,9 @@ def sol_runs_view(request):
             "final_sol_run": final_sol_run[0]
         })
     context.update({
-                "sol_runs": sol_runs
-            })
+        "sol_runs": sol_runs,
+        "new_runs_pks": new_runs_pks
+    })
     return render(request, 'sols/sol_runs.html', context)
 
 
@@ -125,7 +128,7 @@ def admin_solutions_view(request, pk):
     sol_run = get_object_or_404(SolutionRun, id=pk)
     current_user = request.user
     if current_user.is_superuser:
-        context = update_run()
+        context = update_run(request)
     else:
         return HttpResponseNotAllowed("You are not superuser.")
     context.update({
@@ -242,7 +245,7 @@ def set_sol_run_final_view(request, pk):
 
 @login_required
 def unset_sol_run_final_view(request):
-    context = update_run()
+    context = update_run(request)
     final_sol_run = SolutionRun.objects.filter(final=True)
     if len(final_sol_run) != 0:
         final_sol_run[0].final = False 
@@ -263,7 +266,7 @@ def set_sol_final_view(request, pk):
 
 @login_required
 def unset_sol_final_view(request, pk):
-    context = update_run()
+    context = update_run(request)
     solution_run = get_object_or_404(SolutionRun, id=pk)
     final_sol = Solution.objects.filter(solution_run=solution_run, final=True)
     if len(final_sol) != 0:
@@ -323,10 +326,10 @@ def stats_view(request, pk):
     return render(request, 'sols/stats.html', context)
 
 
-def create_objects(objs, dt):
+def create_objects(request, objs, dt):
     # logging.debug(type(dt))
     logging.debug(dt)
-    logging.debug(SolutionRun.objects.get(timestamp=dt))
+    logging.debug(SolutionRun.objects.filter(timestamp=dt))
     logging.debug(SolutionRun.objects.all().order_by('-timestamp').first())
     # for sr in SolutionRun.objects.all():
     #     sr.timestamp = make_aware(sr.timestamp)
@@ -337,6 +340,13 @@ def create_objects(objs, dt):
         sol_run = SolutionRun(timestamp=dt)
         sol_run.save()
         logging.info("New SolutionRun object.")
+        session = request.session
+        # new_runs = session.get("new_runs", [])
+        # new_runs.append(sol_run.as_dict())
+        # session["new_runs"] = new_runs
+        new_runs_pks = session.get("new_runs_pks", [])
+        new_runs_pks.append(sol_run.pk)
+        session["new_runs_pks"] = new_runs_pks
     except IntegrityError:
         return
     for key, val in objs.items():
@@ -352,11 +362,11 @@ def create_objects(objs, dt):
             instance.save()
     
 
-def new_run(latest_admin_json_dt):
+def new_run(request, latest_admin_json_dt):
     admin_json_file = join(final_solution_admin_path, datetime.strftime(latest_admin_json_dt, time_format) + ".json")
     with open(admin_json_file, 'r') as f:
         objs = json.load(f)
-    create_objects(objs, latest_admin_json_dt)
+    create_objects(request, objs, latest_admin_json_dt)
 
 
 def set_final_solution(pk):
@@ -365,7 +375,7 @@ def set_final_solution(pk):
     solution.save()
 
 
-def update_run():
+def update_run(request):
     latest_sol_run = SolutionRun.objects.all().order_by('-timestamp').first()
     # logging.debug(latest_sol_run)
     files_timestamps = [datetime.strptime(fn.replace(".json", ""), time_format) for fn in listdir(final_solution_admin_path)]
@@ -381,7 +391,7 @@ def update_run():
             if latest_admin_json_dt > latest_sol_run_dt:
                 logging.debug("latest_admin_json_dt > latest_sol_run_dt")
                 logging.debug(f"{latest_admin_json_dt} > {latest_sol_run_dt}")
-                new_run(latest_admin_json_dt)
+                new_run(request, latest_admin_json_dt)
                 context = {
                     'admin_new_solution': True,
                     'existing_solutions': True
@@ -392,7 +402,7 @@ def update_run():
                     'existing_solutions': True
                 }
         else:
-            new_run(latest_admin_json_dt)
+            new_run(request, latest_admin_json_dt)
             context = {
                     'admin_new_solution': True,
                     'existing_solutions': True

@@ -144,7 +144,7 @@ def display_click_data(clickData, df_inp):
                     id="modal",
                     is_open=True,
                     keyboard=False,
-            backdrop="static",
+            backdrop=True,
                 ),
             ]
         )

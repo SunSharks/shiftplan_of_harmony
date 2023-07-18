@@ -311,7 +311,7 @@ def chart_plot(df):
         custom_data=["job", "default_rating"]
         )
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
-    tl.update_yaxes(autorange="reversed")
+    # tl.update_yaxes(autorange="reversed")
     return tl
 
 def generate_df(jobtype_pk):

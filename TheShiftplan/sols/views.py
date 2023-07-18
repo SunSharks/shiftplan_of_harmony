@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from os import listdir
 from os.path import exists, join
@@ -366,7 +366,8 @@ def new_run(request, latest_admin_json_dt):
     admin_json_file = join(final_solution_admin_path, datetime.strftime(latest_admin_json_dt, time_format) + ".json")
     with open(admin_json_file, 'r') as f:
         objs = json.load(f)
-    create_objects(request, objs, latest_admin_json_dt)
+    time_offset = timedelta(hours=settings.TIME_OFFSET)
+    create_objects(request, objs, latest_admin_json_dt + time_offset)
 
 
 def set_final_solution(pk):
@@ -381,14 +382,17 @@ def update_run(request):
     files_timestamps = [datetime.strptime(fn.replace(".json", ""), time_format) for fn in listdir(final_solution_admin_path)]
     if len(files_timestamps) > 0:
         latest_admin_json_dt = max(files_timestamps)
+        logging.debug(latest_admin_json_dt)
         if not latest_sol_run is None:
             logging.debug(latest_sol_run.timestamp)
             latest_sol_run_dt = datetime.strptime(datetime.strftime(latest_sol_run.timestamp, time_format), time_format)
             latest_sol_run_dt = latest_sol_run.timestamp
             # latest_sol_run_dt = make_aware(latest_sol_run_dt)
+            time_offset = timedelta(hours=settings.TIME_OFFSET)
+            # latest_admin_json_dt = latest_admin_json_dt + time_offset
             latest_admin_json_dt = make_aware(latest_admin_json_dt)
-            # logging.debug(latest_sol_run_dt)
-            if latest_admin_json_dt > latest_sol_run_dt:
+            logging.debug(latest_admin_json_dt)
+            if latest_admin_json_dt + time_offset > latest_sol_run_dt:
                 logging.debug("latest_admin_json_dt > latest_sol_run_dt")
                 logging.debug(f"{latest_admin_json_dt} > {latest_sol_run_dt}")
                 new_run(request, latest_admin_json_dt)

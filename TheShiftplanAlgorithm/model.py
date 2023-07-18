@@ -21,7 +21,6 @@ class Model:
         self.jobs = self.jobs.reset_index(drop=True)
         self.persons = self.persons.reset_index(drop=True)
         self.preferences = self.preferences.reset_index(drop=True)
-        print(self.persons)
 
         self.five = -10
         self.three = 0
@@ -40,10 +39,18 @@ class Model:
 
         self.durings = self.jobs["during"].to_numpy()
         self.total_workhours = np.sum(self.durings)
+        self.priorities = self.jobs["priority"].to_numpy()
 
         self.slack_objective = 0
 
-    def translate_weights(self):
+        self.build_weights()
+
+
+    def build_weights(self):
+        self.weights = np.empty((self.num_persons, self.num_jobs))
+        for i, user_pk in self.persons[["user_pk"]].itertuples(index=True):
+            self.weights[i] = self.preferences.loc[self.preferences["user"] == user_pk]["rating"].to_numpy()
+            
         self.weights[self.weights == 1] = self.one
         self.weights[self.weights == 2] = self.two
         self.weights[self.weights == 3] = self.three
@@ -51,12 +58,14 @@ class Model:
         self.weights[self.weights == 5] = self.five
         self.center_weights()
 
+
     def center_weights(self):
         # print(self.weights)
         means = self.weights.mean(axis=1)
         means = means.reshape(means.size, 1)
         self.weights = self.weights - means
         # print(self.weights)
+
 
     def feed_boolean_constraint(self):
         """Solution matrix should contain boolean values"""
@@ -91,6 +100,13 @@ class Model:
             self.model.addCons(self.vars_slack_jobassign[-1] >= 0)
             self.slack_objective = - self.slack_coef_jobassign * \
                 self.vars_slack_jobassign[-1] + self.slack_objective
+
+
+    def prioritize_jobs(self):
+        # print(len(self.jobs.index))
+        # print(len(self.persons.index))
+        # print(self.weights.shape)
+        self.weights = self.weights + self.priorities * self.prioritized_weights_coef
 
 
     def get_workload_per_person(self):
@@ -209,6 +225,7 @@ class Model:
                 self.slack_objective = - self.slack_coef_diversity * \
                     vars_slack[-1] + self.slack_objective
 
+
     def feed_no_break_softly(self):
         no_break_users = self.persons.loc[self.persons["break"] == 0].index
         vars_slack = []
@@ -217,15 +234,11 @@ class Model:
 
 
     def feed_objective(self):
-        # print(self.preferences)
-        self.weights = np.empty((self.num_persons, self.num_jobs))
-        for i, user_pk in self.persons[["user_pk"]].itertuples(index=True):
-            self.weights[i] = self.preferences.loc[self.preferences["user"] == user_pk]["rating"].to_numpy()
-        self.translate_weights()
         self.model.setObjective(
             quicksum(map(quicksum, (self.weights*self.vars)))+self.slack_objective, "maximize")
     #    model.setObjective(quicksum(map(quicksum, (lWeights_flat*vars))), "maximize")
     #    model.setObjective(quicksum(map(quicksum, (lPrios_centered*vars))), "maximize")
+
 
     def prt_wl(self):
         """Prints workload per person in german language. """
@@ -249,6 +262,7 @@ class Model:
                     # print(50*'*')
                     # print(self.persons.iloc[num], "\nassigned\n", self.jobs.iloc[num2])
                     # print(50*'-')
+
 
     def dump_solutions_pkl(self):
         mode_name = self.shiftplan["mode_name"]

@@ -45,19 +45,18 @@ if __name__ == '__main__':
     # print()
     # print("preferences\n", preferences)
     # print(len(users.index), len(preferences.index))
-
-    if shiftplan["mode_name"] == "assign_every_job":
+    mn = shiftplan["mode_name"]
+    if mn == "assign_every_job":
         from assign_every_job_model import AssignEveryJobModel as Model_class
         logging.info("Mode assign_every_job")
-    elif shiftplan["mode_name"] == "non_prioritized":
+    elif mn == "non_prioritized":
         from non_prioritized_model import NonPrioritizedModel as Model_class
-    elif shiftplan["mode_name"] == "prioritized":
-        logging.error("prioritized mode not implemented yet.")
-        exit()
+    elif mn == "prioritized":
+        from prioritized_model import PrioritizedModel as Model_class
     else:
-        mn = shiftplan["mode_name"]
         logging.error(f"Invalid mode: {mn}.")
         exit()
+    logging.info(f"Creating {mn} model.")
     model = Model_class(jobs=jobs, persons=users, preferences=preferences, jobtypes=jts, shiftplan=shiftplan)
     
     s = Solution(model)

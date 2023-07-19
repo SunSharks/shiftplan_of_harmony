@@ -1,19 +1,22 @@
 from django.contrib import admin
 from django.conf import settings
+from django.db.utils import OperationalError
 
 from .signals import *
 
 from .models import BiasHours, Workload
 from defs.models import Shiftplan, Mode
 
-shiftplan = Shiftplan.objects.all()[0]
+try:
+    shiftplan = Shiftplan.objects.all()[0]
 
-if shiftplan.mode.name == "assign_every_job":
-    admin.site.register(BiasHours)
-elif shiftplan.mode.name == "non_prioritized":
-    admin.site.register(Workload)
-# admin.site.register(Workload)
-
+    if shiftplan.mode.name == "assign_every_job":
+        admin.site.register(BiasHours)
+    elif shiftplan.mode.name == "non_prioritized":
+        admin.site.register(Workload)
+    # admin.site.register(Workload)
+except:
+    pass
 
 if settings.DEBUG:
     from .models import UserOptions, UserJobRating

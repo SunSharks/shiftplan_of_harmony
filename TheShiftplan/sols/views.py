@@ -152,7 +152,7 @@ def prepare_session_var(request, pk):
         if len(user_job_assignments) == 0:
             assigned_username = config.dummy_username
             assigned_rating = 0
-            d = {}
+            d = {"job": j.pk}
         # elif len(user_job_assignments) > 1:
         #     return HttpResponse("Multiple persons assigned to the same job.")
         else:

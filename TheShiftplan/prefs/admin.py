@@ -12,7 +12,7 @@ try:
 
     if shiftplan.mode.name == "assign_every_job":
         admin.site.register(BiasHours)
-    elif shiftplan.mode.name == "non_prioritized":
+    elif shiftplan.mode.name in ("non_prioritized", "prioritized"):
         admin.site.register(Workload)
     # admin.site.register(Workload)
 except:

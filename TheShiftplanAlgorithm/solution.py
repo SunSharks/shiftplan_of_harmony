@@ -75,9 +75,14 @@ class Solution:
         
             
     def write_json(self, json_str):
-        with open(self.solutions_path, 'w') as f:
-            f.write(json_str)
-
+        try:
+            with open(self.solutions_path, 'w') as f:
+                f.write(json_str)
+        except:
+            makepath = "/".join(self.solutions_path.split("/")[:-1])
+            os.makedirs(makepath)
+            with open(self.solutions_path, 'w') as f:
+                f.write(json_str)
 
     def get_color_palette(self):
         palette = sns.color_palette("coolwarm", np.unique(self.avg_rates).shape[0]).as_hex()[::-1]

@@ -150,6 +150,21 @@ class Model:
 
     def no_fives(self):
         fives = self.preferences.loc[self.preferences["rating"] == 5]
+        # Check feasibility
+        only_fives_found = False
+        # logging.debug(self.jobs)
+        for job_pk, jt_pk, begin, end in self.jobs[["pk", "jobtype", "datetime_start", "datetime_end"]].itertuples(index=False):
+            jobs = self.preferences.loc[self.preferences["job"] == job_pk]
+            # logging.debug(jobs.loc[jobs["rating"] != 5])
+            if len(jobs.loc[jobs["rating"] != 5].index) == 0:
+                jobtype = self.jobtypes.loc[self.jobtypes["pk"] == jt_pk].at[0, "name"]
+                logging.warning(f"Every user rated this job with 5:\n{jobtype} {begin} - {end}")
+                only_fives_found = True
+        if only_fives_found:
+            logging.warning("Continuing with a model that will not be able to fully avoid assignments that are rated 5.")
+            return 
+        
+        logging.info("There are no jobs exclusively rated by 5.")
         for user_pk, job_pk in fives[["user", "job"]].itertuples(index=False):
             user_idx = list(self.persons.loc[self.persons["user_pk"] == user_pk].index)[0]
             job_idx = list(self.jobs.loc[self.jobs["pk"] == job_pk].index)[0]

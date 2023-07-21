@@ -13,7 +13,7 @@ try:
 except ImportError:
     pass
 
-LEVEL = logging.INFO
+LEVEL = logging.DEBUG
 if "info" in sys.argv:
     LEVEL = logging.INFO
 elif "debug" in sys.argv:
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     mn = shiftplan["mode_name"]
     if mn == "assign_every_job":
         from assign_every_job_model import AssignEveryJobModel as Model_class
-        logging.info("Mode assign_every_job")
     elif mn == "non_prioritized":
         from non_prioritized_model import NonPrioritizedModel as Model_class
     elif mn == "prioritized":

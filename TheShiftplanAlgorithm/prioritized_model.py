@@ -1,3 +1,4 @@
+import logging
 from pyscipopt import quicksum
 
 import fetch_json_data as db
@@ -12,7 +13,7 @@ class PrioritizedModel(Model):
         super().__init__(**kwargs)
         self.workloads = self.persons["workload"].to_numpy()
         self.build_model()
-
+        logging.info("Built model.")
         self.optimize()
 
     def build_model(self):

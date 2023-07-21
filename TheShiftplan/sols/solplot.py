@@ -120,7 +120,7 @@ def generate_graph(df_inp, color_mode, plot_mode, session_state=None, *args, **k
         df = pd.read_json(df_inp)
     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
-    df['begin_date'] = pd.to_datetime(df['begin_date'], format="%Y-%m-%d")
+    df['begin_date'] = pd.to_datetime(df['begin'], format="%Y-%m-%d")
     df['end_date'] = pd.to_datetime(df['end'], format="%Y-%m-%d")
     df['begin_time'] = pd.to_datetime(df['begin_time'], format="%H:%M:%S")
     df['end_time'] = pd.to_datetime(df['end_time'], format="%H:%M:%S")
@@ -313,7 +313,8 @@ def chart_plot(df, color_mode, current_username):
             },
             custom_data=["job", "user_rating"]
         )
-    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)    
+    tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
+    tl.update_traces(textposition='inside')  
 
     t_delt_show_dateline = timedelta(days=1)
     now = datetime.now()

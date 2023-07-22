@@ -127,7 +127,9 @@ def generate_graph(df_inp, color_mode, plot_mode, session_state=None, *args, **k
     # print("generae_graph", df)
     if plot_mode == "user_assigned":
         # print(df.loc[df["assigned_username"] == current_username])
-        df = df.loc[df["assigned_username"] == current_username]
+        dfa = df.loc[df["assigned_username"] == current_username]
+        if len(dfa.index) != 0:
+            df = dfa
     dff = df.copy()
     fig = chart_plot(dff, color_mode, current_username)
     fig.update_layout(clickmode='event+select')

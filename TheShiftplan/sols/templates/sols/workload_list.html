@@ -13,16 +13,42 @@
 
 <div>
     <h2>Workers</h2>
-    {% for w in workers %} 
-        <li><b>{{ w.username }}</b> - {{ w.workload }}</li>
-    {% endfor %}
+    <table border="1">
+        <thead>
+          <tr>
+            {% for it in header_items %} 
+                <th width="150px"><b> {{ it }} </b></th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% if assign_every_job %}
+                {% for w in workers %} 
+                    <tr>
+                        <td><b> {{ w.username }} </b></td>
+                        <td> {{ w.sum_workload }} </td>
+                        <td> {{ w.shiftplan_hours }} </td>
+                        <td> {{ w.bias_hours }} </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% for w in workers %} 
+                    <tr>
+                        <td><b> {{ w.username }} </b></td>
+                        <td> {{ w.shiftplan_hours }} </td>
+                        <td> {{ w.workload_hours }} </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
 </div>
 
 <div>
     {% if non_workers %}
         <h2>Non Workers</h2>
         {% for w in non_workers %} 
-            <li><b>{{ w.username }}</b> - {{ w.workload }}</li>
+            <li><b>{{ w.username }}</b> - {{ w.sum_workload }}</li>
         {% endfor %}
     {% endif %}
 </div>

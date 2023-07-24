@@ -21,8 +21,8 @@ from utils import config
 
 from .solplot import *
 from .models import SolutionRun, Solution, UserJobAssignment
-from defs.models import UserProfile, Jobtype, Job
-from prefs.models import UserJobRating, BiasHours, UserOptions
+from defs.models import Shiftplan, UserProfile, Jobtype, Job
+from prefs.models import UserJobRating, BiasHours, UserOptions, Workload
 
 
 time_format = '%Y-%m-%d-%H-%M'
@@ -291,6 +291,7 @@ def unset_sol_final_view(request, pk):
 
 @login_required
 def workload_list_view(request, pk):
+    context = {}
     solution = get_object_or_404(Solution, id=pk)
     prepare_session_var(request, pk)
     session = request.session
@@ -300,21 +301,46 @@ def workload_list_view(request, pk):
     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
     df['during'] = df['end'] - df['begin']
     # logging.debug(df.columns)
+    mode = list(Shiftplan.objects.all())[0].mode.name
+    mode = "assign_every_job"
     worker_insts = UserProfile.objects.filter(worker=True)
     workers = []
-    for w in worker_insts:
-        w_user = w.user
-        df_user_assigned = df.loc[df["user"] == w_user.pk]
-        user_workload = df_user_assigned["during"].sum()
-        username = w.user.username
-        bias = BiasHours.objects.get(user=w.user).bias_hours
-        # logging.debug(bias)
-        # logging.debug(df_user_assigned)
-        # logging.debug()
-        workers.append({
-            "username": username,
-            "workload": user_workload    
-        })
+    if mode == "assign_every_job":
+        header_items = ["Username", "Sum Workload", "Bias Hours", "Shiftplan Hours"]
+        for w in worker_insts:
+            w_user = w.user
+            df_user_assigned = df.loc[df["user"] == w_user.pk]
+            shiftplan_hours = df_user_assigned["during"].sum()
+            username = w.user.username
+            bias = BiasHours.objects.get(user=w.user).bias_hours
+            bias = timedelta(hours=bias)
+            sum_workload = shiftplan_hours + bias
+            # logging.debug(bias)
+            # logging.debug(df_user_assigned)
+            # logging.debug()
+            workers.append({
+                "username": username,
+                "sum_workload": sum_workload,
+                "shiftplan_hours": shiftplan_hours,
+                "bias_hours": bias  
+            })
+    elif mode in ("non_prioritized", "prioritized"):
+        header_items = ["Username", "Assigned Workload", "Workload"]
+        for w in worker_insts:
+            w_user = w.user
+            df_user_assigned = df.loc[df["user"] == w_user.pk]
+            shiftplan_hours = df_user_assigned["during"].sum()
+            username = w.user.username
+            workload_hours = Workload.objects.get(user=w.user).workload_hours
+            workload_hours = timedelta(hours=workload_hours)
+            # logging.debug(bias)
+            # logging.debug(df_user_assigned)
+            # logging.debug()
+            workers.append({
+                "username": username,
+                "shiftplan_hours": shiftplan_hours,
+                "workload_hours": workload_hours  
+            })
     non_worker_insts = UserProfile.objects.filter(worker=False)
     non_workers = []
     for w in non_worker_insts:
@@ -324,17 +350,21 @@ def workload_list_view(request, pk):
         user_workload = df_user_assigned["during"].sum()
         non_workers.append({
             "username": username,
-            "workload": user_workload    
+            "sum_workload": user_workload    
         })
+    context.update({
+        mode: True,
+        "header_items": header_items
+    })
     if len(non_workers) != 0:
-        context = {
+        context.update({
             "workers": workers,
             "non_workers": non_workers
-        }
+        })
     else:
-        context = {
+        context.update({
             "workers": workers
-        }
+        })
     return render(request, 'sols/workload_list.html', context)
 
 

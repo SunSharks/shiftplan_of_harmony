@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "navbar">
+    <div class = "navbar item">
+        <a href="{% url 'sols:index' %}">Back Home</a>
+    </div>
+</div>
+<legend><h1>Workload Overview</h1></legend>
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+<div>
+    <h2>Workers</h2>
+    {% for w in workers %} 
+        <li><b>{{ w.username }}</b> - {{ w.workload }}</li>
+    {% endfor %}
+</div>
+
+<div>
+    {% if non_workers %}
+        <h2>Non Workers</h2>
+        {% for w in non_workers %} 
+            <li><b>{{ w.username }}</b> - {{ w.workload }}</li>
+        {% endfor %}
+    {% endif %}
+</div>
+
+
+<div>
+    <h2>Solution Plot</h2>
+    {% include "sols/sol_container.html" %}
+</div>
+
+
+{% endblock %}

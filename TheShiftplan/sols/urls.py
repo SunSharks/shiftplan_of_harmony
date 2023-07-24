@@ -13,5 +13,6 @@ urlpatterns = [
     path('unset_final_sol_run/', unset_sol_run_final_view, name='unset_sol_run_final'),
     path('set_final_sol/<int:pk>/', set_sol_final_view, name='set_sol_final'),
     path('unset_final_sol/<int:pk>/', unset_sol_final_view, name='unset_sol_final'),
-    path('own_shifts/', own_shifts_view, name='own_shifts')
+    path('own_shifts/', own_shifts_view, name='own_shifts'),
+    path('workload_list/<int:pk>/', workload_list_view, name='workload_list')
 ]

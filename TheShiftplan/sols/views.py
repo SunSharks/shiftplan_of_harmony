@@ -150,11 +150,22 @@ def prepare_session_var(request, pk):
         user_job_assignments = UserJobAssignment.objects.filter(job=j, assigned=True, solution=solution)
         # print(user_job_assignments)
         if len(user_job_assignments) == 0:
+            try:
+                dummy_user = User.objects.get(username=config.dummy_username)
+            except User.DoesNotExist:
+                dummy_user = User(username=config.dummy_username)
+                dummy_user.save()
+                dummy_profile = UserProfile.objects.get(user=dummy_user)
+                setattr(dummy_profile, "worker", False)
+                dummy_profile.save()
             assigned_username = config.dummy_username
             assigned_rating = 0
-            d = {"job": j.pk}
-        # elif len(user_job_assignments) > 1:
-        #     return HttpResponse("Multiple persons assigned to the same job.")
+            d = {
+                "job": j.pk,
+                "user": dummy_user.pk
+            }
+        elif len(user_job_assignments) > 1:
+            logging.warning("Multiple persons assigned to the same job.")
         else:
             assigned_username = user_job_assignments[0].user.username
             assigned_rating = UserJobRating.objects.get(job=user_job_assignments[0].job, user=user_job_assignments[0].user).rating
@@ -275,8 +286,11 @@ def unset_sol_final_view(request, pk):
     return redirect("sols:sol_runs")
 
 
+# def get_workload(user_profiles)
+
+
 @login_required
-def stats_view(request, pk):
+def workload_list_view(request, pk):
     solution = get_object_or_404(Solution, id=pk)
     prepare_session_var(request, pk)
     session = request.session
@@ -285,7 +299,58 @@ def stats_view(request, pk):
     df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
     df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
     df['during'] = df['end'] - df['begin']
-    print(df)
+    # logging.debug(df.columns)
+    worker_insts = UserProfile.objects.filter(worker=True)
+    workers = []
+    for w in worker_insts:
+        w_user = w.user
+        df_user_assigned = df.loc[df["user"] == w_user.pk]
+        user_workload = df_user_assigned["during"].sum()
+        username = w.user.username
+        bias = BiasHours.objects.get(user=w.user).bias_hours
+        # logging.debug(bias)
+        # logging.debug(df_user_assigned)
+        # logging.debug()
+        workers.append({
+            "username": username,
+            "workload": user_workload    
+        })
+    non_worker_insts = UserProfile.objects.filter(worker=False)
+    non_workers = []
+    for w in non_worker_insts:
+        username = w.user.username
+        w_user = w.user
+        df_user_assigned = df.loc[df["user"] == w_user.pk]
+        user_workload = df_user_assigned["during"].sum()
+        non_workers.append({
+            "username": username,
+            "workload": user_workload    
+        })
+    if len(non_workers) != 0:
+        context = {
+            "workers": workers,
+            "non_workers": non_workers
+        }
+    else:
+        context = {
+            "workers": workers
+        }
+    return render(request, 'sols/workload_list.html', context)
+
+
+@login_required
+def stats_view(request, pk):
+    solution = get_object_or_404(Solution, id=pk)
+    df = prepare_session_var(request, pk)
+    df = pd.read_json(df)
+    # session = request.session
+    # djaploda = session.get('django_dash', {})
+    # df = pd.read_json(djaploda.get('df', {}))
+    # logging.debug(df)
+    df['begin'] = pd.to_datetime(df['begin'], format="%Y-%m-%d %H:%M:%S")
+    df['end'] = pd.to_datetime(df['end'], format="%Y-%m-%d %H:%M:%S")
+    df['during'] = df['end'] - df['begin']
+    # logging.debug(df)
     current_user = request.user
     num_workers = len(UserProfile.objects.filter(worker=True))
     num_jobs = len(Job.objects.all())
@@ -294,17 +359,16 @@ def stats_view(request, pk):
     sum_working_hours += pd.to_timedelta(sum_bias_hours, unit='h')
     avg_workload = sum_working_hours / num_workers
 
-    user_assigned_jobs = UserJobAssignment.objects.filter(solution=solution, user=current_user, assigned=True)
-    user_num_jobs = len(user_assigned_jobs)
-    print(df.loc[df["user"] == current_user.pk])
+    # user_assigned_jobs = UserJobAssignment.objects.filter(solution=solution, user=current_user, assigned=True)
+    # print(df.loc[df["user"] == current_user.pk])
     df_user_assigned = df.loc[df["user"] == current_user.pk]
+    user_num_jobs = len(df_user_assigned.index)
     user_workload = df_user_assigned["during"].sum()
     user_break = UserOptions.objects.filter(user=current_user)[0].min_break_hours
     user_break_str = f"{user_break} hours between 2 shifts"
     workloads_per_person = df.groupby(['user'])["during"].sum()
     max_workload = workloads_per_person.max()
     min_workload = workloads_per_person.min()
-    print(max_workload)
     stats = [
         {"label": t[0], "value": t[1], "title": t[2]} for t in [
             ("User", current_user.username, ""),
@@ -321,16 +385,21 @@ def stats_view(request, pk):
     ]
     context = {}
     context.update({
-        "stats": stats
-    })
+            "stats": stats
+        })
+    if current_user.is_superuser:
+
+        context.update({
+            "is_admin": True
+        })
     return render(request, 'sols/stats.html', context)
 
 
 def create_objects(request, objs, dt):
     # logging.debug(type(dt))
-    logging.debug(dt)
-    logging.debug(SolutionRun.objects.filter(timestamp=dt))
-    logging.debug(SolutionRun.objects.all().order_by('-timestamp').first())
+    # logging.debug(dt)
+    # logging.debug(SolutionRun.objects.filter(timestamp=dt))
+    # logging.debug(SolutionRun.objects.all().order_by('-timestamp').first())
     # for sr in SolutionRun.objects.all():
     #     sr.timestamp = make_aware(sr.timestamp)
     #     sr.save()
@@ -391,7 +460,7 @@ def update_run(request):
             time_offset = timedelta(hours=settings.TIME_OFFSET)
             # latest_admin_json_dt = latest_admin_json_dt + time_offset
             latest_admin_json_dt = make_aware(latest_admin_json_dt)
-            logging.debug(latest_admin_json_dt)
+            # logging.debug(latest_admin_json_dt)
             if latest_admin_json_dt + time_offset > latest_sol_run_dt:
                 logging.debug("latest_admin_json_dt > latest_sol_run_dt")
                 logging.debug(f"{latest_admin_json_dt} > {latest_sol_run_dt}")

@@ -16,5 +16,8 @@
   <div>
     <a href="{% url 'sols:stats' show_solution.id %}">Stats</a>
   </div>
+  <div>
+    <a href="{% url 'sols:workload_list' show_solution.id %}">Workload Overview</a>
+  </div>
   {% include "sols/sol_container.html" %}
 {% endblock content %}

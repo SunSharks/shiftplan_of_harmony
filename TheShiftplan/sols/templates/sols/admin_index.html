@@ -18,7 +18,7 @@
                 <a class="nav-link" href="{% url 'sols:stats' final_sol.id %}">Stats</a>
             </li>
             <li>
-                <a href="{% url 'sols:workload_list' show_solution.id %}">Workload Overview</a>
+                <a href="{% url 'sols:workload_list' final_sol.id %}">Workload Overview</a>
             </li>
         {% endif %}
     </ul>

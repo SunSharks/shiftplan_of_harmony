@@ -1,5 +1,6 @@
 import logging
 from pyscipopt import quicksum
+import numpy as np
 
 import fetch_json_data as db
 from model import Model
@@ -11,7 +12,12 @@ class PrioritizedModel(Model):
         self.prioritized_weights_coef = 1
         self.slack_coef_jobassign = 5
         super().__init__(**kwargs)
+        # logging.debug(self.persons["workload"])
         self.workloads = self.persons["workload"].to_numpy()
+        if 0 in self.workloads:
+            self.workloads += 12
+            self.persons["workload"] = self.workloads
+        logging.debug(self.workloads)
         self.build_model()
         logging.info("Built model.")
         self.optimize()

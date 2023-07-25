@@ -10,6 +10,7 @@ from datetime import timedelta
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 
+
 class Model:
     def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
         self.jobs = jobs
@@ -29,6 +30,7 @@ class Model:
         self.two = 3  # (self.three + self.one) / 2
 
         self.slack_coef_diversity = .5
+        self.max_time_frame = timedelta(hours=10)
         self.jobs_until_forced_break = 2
 
         self.workload_per_person = None
@@ -126,26 +128,52 @@ class Model:
             self.model.addCons(quicksum(self.vars[i]*self.durings) >= lower)
 
 
+    def get_job_successors(self):
+        self.job_successors = {}
+        for id, end, during in self.jobs[["datetime_end", "during"]].itertuples(index=True):
+            successors = self.jobs.loc[end == self.jobs['datetime_start']]
+            self.job_successors[id] = list(successors.index)
+
+
+    def feed_conflicting_series(self, ser):
+        l = len(ser) - 1
+        for p in range(self.num_persons):
+            self.model.addCons(quicksum(self.vars[p][i] for i in ser) <= l)
+
+
+    def get_series_time(self, ser):
+        logging.debug(self.jobs.iloc[ser])
+        # durs = 
+        return 
+
+
     def feed_forced_break(self):
-        """TODO: Enforces break after self.jobs_until_forced_break shifts as hard constraint.
+        """TODO: Enforces break after self.max_time_frame hours as hard constraint.
         """
-        pass
-        # self.neighbors_per_job = {}
-        # for id, end in self.dh.jobs[["abs_end"]].itertuples(index=True):
-        #     # print(self.dh.jobs.loc[end == self.dh.jobs['abs_start']])
-        #     neighbors = self.dh.jobs.loc[end == self.dh.jobs['abs_start']]
-        #     self.neighbors_per_job[id] = list(neighbors.index)
-        # n_series_ids = []
-        # for id in self.neighbors_per_job:
-        #     s = self.get_n_series(3, id)
-        #     if s:
-        #         n_series_ids.append(tuple(s))
-        # # print(set(n_series_ids))
-        # for p in range(self.num_persons):
-        #     n_series_ids = set(n_series_ids)
-        #     for ser in n_series_ids:
-        #         self.model.addCons(quicksum(self.vars[p][i]
-        #                                     for i in ser) <= self.jobs_until_forced_break)
+        self.get_job_successors()
+        
+        for id, during in self.jobs[["during"]].itertuples(index=True):
+            during = timedelta(hours=during)
+            if during >= self.max_time_frame:
+                for nb_id in self.job_successors[id]:
+                    self.feed_conflicting_series([id, nb_id])
+                    # logging.debug(self.jobs.iloc[nb_id]["during"])
+            else:
+                max_n = 5
+                n = 3
+                while n < max_n:
+                    s = self.get_n_series(n, id)
+                    # logging.debug(s)
+                    if s:
+                        durs = self.jobs.iloc[s]["during"].sum()
+                        # logging.debug(self.jobs.iloc[s]["datetime_end"])
+                        if timedelta(hours=durs) >= self.max_time_frame:
+                            self.feed_conflicting_series(s)
+                            break
+                    else:
+                        break     
+                    n += 1
+        
 
 
     def no_fives(self):
@@ -194,19 +222,19 @@ class Model:
         if depth == len(series):
             return series
         else:
-            if id not in self.neighbors_per_job:
+            if id not in self.job_successors:
                 return False
             else:
                 # print(nb_lst_idx, series)
-                # print( self.neighbors_per_job[id][nb_lst_idx])
+                # print( self.job_successors[id][nb_lst_idx])
 
                 nb_lst_idx += 1
-                if len(self.neighbors_per_job[id]) <= nb_lst_idx:
+                if len(self.job_successors[id]) <= nb_lst_idx:
                     return False
-                series.append(self.neighbors_per_job[id][nb_lst_idx])
+                series.append(self.job_successors[id][nb_lst_idx])
                 if depth == len(series):
                     return series
-                return self.get_n_series(depth, self.neighbors_per_job[id][nb_lst_idx], nb_lst_idx, series)
+                return self.get_n_series(depth, self.job_successors[id][nb_lst_idx], nb_lst_idx, series)
 
 
     def find_conflicts(self, br):

@@ -82,7 +82,10 @@ class Model:
     def assign_every_job(self):
         """Sum of assigned jobs has to equal number of jobs."""
         # Summe der belegten Schichten muss gleich der Anzahl der Schichten sein.
-        self.model.addCons(quicksum([quicksum(i) for i in self.vars]) >= self.num_jobs)
+        # logging.debug(self.persons)
+        # self.model.addCons(quicksum([quicksum(i) for i in self.vars]) >= self.num_jobs)
+        for i in range(self.num_jobs):
+            self.model.addCons(quicksum(self.vars.T[i]) >= 1)
 
 
     def assign_every_job_once(self):

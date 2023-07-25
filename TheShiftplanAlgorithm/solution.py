@@ -49,6 +49,7 @@ class Solution:
             unassigned_persons = np.where(solution[:,j] != 1)
             assigned_users = list(self.persons.iloc[assigned_persons]["user_pk"])
             unassigned_users = list(self.persons.iloc[unassigned_persons]["user_pk"])
+            # print(assigned_users)
             instances = [
                 {
                     "user": user,

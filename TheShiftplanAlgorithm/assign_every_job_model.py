@@ -10,14 +10,12 @@ import fetch_json_data as db
 
 class AssignEveryJobModel(Model):
     def __init__(self, **kwargs):
-        self.slack_coef_fairness = 2
-        self.eps = 200     # Toleranzstundenanzahl.
+        self.slack_coef_fairness = 8
+        self.eps = 20     # Toleranzstundenanzahl.
 
         super().__init__(**kwargs)
         # print(self.persons)
 
-        self.biases = self.persons["bias"].to_numpy()
-        # print(self.preferences)
         self.build_model()
 
         self.prt_avg_workload_per_person()
@@ -26,6 +24,8 @@ class AssignEveryJobModel(Model):
         self.optimize()
 
     def build_model(self):
+        logging.debug(f"Num Jobs: {self.num_jobs}")
+        # logging.debug()
         self.feed_boolean_constraint()
         self.assign_every_job()
         self.assign_every_job_once()
@@ -35,6 +35,7 @@ class AssignEveryJobModel(Model):
         self.feed_conflicts_per_person()
         # self.feed_night_constraint()
         self.feed_restricted_jobs()
+        self.feed_forced_break()
         self.no_fives()
         self.feed_fairness()
         # self.feed_diversity()
@@ -62,7 +63,7 @@ class AssignEveryJobModel(Model):
         return
 
     def feed_restricted_jobs(self):
-        # TODO
+        self.consider_subcrews()
         """SELECT * FROM Jobs WHERE Jobs.jt_primary IN ( SELECT id FROM Jobtypes WHERE Jobtypes.name IN ( SELECT jt_name FROM Exclusives));"""
         # uniques = self.dh.exclusives.jt_name.unique()
         # allowed_rows = []

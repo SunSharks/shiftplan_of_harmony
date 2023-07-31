@@ -5,17 +5,23 @@ import json
 import os
 from datetime import datetime
 import pickle
+import logging
 
 class Solution:
-    def __init__(self, model, solutions_path="../TheShiftplan/sols/_json/_admin/{}.json"):
+    def __init__(self, model, sol_json_path="../TheShiftplan/sols/_json/_admin/{}.json", model_pkl_path=""):
+        now = datetime.now()
+        self.date_str = datetime.strftime(now, '%Y-%m-%d-%H-%M')
         self.solutions = model.solutions
         self.jobs = model.jobs
+        self.durings = model.durings
         self.persons = model.persons
         self.preferences = model.preferences
         self.jobtypes = model.jobtypes
         self.shiftplan = model.shiftplan
-        self.solutions_path = solutions_path
-        self.complete_solutions_path()
+        self.model = model
+        self.sol_json_path = sol_json_path
+        self.model_pkl_path = model_pkl_path
+        self.complete_sol_json_path()
 
         self.preferences_np = self.preferences.to_numpy()
         # self.style = ""
@@ -28,6 +34,32 @@ class Solution:
         for i, s in enumerate(self.solutions):
             self.solution_lists[i] = self.create_user_job_assigned(s)
         self.write_json(json.dumps(self.solution_lists))
+        # self.pickle_model()
+        self.print_sols()
+
+
+    def print_sols(self):
+        for s in self.solutions:
+            assigned_jobs = s.sum()
+            logging.info(f"Assigned Jobs: {assigned_jobs}.")
+            logging.info(f"Solution\n{s}")
+
+
+    def pickle_model(self):
+        # TODO!
+        path = os.path.join(self.model_pkl_path, "model_" + self.date_str + ".pkl")
+        with open(path, 'wb') as f:
+            pickle.dump(self.model, f)
+
+
+    def get_stats(self, solution):
+        assigned_jobs = solution.sum()
+        sum_shiftplan_hours = self.durings.sum()
+        sum_workload_hours = sum_shiftplan_hours + self.model.biases
+        avg_workload_hours = sum_workload_hours / self.model.num_persons
+        persons_num_jobs = solution.sum(axis=1)
+        persons_workloads = solution * self.durings
+
 
 
     def create_user_job_assigned(self, solution):
@@ -68,21 +100,19 @@ class Solution:
         return user_job_assigned
 
 
-    def complete_solutions_path(self):
-        now = datetime.now()
-        date_str = datetime.strftime(now, '%Y-%m-%d-%H-%M')
-        file_timestamp = f"{date_str}"
-        self.solutions_path = self.solutions_path.format(file_timestamp)
+    def complete_sol_json_path(self):
+        file_timestamp = f"{self.date_str}"
+        self.sol_json_path = self.sol_json_path.format(file_timestamp)
         
             
     def write_json(self, json_str):
         try:
-            with open(self.solutions_path, 'w') as f:
+            with open(self.sol_json_path, 'w') as f:
                 f.write(json_str)
         except:
-            makepath = "/".join(self.solutions_path.split("/")[:-1])
+            makepath = "/".join(self.sol_json_path.split("/")[:-1])
             os.makedirs(makepath)
-            with open(self.solutions_path, 'w') as f:
+            with open(self.sol_json_path, 'w') as f:
                 f.write(json_str)
 
     def get_color_palette(self):

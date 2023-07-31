@@ -64,15 +64,11 @@ def fetch_jobtypes():
     name_appendix
     FROM Jobtypes"""
     jts = models["jobtypes"]
-    # jts = strip_columns(jts)
-    # jts.loc[:, 'special'] = 0
-    # jts.loc[:, 'helper'] = 0
-    # jts.loc[:, 'name_appendix'] = ""
     jts = jts.assign(special=0)
     jts = jts.assign(helper=0)
     jts = jts.assign(name_appendix="")
     jts = jts.rename(columns={'description': 'competences'})
-    # print(jts)
+    jts["subcrew"] = jts["subcrew"].astype('Int32')    
     return jts
 
 def fetch_jobs(*jobtype_ids):
@@ -153,6 +149,10 @@ def fetch_preferences(users, jobs):
     return ujrs
 
 
+def fetch_subcrews():
+    return models["subcrews"]
+
+
 
 
 
@@ -164,4 +164,4 @@ if __name__ == "__main__":
     # print(list(jobtypes["id"]))
     jobs = fetch_jobs(*list(jobtypes["pk"]))
     users = fetch_users()
-    # print(jobtypes) 
+    # print(jobtypes)

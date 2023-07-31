@@ -12,16 +12,20 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 
 
 class Model:
-    def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None):
+    def __init__(self, jobs=None, persons=None, preferences=None, jobtypes=None, shiftplan=None, subcrews=None):
         self.jobs = jobs
         self.persons = persons
         self.preferences = preferences
         self.jobtypes = jobtypes
         self.shiftplan = shiftplan
+        self.subcrews = subcrews
 
         self.jobs = self.jobs.reset_index(drop=True)
         self.persons = self.persons.reset_index(drop=True)
         self.preferences = self.preferences.reset_index(drop=True)
+        self.biases = self.persons["bias"].to_numpy()
+        # logging.debug(self.biases)
+        # logging.info(len(self.jobs.index))
 
         self.five = -10
         self.three = 0
@@ -50,8 +54,11 @@ class Model:
 
     def build_weights(self):
         self.weights = np.empty((self.num_persons, self.num_jobs))
-        for i, user_pk in self.persons[["user_pk"]].itertuples(index=True):
+        # logging.debug(self.persons)
+        for i, user_pk, un in self.persons[["user_pk", "nickname"]].itertuples(index=True):
             self.weights[i] = self.preferences.loc[self.preferences["user"] == user_pk]["rating"].to_numpy()
+            # logging.debug(un)
+            # logging.debug(self.preferences.loc[self.preferences["user"] == user_pk]["rating"].to_numpy())
             
         self.weights[self.weights == 1] = self.one
         self.weights[self.weights == 2] = self.two
@@ -131,6 +138,40 @@ class Model:
             self.model.addCons(quicksum(self.vars[i]*self.durings) >= lower)
 
 
+    def consider_subcrews(self):
+        for id, sc_pk, members, sc_name in self.subcrews[["pk", "members", "name"]].itertuples(index=True):
+            jts = list(self.jobtypes.loc[self.jobtypes["subcrew"] == sc_pk]["pk"])
+            if len(jts) == 0:
+                continue
+            # logging.debug(sc_name)
+            # logging.debug(jts)
+            jobs = self.jobs[self.jobs['jobtype'].isin(jts)]
+            # logging.debug(jobs)
+            excluded_persons = self.persons[~self.persons['pk'].isin(members)]
+            # logging.debug(excluded_persons)
+            excluded_persons_pd_idx = list(excluded_persons.index)
+            jobs_pd_idx = list(jobs.index)
+            subcrew_prefs = self.preferences[self.preferences['user'].isin(members)]
+            # logging.debug(subcrew_prefs)
+            for j_pk in list(jobs["pk"]):
+                prefs = subcrew_prefs.loc[subcrew_prefs["job"] == j_pk]["rating"]
+                # logging.debug(set(prefs))
+                set_prefs = set(prefs)
+                if set_prefs == {5}:
+                    logging.warning("Restricted Job only rated by 5.")
+            if len(excluded_persons_pd_idx) + len(jobs_pd_idx) >= 2:
+                for p in excluded_persons_pd_idx:
+                    logging.debug(self.preferences.at[p, 'rating'])
+                    self.preferences.at[p, 'rating'] = 5
+                    # logging.debug(self.preferences.at[p, 'rating'])
+                    # self.model.addCons(quicksum(self.vars[p][j] for j in jobs_pd_idx) <= 0)
+                    # for j in jobs_pd_idx:
+                    #     logging.debug(self.vars)
+                    #     self.model.addCons(self.vars[p][j] <= 0)
+            
+
+
+
     def get_job_successors(self):
         self.job_successors = {}
         for id, end, during in self.jobs[["datetime_end", "during"]].itertuples(index=True):
@@ -142,12 +183,6 @@ class Model:
         l = len(ser) - 1
         for p in range(self.num_persons):
             self.model.addCons(quicksum(self.vars[p][i] for i in ser) <= l)
-
-
-    def get_series_time(self, ser):
-        logging.debug(self.jobs.iloc[ser])
-        # durs = 
-        return 
 
 
     def feed_forced_break(self):
@@ -300,11 +335,11 @@ class Model:
         for i, s in enumerate(solutions):
             aval = np.vectorize(lambda x: self.model.getSolVal(s, x))(self.vars)
             self.solutions.append(aval)
-        # print(self.solutions)
-        for num, l in enumerate(self.solutions[0]):
-            for num2, i in enumerate(l):
-                if i == 1:
-                    pass
+        logging.info(self.solutions)
+        # for num, l in enumerate(self.solutions[0]):
+        #     for num2, i in enumerate(l):
+        #         if i == 1:
+        #             pass
                     # print(50*'*')
                     # print(self.persons.iloc[num], "\nassigned\n", self.jobs.iloc[num2])
                     # print(50*'-')

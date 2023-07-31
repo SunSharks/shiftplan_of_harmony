@@ -39,7 +39,7 @@ if __name__ == '__main__':
     jts = db.fetch_jobtypes()
     jobs = db.fetch_jobs(*list(jts["pk"]))
     users = db.fetch_users()
-    # subcrews = db.fetch_names(helper=False)
+    subcrews = db.fetch_subcrews()
     preferences = db.fetch_preferences(users, jobs)
     # print("Users\n", users)
     # print()
@@ -56,6 +56,6 @@ if __name__ == '__main__':
         logging.error(f"Invalid mode: {mn}.")
         exit()
     logging.info(f"Creating {mn} model.")
-    model = Model_class(jobs=jobs, persons=users, preferences=preferences, jobtypes=jts, shiftplan=shiftplan)
+    model = Model_class(jobs=jobs, persons=users, preferences=preferences, jobtypes=jts, shiftplan=shiftplan, subcrews=subcrews)
     
     s = Solution(model)

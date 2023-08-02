@@ -26,5 +26,6 @@ urlpatterns = [
     path('prefs/', include('prefs.urls')),
     path('defs/', include('defs.urls')),
     path('sols/', include('sols.urls')),
+    path('admin_prefs/', include('admin_prefs.urls')),
     path('accounts/', include('accounts.urls')),
 ]

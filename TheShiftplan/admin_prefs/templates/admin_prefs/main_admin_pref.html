@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="get">
+    {% csrf_token %}
+    <label for="users">Choose a user:</label>
+    <select name="users" id="users" value="selected_user">
+        {% for u in workers %}
+            {% if u.selected %}
+                <option value="{{ u.value }}" selected>{{ u.label }}</option>
+            {% else %}
+            <option value="{{ u.value }}">{{ u.label }}</option>
+            {% endif %}
+        {% endfor %}
+    </select> 
+    <input type="submit" value="Show prefs">
+</form>
+
+{% include "admin_prefs/admin_pref_container.html" %}
+
+{% endblock content %}

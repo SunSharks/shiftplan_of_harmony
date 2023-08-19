@@ -1,10 +1,16 @@
 # shiftplan_of_harmony
 
+## Structure 2023
+![plot](./TheShiftplan/TheShiftplan_models.png)
+### TheShiftplan/
+Django project: web interface of the shiftplan.
+#### defs/
+Django app to define and edit the structure of the shift schedule.
 
 ---
-=== Old Structure (2022) ===
-## deftab/
-### index.php
+## Old Structure (2022)
+### deftab/
+#### index.php
 index.php uses def.js for definitions of day and job credentials.
 **Day input fields** can be added by clicking the plus sign in the top left corner. Deletion by clicking the minus symbol next to the last day box. You can only delete the last day box.
 
@@ -13,31 +19,31 @@ index.php uses def.js for definitions of day and job credentials.
 In def.js, the `name_special` variable can be changed to change the label for this checkbox. It can be used to mark all kinds of exceptions.
 **Sensibel checkbox** makes the default preference value equals 5 for all jobs of that jobtype.
 
-### tab.php
+#### tab.php
 tab.php uses deftabsketch.js to create a editable table to define time intervals of jobs.
 
-### delete_jobtype.php
+#### delete_jobtype.php
 
-## crew_prios/
+### crew_prios/
 Website to define preferences for each job that is not a helper job.
 For a costum man text rename the file "indexmantxt.txt" to "_indexmantxt.txt" and edit its containing text.
 ### index.php
 
 .
-## TODO
+### TODO
 
 * Barrierefreie Farben!
 * Layout von allem.
 * Mehr utf8s in die encoding Funktionen.
 
-### deftab
-#### Appearence
+#### deftab
+##### Appearence
 * Calculate & show day of griditems.
 * [DONE] Show how many griditems are currently selected.
 * Red frame around each job after saving for a short time.
 * Nicer css
 
-#### Functionality
+##### Functionality
 * The person who created a job(type) should be the only one who is able to delete/edit that job(type).
 * [DONE] Delete jobtype and corresponding jobs. (button, functionality, security, integrety)
 * [DONE] Link day entries of table Jobs to corresponding entry of table Days.
@@ -57,16 +63,14 @@ For a costum man text rename the file "indexmantxt.txt" to "_indexmantxt.txt" an
 * Download button for competences text.
 * Number input in jobbox for twins (dublicate jobs).
 
-### prios
-#### index
+#### prios
+##### index
 * Equal width of table columns.
 * [DONE] Style fixed table row headers.
 * Nicer css
 * selectable rows and columns
 
-#### signup
+##### signup
 * [DONE] Hash PW
 * Autocomplete full name
 
-
-### New file structure

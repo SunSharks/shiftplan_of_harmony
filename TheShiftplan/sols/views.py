@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 
 from django.conf import settings
 from django.utils.timezone import make_aware
+from django.utils.datastructures import MultiValueDictKeyError
 
 from utils.create_instances import *
 from utils import config
@@ -39,6 +40,25 @@ def test():
     logging.debug(SolutionRun.objects.get(final=True))
     # logging.debug(Job.objects.get)
     logging.debug(Solution.objects.filter(solution_run=fin_sol_run, final=True))
+
+
+def get_csv(solution):
+    # logging.debug()
+    jobtypes = Jobtype.objects.all().order_by('name')
+    s = ""
+    for jt in jobtypes:
+        s += jt.name + ';'
+        jt_jobs = jt.job_set.all().order_by('begin_date', 'begin_time')
+        for j in jt_jobs:
+            pers = solution.userjobassignment_set.get(assigned=True, job=j.pk).user
+            logging.debug(pers)
+            s += pers.username + ';'
+        s += '\n'
+    with open('plot_shiftplan.csv', 'w') as f:
+        f.write(s)
+        # solution.userjobassignment_set.filter()
+
+
 
 
 @login_required
@@ -86,6 +106,7 @@ def admin_index_view(request, final_sol):
                 "show_solution": final_sol,
                 "show_solution_run": final_sol.solution_run
             })
+            get_csv(final_sol)
         else:
             context.update({
                 "error_message": final_sol
@@ -198,15 +219,26 @@ def prepare_session_var(request, pk):
     # print("CONVERT TO JSON")
     df['begin'] = df['begin'].dt.strftime('%Y-%m-%d %H:%M:%S')
     df['end'] = df['end'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    worker_insts = UserProfile.objects.filter(worker=True)
+    workers = []
+    for w in worker_insts:
+        w_user = w.user
+        df_user_assigned = df.loc[df["user"] == w_user.pk]
+        pk = w.user.pk
+        username = w.user.username
+        workers.append({'label': username, 'value': pk})
+
     df = df.to_json()
     # print(context)
     session = request.session
     djaploda = session.get('django_dash', {})
     ndf = djaploda.get('df', df)
     ndf = df
+
     djaploda['df'] = ndf
     djaploda['username'] = current_user.username
     djaploda['is_admin'] = current_user.is_superuser
+    djaploda['workers'] = workers
     session['django_dash'] = djaploda
     return df
 
@@ -674,3 +706,5 @@ def own_shifts_view(request):
         "successors": successors
         }
     return render(request, 'sols/own_shifts.html', context)
+
+

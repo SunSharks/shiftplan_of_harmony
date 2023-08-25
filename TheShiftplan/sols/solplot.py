@@ -47,6 +47,7 @@ app.layout = html.Div([
     dcc.Input(id='is_admin', type="hidden", style={"display": "hidden"}),
     dcc.Store(id="cache", data=[]),
     html.Div([
+        html.Pre(id='num_fives', children=[]),
         html.Label(
             children="Select Plot Mode.",
             htmlFor="plot_mode"
@@ -107,6 +108,7 @@ app.layout = html.Div([
 
 @app.callback(
     Output('chart_plot', 'figure'),
+    Output('num_fives', 'children'),
     [Input('df_inp', 'value'),
     Input('color_mode', 'value'),
     Input('plot_mode', 'value')
@@ -133,7 +135,11 @@ def generate_graph(df_inp, color_mode, plot_mode, session_state=None, *args, **k
     dff = df.copy()
     fig = chart_plot(dff, color_mode, current_username)
     fig.update_layout(clickmode='event+select')
-    return fig
+    fives = df.loc[df["assigned_rating"] == 5]["assigned_rating"].count()
+    fours = df.loc[df["assigned_rating"] == 5]["assigned_rating"].count()
+    rates = [str(df.loc[df["assigned_rating"] == i]["assigned_rating"].count()) + " -- " for i in range(1,6)]
+    # fives = f"Num fives: {fives}"
+    return fig, rates
 
 
 @app.callback(
@@ -316,7 +322,8 @@ def chart_plot(df, color_mode, current_username):
             custom_data=["job", "user_rating"]
         )
     tl.update_traces(marker_line_color='rgb(0,0,0)', marker_line_width=3, opacity=1)
-    tl.update_traces(textposition='inside')  
+    tl.update_traces(textposition='inside', textfont_size=8)
+    # fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')  
 
     t_delt_show_dateline = timedelta(days=1)
     now = datetime.now()

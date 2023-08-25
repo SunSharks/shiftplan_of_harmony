@@ -27,7 +27,7 @@ class Model:
         # logging.debug(self.biases)
         # logging.info(len(self.jobs.index))
 
-        self.five = -10
+        self.five = -30
         self.three = 0
         self.one = 6
         self.four = -6  # (self.five + self.three) / 2
@@ -49,7 +49,7 @@ class Model:
 
         self.slack_objective = 0
 
-        self.build_weights()
+        # self.build_weights()
 
 
     def build_weights(self):
@@ -161,10 +161,10 @@ class Model:
                     logging.warning("Restricted Job only rated by 5.")
             if len(excluded_persons_pd_idx) + len(jobs_pd_idx) >= 2:
                 for p in excluded_persons_pd_idx:
-                    logging.debug(self.preferences.at[p, 'rating'])
-                    self.preferences.at[p, 'rating'] = 5
                     # logging.debug(self.preferences.at[p, 'rating'])
-                    # self.model.addCons(quicksum(self.vars[p][j] for j in jobs_pd_idx) <= 0)
+                    # self.preferences.at[p, 'rating'] = 5
+                    # logging.debug(self.preferences.at[p, 'rating'])
+                    self.model.addCons(quicksum(self.vars[p][j] for j in jobs_pd_idx) <= 0)
                     # for j in jobs_pd_idx:
                     #     logging.debug(self.vars)
                     #     self.model.addCons(self.vars[p][j] <= 0)

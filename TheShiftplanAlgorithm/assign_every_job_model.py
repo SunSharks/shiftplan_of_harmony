@@ -10,9 +10,9 @@ import fetch_json_data as db
 
 class AssignEveryJobModel(Model):
     def __init__(self, **kwargs):
-        self.slack_coef_fairness = 8
+        self.slack_coef_fairness = 40
         self.eps = 20     # Toleranzstundenanzahl.
-
+        
         super().__init__(**kwargs)
         # print(self.persons)
 
@@ -25,8 +25,10 @@ class AssignEveryJobModel(Model):
 
     def build_model(self):
         logging.debug(f"Num Jobs: {self.num_jobs}")
-        # logging.debug()
+        logging.debug(self.persons) 
+        
         self.feed_boolean_constraint()
+        self.feed_restricted_jobs()
         self.assign_every_job()
         self.assign_every_job_once()
         self.get_workload_per_person()
@@ -34,11 +36,12 @@ class AssignEveryJobModel(Model):
         self.feed_forced_break()
         self.feed_conflicts_per_person()
         # self.feed_night_constraint()
-        self.feed_restricted_jobs()
+        
         self.feed_forced_break()
         self.no_fives()
         self.feed_fairness()
         # self.feed_diversity()
+        self.build_weights()
         self.feed_objective()
 
 
@@ -63,7 +66,35 @@ class AssignEveryJobModel(Model):
         return
 
     def feed_restricted_jobs(self):
-        self.consider_subcrews()
+        for id, sc_pk, members, sc_name in self.subcrews[["pk", "members", "name"]].itertuples(index=True):
+            jts = list(self.jobtypes.loc[self.jobtypes["subcrew"] == sc_pk]["pk"])
+            if len(jts) == 0:
+                continue
+            logging.debug(sc_name)
+            # logging.debug(jts)
+            jobs = self.jobs[self.jobs['jobtype'].isin(jts)]
+            # logging.debug(jobs)
+            excluded_persons = self.persons[~self.persons['pk'].isin(members)]
+            logging.debug(excluded_persons)
+            excluded_persons_pd_idx = list(excluded_persons.index)
+            jobs_pd_idx = list(jobs.index)
+            subcrew_prefs = self.preferences[self.preferences['user'].isin(members)]
+            # logging.debug(subcrew_prefs)
+            for j_pk in list(jobs["pk"]):
+                prefs = subcrew_prefs.loc[subcrew_prefs["job"] == j_pk]["rating"]
+                # logging.debug(set(prefs))
+                set_prefs = set(prefs)
+                if set_prefs == {5}:
+                    logging.warning("Restricted Job only rated by 5.")
+            if len(excluded_persons_pd_idx) + len(jobs_pd_idx) >= 2:
+                for p in excluded_persons_pd_idx:
+                    # logging.debug(self.preferences.at[p, 'rating'])
+                    # self.preferences.at[p, 'rating'] = 5
+                    # logging.debug(self.preferences.at[p, 'rating'])
+                    # self.model.addCons(quicksum(self.vars[p][j] for j in jobs_pd_idx) <= 0)
+                    for j in jobs_pd_idx:
+                    #     logging.debug(self.vars)
+                        self.model.addCons(self.vars[p][j] <= 0)
         """SELECT * FROM Jobs WHERE Jobs.jt_primary IN ( SELECT id FROM Jobtypes WHERE Jobtypes.name IN ( SELECT jt_name FROM Exclusives));"""
         # uniques = self.dh.exclusives.jt_name.unique()
         # allowed_rows = []
@@ -112,7 +143,7 @@ class AssignEveryJobModel(Model):
 
     def prt_avg_workload_per_person(self):
         logging.info("Das wären im Optimalfall {avg} Stunden für jeden ohne Beachtung von Ausnahmen.".format(
-            avg=self.total_workhours/self.num_persons))
+            avg=(self.total_workhours+self.biases.sum())/self.num_persons))
 
     def prt_biased_workloads(self):
         i = 0

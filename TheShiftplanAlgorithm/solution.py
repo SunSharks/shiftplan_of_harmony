@@ -41,8 +41,11 @@ class Solution:
     def print_sols(self):
         for s in self.solutions:
             assigned_jobs = s.sum()
+            logging.debug(s.sum(axis=0))
             logging.info(f"Assigned Jobs: {assigned_jobs}.")
-            logging.info(f"Solution\n{s}")
+            # with np.printoptions(threshold=np.inf):
+            #     print(s)
+            # logging.info(f"Solution\n{s}")
 
 
     def pickle_model(self):
@@ -74,12 +77,18 @@ class Solution:
         ]
         @param solution: numpy.ndarray
         """
+        logging.debug(self.jobs)
         user_job_assigned = []
         for j in self.jobs.index:
             job = int(self.jobs.iloc[j]["pk"])
-            assigned_persons = np.where(solution[:,j] == 1)
-            unassigned_persons = np.where(solution[:,j] != 1)
+            assigned_persons = np.where(solution[:,j] >= .9)
+            unassigned_persons = np.where(solution[:,j] < .9)
             assigned_users = list(self.persons.iloc[assigned_persons]["user_pk"])
+            # print(5*'-')
+            # print(self.jobtypes.loc[self.jobtypes["pk"] == self.jobs.at[j, "jobtype"]]["name"])
+            # print(self.persons.iloc[assigned_persons]["nickname"])
+            
+            # print(self.jobs.iloc[j]["nickname"])
             unassigned_users = list(self.persons.iloc[unassigned_persons]["user_pk"])
             # print(assigned_users)
             instances = [

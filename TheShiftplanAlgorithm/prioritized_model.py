@@ -19,6 +19,8 @@ class PrioritizedModel(Model):
             self.persons["workload"] = self.workloads
         logging.debug(self.workloads)
         self.build_model()
+        self.build_weights()
+
         logging.info("Built model.")
         self.optimize()
 

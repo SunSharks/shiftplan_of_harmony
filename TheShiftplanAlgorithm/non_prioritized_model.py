@@ -23,6 +23,8 @@ class NonPrioritizedModel(Model):
         self.feed_conflicts_per_person()
         self.feed_diversity()
         self.assign_every_job_softly()
+        self.build_weights()
+
         self.feed_objective()
 
     def feed_workload_hard_constraint(self):

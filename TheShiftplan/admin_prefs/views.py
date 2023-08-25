@@ -99,10 +99,13 @@ def admin_prefs_view(request):
     ndf = djaploda.get('df', df)
     ndf = df
     djaploda['df'] = ndf
-    session['django_dash'] = djaploda  
+    session['django_dash'] = djaploda
+
+    break_hours = UserOptions.objects.get(user=selected_user).min_break_hours
 
     context.update({
         "workers": workers,
-        "selected_user": selected_user.pk
+        "selected_user": selected_user.pk,
+        "break_hours": break_hours
     })
     return render(request, 'admin_prefs/main_admin_pref.html', context)
